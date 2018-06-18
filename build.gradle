@@ -1,0 +1,310 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+version = "${System.env.BUILD_VERSION ?: '5.1.0'}"
+project.ext.buildDate = "${System.env.BUILD_ID ?: new Date().format('yyyy-MM-dd HH:mm:ss')}"
+project.ext.buildNumber = "${System.env.BUILD_NUMBER ?: '8'}"
+project.ext.buildVersion = "${version}.${buildNumber}"
+project.ext.buildModule = "${System.env.JOB_NAME ?: 'manual'}"
+
+
+project.ext.productCompany = 'Veritas Technologies LLC'
+project.ext.productBuildby = productCompany
+project.ext.productName = 'FedX'
+project.ext.productLongName = 'FedX'
+
+project.ext.rdf4jVersion = '2.3.2'
+project.ext.jettyVersion = '9.4.8.v20171121'
+
+buildDir='target'
+group 'com.veritas.fops'
+
+sourceSets {
+	main {
+		java { srcDirs 'src' }
+	}
+	test {
+		java { srcDirs 'test' }
+		resources { srcDirs 'test' }
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	implementation 'commons-codec:commons-codec:1.11'
+	implementation 'org.apache.commons:commons-compress:1.16.1'
+	implementation 'commons-io:commons-io:2.6'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.9'
+	implementation 'org.apache.httpcomponents:httpcore-nio:4.4.9'	
+	implementation 'org.apache.httpcomponents:httpclient:4.5.5'
+	implementation 'org.apache.httpcomponents:httpclient-cache:4.5.5'
+	implementation 'commons-logging:commons-logging:1.2'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.9.5'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
+	implementation 'log4j:log4j:1.2.16'
+	implementation 'org.slf4j:slf4j-api:1.7.0'
+	implementation 'org.slf4j:slf4j-log4j12:1.7.0'
+	implementation('com.google.guava:guava:25.1-jre') {
+		transitive = false
+	}
+	
+	implementation("org.eclipse.rdf4j:rdf4j-repository-sail:$rdf4jVersion") {
+		exclude group: 'com.google.guava', module: 'guava' // to avoid transitive behavior
+	}
+	implementation "org.eclipse.rdf4j:rdf4j-queryresultio-sparqljson:$rdf4jVersion"
+	implementation "org.eclipse.rdf4j:rdf4j-queryresultio-sparqlxml:$rdf4jVersion"
+	implementation("org.eclipse.rdf4j:rdf4j-sail-nativerdf:$rdf4jVersion") {
+		exclude group: 'com.google.guava', module: 'guava' // to avoid transitive behavior
+	}
+	implementation "org.eclipse.rdf4j:rdf4j-repository-http:$rdf4jVersion"
+	testCompile "org.eclipse.rdf4j:rdf4j-sail-memory:$rdf4jVersion"
+	testCompile "org.eclipse.rdf4j:rdf4j-repository-manager:$rdf4jVersion"
+	testCompile "org.eclipse.rdf4j:rdf4j-queryresultio-text:$rdf4jVersion"
+	
+	
+	
+	// JUnit and friends
+	testCompile 'org.hamcrest:hamcrest-core:1.3'
+	testCompile 'junit:junit:4.11'
+	
+	// Jetty
+	testCompile "org.eclipse.jetty:jetty-server:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-xml:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-util:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-http:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-security:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-servlet:$jettyVersion"	
+	testCompile "org.eclipse.jetty:jetty-servlets:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-io:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-deploy:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-continuation:$jettyVersion"
+	testCompile "org.eclipse.jetty:jetty-webapp:$jettyVersion"
+	
+	testCompile "javax.servlet:javax.servlet-api:3.1.0"
+}
+
+
+compileJava {
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
+}
+
+// define manifest
+jar {
+	manifest {
+		attributes(
+			"project": project.name,
+			"module": rootProject.buildModule,
+			"version": rootProject.version,
+			"date": rootProject.buildDate,
+			"build": rootProject.buildNumber,
+			"built-by": rootProject.productCompany,
+			"ProductName": rootProject.productName,
+			"ProductLongName": rootProject.productLongName,
+			"ProductVersion": version,
+			"CompanyName": rootProject.productCompany,
+			)
+	}
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	archiveName = "${baseName}-${version}-sources.${extension}"
+	from sourceSets.main.java
+}
+
+
+javadoc {
+	
+	def title = 'fluidOps FedX Documentation'
+	
+	source = sourceSets.main.allJava
+	classpath = sourceSets.main.compileClasspath
+	destinationDir = file("target/javadoc")
+	
+	if (JavaVersion.current().isJava8Compatible()) {
+		options.addStringOption('Xdoclint:none', '-quiet')
+	}
+	
+	options.linkSource = false
+	options.serialWarn = false
+	options.source = '1.8'
+	options.windowTitle = title
+	options.encoding = 'UTF-8'
+	options.author = true
+	options.version = true
+	options.use = true
+		
+	options.docTitle = "<h1>$title</h1>"
+	options.header = "<img src=\"images/fluidops.png\" />"
+	options.bottom = "<i>Copyright &#169; 2008-2017 fluid Operations AG. All Rights Reserved.</i>"
+}
+
+// fail on JavaDoc errors
+tasks.withType(Javadoc).each { task ->
+	task.failOnError = true
+}
+
+
+// disable the test task => individual test task
+test.enabled = false
+
+
+task testNativeStore(type: Test, dependsOn: classes) {
+	
+	systemProperty 'repositoryType', 'NATIVE'
+	reports.junitXml.destination = file('target/test-results/NATIVE')
+	reports.html.destination = file('target/test-results/NATIVE')
+	
+	include '**/*Tests*'
+	include '**/*Test*'
+	exclude '**/*BaseTest*'
+	exclude 'demos/**'
+	exclude 'local/**'
+	exclude 'performance/**'
+
+	minHeapSize = "256m"
+	maxHeapSize = "1g"
+
+	ignoreFailures true
+}
+
+task testSparqlRepository(type: Test, dependsOn: classes) {
+	
+	systemProperty 'repositoryType', 'SPARQLREPOSITORY'
+	reports.junitXml.destination = file('target/test-results/SPARQLREPOSITORY')
+	reports.html.destination = file('target/test-results/SPARQLREPOSITORY')
+	
+	include '**/*Tests*'
+	include '**/*Test*'
+	exclude '**/*BaseTest*'
+	exclude 'demos/**'
+	exclude 'local/**'
+	exclude 'performance/**'
+
+	minHeapSize = "256m"
+	maxHeapSize = "1g"
+
+	ignoreFailures true
+}
+
+task testRemoteRepository(type: Test, dependsOn: classes) {
+	
+	systemProperty 'repositoryType', 'REMOTEREPOSITORY'
+	reports.junitXml.destination = file('target/test-results/REMOTEREPOSITORY')
+	reports.html.destination = file('target/test-results/REMOTEREPOSITORY')
+	
+	include '**/*Tests*'
+	include '**/*Test*'
+	exclude '**/*BaseTest*'
+	exclude 'demos/**'
+	exclude 'local/**'
+	exclude 'performance/**'
+
+	minHeapSize = "256m"
+	maxHeapSize = "1g"
+
+	ignoreFailures true
+}
+
+
+task tests(dependsOn: ['testNativeStore', 'testSparqlRepository', 'testRemoteRepository']) {
+	
+}
+
+// make sure that tests are executed
+check.dependsOn tests
+
+
+def deployDir = file("target/deploy")
+
+task deploy(type: Copy, dependsOn: ["jar"] ) {
+
+	into "$deployDir"
+	
+	into("lib") {
+		from configurations.compileClasspath
+	}
+	
+	into("lib") {
+		from rootProject.jar
+	}
+	
+	into("src") {
+		from sourcesJar
+	}
+	
+	into(".") {
+		from 'build'
+		include 'README.txt'
+	}
+	
+	into("examples") {
+		from 'examples'
+	}
+	
+	into("doc") {
+		from 'build/doc'
+		include '**/*.html'
+		exclude 'images'
+	}
+	
+	into("doc/javadoc") {
+		from javadoc
+	}
+	
+	into("doc/javadoc") {
+		from 'build/doc'
+		include 'images/*'
+	}
+	
+	into(".") {
+		from rootProject.file(".")
+		include 'cli.bat'
+		include 'cli.sh'
+		include 'LICENSE.txt'
+		include 'NOTICE.txt'
+	}
+}
+
+
+task zipBundle(type: Zip, dependsOn: "deploy") {
+	archiveName = "FedX " + version + ".${extension}"
+	from "$deployDir"
+}
+
+
+task createPom {
+	doLast {
+		pom {
+			project {
+				inceptionYear '2018'
+				licenses {
+					license {
+						name 'Apache License, Version 2.0'
+						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+						distribution 'manual'
+					}
+				}
+				developers {
+					developer {
+						id "aschwarte10";
+						name "Andreas Schwarte";
+						email "aschwarte10@gmail.com";
+					}
+				}
+			}
+		}.writeTo("pom.xml")
+	}
+}
+
+artifacts {
+	archives zipBundle
+}
+
+

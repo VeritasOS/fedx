@@ -1,0 +1,9 @@
+@prefix fluid: <http://fluidops.org/config#>.
+
+<http://DBpedia> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://dbpedia.org/sparql";
+fluid:supportsASKQueries "false" .
+
+<http://SWDF> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://data.semanticweb.org/sparql".
+

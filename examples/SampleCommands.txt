@@ -1,0 +1,36 @@
+This document provides various examples
+
+Note: for information on queries and required data sources read: query_readme.txt
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood 
+> cli -d examples\DBpediaSemanticWebDogFood.ttl @q examples\q1.txt
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood using JSON as output format
+> cli -d examples\DBpediaSemanticWebDogFood.ttl -f JSON @q examples\q1.txt
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood using XML as output format, with folder "test"
+> cli -d examples\DBpediaSemanticWebDogFood.ttl -f JSON -folder test @q examples\q1.txt
+
+Evaluate query 3 at DBpedia and Drugbank
+> cli -s http://dbpedia.org/sparql -s http://www4.wiwiss.fu-berlin.de/drugbank/sparql @q examples\q2.txt
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood, verbose log messages to stdout at highest level (TRACE)
+> cli -verbose 2 -d examples\DBpediaSemanticWebDogFood.ttl @q examples\q1.txt
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood, verbose log messages to file at level 1 (INFO)
+> cli -verbose 1 -logtofile -d examples\DBpediaSemanticWebDogFood.ttl @q examples\q1.txt
+
+Evaluate a set of queries at DBpedia and SemanticWebDogFood
+> cli -d examples\DBpediaNYTimesLinkedMDB.ttl @q examples\queries.txt
+
+Evaluate the specified query at DBpedia
+> cli -s http://dbpedia.org/sparql -q "SELECT ?President WHERE {?President <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/PresidentsOfTheUnitedStates> . }"
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood, and apply the specified FedX configuration (prints query plan)
+> cli -c examples\fedxConfig.prop -d examples\DBpediaSemanticWebDogFood.ttl @q examples\q1.txt
+
+Evaluate query 1 at DBpedia and SemanticWebDogFood. Data sources specified implicitly using dataConfig setting in FedX configuration and apply the specified fedx configuration (prints query plan)
+> cli -c examples\fedxConfig-dataCfg.prop @q examples\q1.txt
+
+Evaluate query 5 at the specified local Sesame NativeStores of DBpedia and NYTimes
+> cli -c examples\fedxConfig.prop -d examples\DBpediaNYTimes-local.ttl @q examples\q5.txt

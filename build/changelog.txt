@@ -1,0 +1,104 @@
+Changelog
+
+Last Update: 2018-06-18
+
+FedX 5.1.0 (2018-06-18)
+ * Switch license to Apache License 2.0
+ * Build using 3rd party dependencies from Maven central
+ * Upgrade 3rd Party dependencies
+ * Definition of pom.xml file
+
+FedX 5.0.1 (2018-04-16)
+ * Upgrade to RDF4J 2.3.1
+
+FedX 5.0.0 (2017-12-30)
+ * Upgrade to RDF4J 2.2.4
+
+FedX 4.0.0 (2017-12-20)
+ * Upgrade to Sesame 2.8.11
+ * Write support to a designated federation member.
+ * Upgrade of 3rd party components
+ * Based on 3.2.0 Release
+ * Bugfixes in source selection
+
+
+FedX 3.2.0 (2017-12-11)
+ * Shutdown executor services
+ * Shutdown query service
+ * Proper thread pool with on-demand thread creation 
+ ** Use java.util.concurrent helper facilities instead of own synchronization
+ * Upgrade to Sesame 2.7.10
+ * Fix potential deadlocks
+ * fix Source selection issue
+ 
+
+FedX 3.1.2 (2015-03-25)
+ * Fix query optimization issue of local variables inside OPTIONAL joins.
+   Queries were not correctly executed, when the variable was not part of
+   the global projection.
+   
+FedX 3.1.1 (2015-03-25)
+ * Fix execution of sub selects (cost estimation of Projection)
+
+FedX 3.1 (2014-10-07)
+ * SPARQL endpoints that do not support ASK queries (e.g. DBpedia) can now
+   be configured to use SELECT queries for source selection. Note that for
+   convenience this is done hard-coded for the DBpedia endpoint
+
+FedX 3.0.1 (2013-10-14)
+ * Facility to print the query plan from the CLI
+
+FedX 3.0 (2013-07-30)
+ * Upgrade to Sesame 2.7.3
+ * JMX monitoring features for Query engine
+ * Implementation of bound joins using SPARQL 1.1 VALUES clause, can be configured 
+   with new configuration options
+ * Name of federation members can now be used as SERVICE IRI (i.e. it
+   one can use an alias instead of long SPARQL endpoint URL) 
+ * Improved evaluation of SERVICE expressions within queries
+ * Improved usability with an endpoint validation prior to adding it to the federation
+ * Fix: DISTINCT evaluation problems within subqueries
+ * Fix: Blank Node evaluation in generated subqueries
+ * Fix: blocking behavior when using SPARQL endpoints (fixed in Sesame)
+ * Fix: subquery generation for conjunctive filter expr (parantheses)
+ * Fix: projection of values when EQ-filter expr could be inserted
+ * Fix: filter expression not correctly evaluated for exclusive statements
+ * Improvements to test infrastructure and test cases
+ ** all tests are now evaluated against SPARQL, REMOTE and NativeStore
+ * Fix: owl:sameAs evaluation problem against particular remote repositories
+
+
+FedX 2.0 (2012-07-04)
+ * Upgrade to Sesame 2.6.5
+ * Monitoring facilities (query log, query plan log, number of remote requests)
+ * Support for remote repositories as endpoints
+ * Optimization improvements: single source queries, scoping of variables (DISTINCT)
+ * Improved: join ordering rules
+ * Updated documentation
+ * Improve: public interface methods
+ * Fix: source selection issues
+ * Fix: error handling
+ 
+
+FedX 1.1 (2011-11-22)
+ * Migration to Sesame 2.6.1
+ * SPARQL 1.1 support
+ * Option to specify commonly used PREFIX declarations in a file
+ * PREFIX Handling in CLI
+ * Documentation
+ * Error handling: all subqueries belonging to a query abort in case of errors
+ * Fix: Join Order optimization can now deal with NUnion
+ * Fix: Join processing where exclusive group has no free variables
+
+FedX 1.0 (2011-07-13)
+ * Migration to Sesame 2.4.0
+ * Improved: Error Handling 
+
+FedX 1.1 beta
+ * Improved: ASK requests in source selection are sent in parallel
+ * Cache now has a clear() functionality
+ * Added: cli.sh
+ 
+FedX 1.0 beta (2011-05-27)
+ * initial release
+

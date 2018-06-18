@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<project name="fedx" default="auto" basedir=".">
+	
+	
+	
+	<!-- build properties -->
+	<property name="global.module" value="FedX" />
+	<property name="global.version" value="4.0.0" />
+	<property name="global.jar-name" value="fedx-4.0.0.jar" />
+	<property name="global.buildID" value="101" />	<!-- e.g. the svn revision used -->
+	<property name="root" location=".." />
+
+	
+	<!-- fedx required libs and classes -->
+	<path id="base.classpath">
+		<fileset dir="${root}/lib/">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${root}/testlib/">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${root}/release/bin/" />
+		<pathelement location="${root}/release/testbin/" />
+		<pathelement location="${root}/test/" />	<!-- for the source files -->
+	</path>
+	
+	
+	<!-- tasks -->
+	
+	<!-- clean: delete bin folder -->
+	<target name="clean">
+		
+		<delete dir="${root}/release" failonerror="true" />
+		<mkdir dir="${root}/release" />		
+		<mkdir dir="${root}/release/bin" />
+		<mkdir dir="${root}/release/testbin" />
+		<mkdir dir="${root}/release/tests" />
+		<mkdir dir="${root}/release/javadoc" />
+		
+	</target>
+	
+		
+	<!-- compile the source code -->
+	<target name="compile" depends="clean">
+		<javac srcdir="${root}/src" destdir="${root}/release/bin" classpathref="base.classpath" debug="on" optimize="on" fork="false" verbose="false" listfiles="false" includes="**/*.java,**/*.prop">
+			<compilerarg value="-Xlint" />
+		</javac>
+	</target>
+	
+	<!-- generate the javadoc to release/javadoc/ -->
+	<target name="javadoc" depends="clean">
+	    <javadoc packagenames="com.fluidops.*"
+            sourcepath="${root}/src"
+            classpathref="base.classpath" 
+            defaultexcludes="yes" 
+            destdir="${root}/release/javadoc" 
+            author="true" 
+            version="true" 
+            use="true" 
+            public="true" 
+            source="1.6" 
+	        serialwarn="true"
+            stylesheetfile="${root}/build/doc/stylesheet_fedx.css"
+            linksource="true"
+            windowtitle="Fluid Operations FedX documentation">
+            <doctitle>
+                <![CDATA[<h1>fluid FedX</h1>]]>
+            </doctitle>
+            <header>
+                <![CDATA[<img src="images/fluidops.png">]]>
+            </header>
+            <bottom>
+                <![CDATA[<i>Copyright &#169; 2008-2011 fluid Operations AG. All Rights Reserved.</i>]]>
+            </bottom>
+	    </javadoc>
+		<copy todir="${root}/release/javadoc" overwrite="true">
+            <fileset dir="${root}/build/doc">
+                <include name="images/*" />
+            </fileset>
+		</copy>
+	</target>
+	
+	<!-- generate the jar file including manifest information to release/fedx.jar -->
+	<target name="jar" depends="compile">
+		<tstamp/>
+		<jar destfile="${root}/release/${global.jar-name}" duplicate="fail" compress="true">
+			<fileset dir="${root}/release/bin" />
+			<fileset dir="${root}/src/" includes="**/*.prop" />
+			<manifest>
+				<attribute name="built-by" value="Fluid Operations AG" />
+				<attribute name="project" value="FedX" />
+				<attribute name="version" value="${global.version} (build ${global.buildID})" />
+				<attribute name="date" value="${TODAY}" />
+				<attribute name="build" value="${global.buildID}" />
+				<attribute name="ProductName" value="fluid FedX" />
+				<attribute name="ProductLongName" value="fluid FedX" />
+				<attribute name="CompanyName" value="fluid Operations AG" />
+				<attribute name="ProductVersion" value="${global.version}" />
+				<attribute name="ProductContact" value="info@fluidops.com" />
+			</manifest>
+		</jar>
+	</target>	
+	
+	<target name="compileTest" depends="compile">
+		<javac srcdir="${root}/test" destdir="${root}/release/testbin" classpathref="base.classpath" debug="off" optimize="on" fork="false" verbose="false" listfiles="false" includes="**/*.java,**/*.prop">
+			<compilerarg value="-Xlint" />
+		</javac>
+	</target>
+	
+	<macrodef name="junit-fedx">
+		<attribute name="repositoryType"/>
+		<sequential>
+			<local name="test.report.path"/>
+			<property name="test.report.path" value="${root}/release/testreport/@{repositoryType}"/>
+			<delete dir="${test.report.path}/xml"/>
+			<delete dir="${test.report.path}/html"/>
+			<mkdir dir="${test.report.path}/xml"/>
+			<mkdir dir="${test.report.path}/html"/>
+			<junit dir="${root}" 
+					fork="yes" forkmode="once" 
+					errorproperty="test.failed" showoutput="yes" 
+					maxmemory="128m" >
+				<sysproperty key="repositoryType" value="@{repositoryType}"/>
+				<sysproperty key="log4j.configuration" value="file:build/test/log4j.properties" />
+				<classpath>
+					<path refid="base.classpath"/>
+				</classpath>
+				<assertions><enable/></assertions>
+				<formatter type="xml"/>
+				<batchtest toDir="${test.report.path}/xml">
+					<fileset dir="${root}/test">
+						<include name="**/*Tests.java"/>
+						<include name="**/*Test.java"/>
+						<exclude name="**/*BaseTest.java"/>
+						<exclude name="demos/*" />
+						<exclude name="local/*" />
+						<exclude name="**/performance/*" />
+					</fileset>
+				</batchtest>
+			</junit>
+			<junitreport toDir="${test.report.path}/xml">
+				<fileset dir="${test.report.path}/xml">
+					<include name="TEST-*.xml"/>
+				</fileset>
+				<report format="frames" todir="${test.report.path}/html"/>
+			</junitreport>
+		</sequential>
+	</macrodef>
+		
+	<target name="junit" depends="compileTest">
+		
+		<junit-fedx repositorytype="SPARQLREPOSITORY"/>
+		<junit-fedx repositorytype="REMOTEREPOSITORY"/>
+		<junit-fedx repositorytype="NATIVE"/>
+		
+	</target>
+	
+	
+	<!-- release bundles -->
+	<target name="bundle" depends="jar, javadoc">
+		
+		<!-- binaries + doc
+		<zip destfile="${root}/release/FedX ${global.version}.zip">
+			<zipfileset dir="${root}/release" prefix="lib" includes="*.jar" />
+			<zipfileset dir="${root}/lib" prefix="lib" includes="*.jar" excludes="**/.svn/*" />
+			<zipfileset dir="${root}/build" includes="license.txt" />
+			<zipfileset dir="${root}/build" includes="README.txt" />
+			<zipfileset dir="${root}/examples" prefix="examples" includes="**/*" excludes="**/.svn/*" />
+			<zipfileset dir="${root}/release/javadoc" prefix="doc/javadoc"/>
+			<zipfileset dir="${root}/build/doc" prefix="doc" includes="**/*.html" />
+			<zipfileset dir="${root}/" prefix="" includes="cli.bat" />
+			<zipfileset dir="${root}/" prefix="" includes="cli.sh" />
+		</zip>
+		-->
+		
+		<!-- binaries + source + javadoc -->
+		<zip destfile="${root}/release/FedX ${global.version}.zip">
+			<zipfileset dir="${root}/release" prefix="lib" includes="*.jar" />
+			<zipfileset dir="${root}/lib" prefix="lib" includes="*.jar" excludes="**/.svn/*" />
+			<zipfileset dir="${root}/build" includes="license.txt" />
+			<zipfileset dir="${root}/build" includes="README.txt" />
+			<zipfileset dir="${root}/src" prefix="src" excludes="**/.svn/*" />
+			<zipfileset dir="${root}/examples" prefix="examples" includes="**/*" excludes="**/.svn/*" />
+			<zipfileset dir="${root}/release/javadoc" prefix="doc/javadoc"/>
+			<zipfileset dir="${root}/build/doc" prefix="doc" includes="**/*.html" />
+			<zipfileset dir="${root}/" prefix="" includes="cli.bat" />
+			<zipfileset dir="${root}/" prefix="" includes="cli.sh" />
+		</zip>
+	</target>
+	
+	<!-- replace/insert license haeders (from file java.header) in all java-files below source -->
+	<regexp id="license.and.package.regexp" pattern="(\s*/\*.*\*/\s*)??^\s*package"/>
+	<target name="replace.license.headers">
+		<loadfile property="license.text" srcFile="${root}/build/license.header"/>
+		<replaceregexp replace="${license.text}package" flags="sm">
+			<fileset dir="${root}/src" includes="**/*.java" excludes="**/QueueCursor.java"/>
+			<regexp refid="license.and.package.regexp"/>
+		</replaceregexp>		
+	</target>
+	
+	
+	<target name="auto" depends="clean, compile, javadoc, jar, junit, bundle" />
+	<target name="manual" depends="clean, compile, jar" />
+	
+</project>

@@ -1,0 +1,9 @@
+# Additional Triple patterns for the SERVICE
+# ?Drug <http://xmlns.com/foaf/0.1/name> ?name .
+# ?Drug <http://dbpedia.org/ontology/abstract> ?abstract .
+SELECT * WHERE {
+  ?Drug <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Drug> .
+  SERVICE <http://10.212.10.29:8088/openrdf-sesame/repositories/dbpedia> {
+  		?Drug <http://www.w3.org/2002/07/owl#sameAs> ?y .  		
+  }
+ } LIMIT 100

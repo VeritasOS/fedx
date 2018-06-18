@@ -1,0 +1,31 @@
+License Information
+
+
+FedX is licensed under the Apache License 2.0 for use in open source applications.
+See attached LICENSE.txt
+
+(c) 2011-2018 fluid Operations AG
+(c) 2018 Veritas Technologies LLC
+http://www.veritas.com
+
+
+Third Party Notice:
+
+This product includes software from the RDF4j project (http://www.rdf4j.org).
+License: https://www.eclipse.org/org/documents/edl-v10.html
+
+This product includes software developed by The Apache Software Foundation (http://www.apache.org/).
+License: http://www.apache.org/licenses/LICENSE-2.0
+
+This product includes software developed by Google (https://github.com/google/guava).
+License: http://www.apache.org/licenses/LICENSE-2.0
+
+This product includes software from the Jackson project (https://github.com/FasterXML/jackson).
+License: http://www.apache.org/licenses/LICENSE-2.0
+
+This product includes software developed by the SL4J project (http://www.slf4j.org/).
+License: http://www.slf4j.org/license.html
+
+Source code for included Open Source software is available from the respective websites of the copyright 
+holders of the included software
+

@@ -1,0 +1,22 @@
+@prefix fluid: <http://fluidops.org/config#>.
+
+<http://kegg> fluid:store "RemoteRepository";
+fluid:repositoryServer "http://10.212.10.29:8081/openrdf-sesame";
+fluid:repositoryName "kegg".
+
+<http://drugbank> fluid:store "RemoteRepository";
+fluid:repositoryServer "http://10.212.10.29:8081/openrdf-sesame";
+fluid:repositoryName "drugbank".
+
+<http://genewiki> fluid:store "RemoteRepository";
+fluid:repositoryServer "http://10.212.10.29:8081/openrdf-sesame";
+fluid:repositoryName "chebi".
+
+<http://dbpedia> fluid:store "RemoteRepository";
+fluid:repositoryServer "http://10.212.10.29:8088/openrdf-sesame";
+fluid:repositoryName "dbpedia".
+
+
+
+
+

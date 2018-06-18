@@ -1,0 +1,13 @@
+/cache.db
+/logs
+/release
+/temp
+/target
+/bin/
+/.gradle
+.gradle/
+target/
+.classpath
+.project
+.settings/
+.DS_Store

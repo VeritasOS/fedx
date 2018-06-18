@@ -1,0 +1,14 @@
+@prefix fluid: <http://fluidops.org/config#>.
+
+
+<http://KEGG> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://10.212.10.29:8081/openrdf-sesame/repositories/kegg" .
+
+<http://chEBI> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://10.212.10.29:8081/openrdf-sesame/repositories/chebi" .
+
+<http://Drugbank> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://10.212.10.29:8081/openrdf-sesame/repositories/drugbank" .
+
+<http://dbpedia> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://10.212.10.29:8088/openrdf-sesame/repositories/dbpedia" .
