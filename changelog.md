@@ -1,5 +1,12 @@
 Changelog
 
+FedX 4.0.0 (2017-12-20)
+ * Upgrade to Sesame 2.8.11
+ * Write support to a designated federation member.
+ * Upgrade of 3rd party components
+ * Based on 3.2.0 Release
+ * Bugfixes in source selection
+ 
 FedX 3.2.0 (2017-12-11)
  * Shutdown executor services
  * Shutdown query service
