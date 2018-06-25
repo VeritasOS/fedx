@@ -1,5 +1,24 @@
 Changelog
 
+FedX 3.0 (2013-07-30)
+ * Upgrade to Sesame 2.7.3
+ * JMX monitoring features for Query engine
+ * Implementation of bound joins using SPARQL 1.1 VALUES clause, can be configured 
+   with new configuration options
+ * Name of federation members can now be used as SERVICE IRI (i.e. it
+   one can use an alias instead of long SPARQL endpoint URL) 
+ * Improved evaluation of SERVICE expressions within queries
+ * Improved usability with an endpoint validation prior to adding it to the federation
+ * Fix: DISTINCT evaluation problems within subqueries
+ * Fix: Blank Node evaluation in generated subqueries
+ * Fix: blocking behavior when using SPARQL endpoints (fixed in Sesame)
+ * Fix: subquery generation for conjunctive filter expr (parantheses)
+ * Fix: projection of values when EQ-filter expr could be inserted
+ * Fix: filter expression not correctly evaluated for exclusive statements
+ * Improvements to test infrastructure and test cases
+ ** all tests are now evaluated against SPARQL, REMOTE and NativeStore
+ * Fix: owl:sameAs evaluation problem against particular remote repositories
+
 FedX 2.0 (2012-07-04)
  * Upgrade to Sesame 2.6.5
  * Monitoring facilities (query log, query plan log, number of remote requests)
