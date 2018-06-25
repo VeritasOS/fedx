@@ -1,5 +1,11 @@
 Changelog
 
+FedX 5.1.0 (2018-06-18)
+ * Switch license to Apache License 2.0
+ * Build using 3rd party dependencies from Maven central
+ * Upgrade 3rd Party dependencies
+ * Definition of pom.xml file
+ 
 FedX 5.0.1 (2018-04-16)
  * Upgrade to RDF4J 2.3.1
  
