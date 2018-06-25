@@ -1,5 +1,10 @@
 Changelog
 
+FedX 3.1.2 (2015-03-25)
+ * Fix query optimization issue of local variables inside OPTIONAL joins.
+   Queries were not correctly executed, when the variable was not part of
+   the global projection.
+   
 FedX 3.1.1 (2015-03-25)
  * Fix execution of sub selects (cost estimation of Projection)
  
