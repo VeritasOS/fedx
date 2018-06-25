@@ -1,5 +1,16 @@
 Changelog
 
+FedX 2.0 (2012-07-04)
+ * Upgrade to Sesame 2.6.5
+ * Monitoring facilities (query log, query plan log, number of remote requests)
+ * Support for remote repositories as endpoints
+ * Optimization improvements: single source queries, scoping of variables (DISTINCT)
+ * Improved: join ordering rules
+ * Updated documentation
+ * Improve: public interface methods
+ * Fix: source selection issues
+ * Fix: error handling
+ 
 FedX 1.1 (2011-11-22)
  * Migration to Sesame 2.6.1
  * SPARQL 1.1 support
