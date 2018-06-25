@@ -1,5 +1,14 @@
 Changelog
 
+FedX 3.2.0 (2017-12-11)
+ * Shutdown executor services
+ * Shutdown query service
+ * Proper thread pool with on-demand thread creation 
+ ** Use java.util.concurrent helper facilities instead of own synchronization
+ * Upgrade to Sesame 2.7.10
+ * Fix potential deadlocks
+ * fix Source selection issue
+ 
 FedX 3.1.2 (2015-03-25)
  * Fix query optimization issue of local variables inside OPTIONAL joins.
    Queries were not correctly executed, when the variable was not part of
