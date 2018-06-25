@@ -1,5 +1,8 @@
 Changelog
 
+FedX 5.0.0 (2017-12-30)
+ * Upgrade to RDF4J 2.2.4
+ 
 FedX 4.0.0 (2017-12-20)
  * Upgrade to Sesame 2.8.11
  * Write support to a designated federation member.
