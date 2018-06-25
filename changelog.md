@@ -1,5 +1,8 @@
 Changelog
 
+FedX 3.1.1 (2015-03-25)
+ * Fix execution of sub selects (cost estimation of Projection)
+ 
 FedX 3.1 (2014-10-07)
  * SPARQL endpoints that do not support ASK queries (e.g. DBpedia) can now
    be configured to use SELECT queries for source selection. Note that for
