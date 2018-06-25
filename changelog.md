@@ -1,5 +1,10 @@
 Changelog
 
+FedX 3.1 (2014-10-07)
+ * SPARQL endpoints that do not support ASK queries (e.g. DBpedia) can now
+   be configured to use SELECT queries for source selection. Note that for
+   convenience this is done hard-coded for the DBpedia endpoint
+   
 FedX 3.0.1 (2013-10-14)
  * Facility to print the query plan from the CLI
 
