@@ -6,13 +6,11 @@ import java.util.List;
 
 import org.eclipse.rdf4j.http.protocol.Protocol;
 import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigException;
-import org.eclipse.rdf4j.repository.config.RepositoryConfigUtil;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import org.eclipse.rdf4j.repository.manager.SystemRepository;
+import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
 
@@ -77,14 +75,14 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	public void stop()
 		throws Exception
 	{
-		Repository systemRepo = new HTTPRepository(Protocol.getRepositoryLocation(getServerUrl(),
-				SystemRepository.ID));
-		RepositoryConnection con = systemRepo.getConnection();
+		RemoteRepositoryManager repoManager = RemoteRepositoryManager.getInstance(getServerUrl());
 		try {
-			con.clear();
-		}
-		finally {
-			con.close();
+			repoManager.initialize();
+			for (String repId : repositoryIds) {
+				repoManager.removeRepository(repId);
+			}
+		} finally {
+			repoManager.shutDown();
 		}
 
 		super.stop();
@@ -108,16 +106,21 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	private void createTestRepositories()
 		throws RepositoryException, RepositoryConfigException
 	{
-		Repository systemRep = new HTTPRepository(Protocol.getRepositoryLocation(getServerUrl(),
-				SystemRepository.ID));
 
-		// create a memory store for each provided repository id
-		for (String repId : repositoryIds) {
-			MemoryStoreConfig memStoreConfig = new MemoryStoreConfig();
-			SailRepositoryConfig sailRepConfig = new SailRepositoryConfig(memStoreConfig);
-			RepositoryConfig repConfig = new RepositoryConfig(repId, sailRepConfig);
-	
-			RepositoryConfigUtil.updateRepositoryConfigs(systemRep, repConfig);
+		RemoteRepositoryManager repoManager = RemoteRepositoryManager.getInstance(getServerUrl());
+		try {
+			repoManager.initialize();
+
+			// create a memory store for each provided repository id
+			for (String repId : repositoryIds) {
+				MemoryStoreConfig memStoreConfig = new MemoryStoreConfig();
+				SailRepositoryConfig sailRepConfig = new SailRepositoryConfig(memStoreConfig);
+				RepositoryConfig repConfig = new RepositoryConfig(repId, sailRepConfig);
+
+				repoManager.addRepositoryConfig(repConfig);
+			}
+		} finally {
+			repoManager.shutDown();
 		}
 
 	}
