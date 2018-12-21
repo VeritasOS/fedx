@@ -5,6 +5,7 @@ FedX 5.2.0 SNAPSHOT
    (RDF4J, Apache Commons, Jackson, Guava)
  * Technical Improvements
    - use Gradle 5 Build Environment
+   - migrate unit tests to junit 5
 
 FedX 5.1.0 (2018-06-18)
  * Switch license to Apache License 2.0

@@ -3,7 +3,7 @@ package com.fluidops.fedx;
 import java.util.Set;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Various tests for the junit framework

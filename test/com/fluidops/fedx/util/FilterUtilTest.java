@@ -8,7 +8,7 @@ import org.eclipse.rdf4j.query.algebra.ValueConstant;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.eclipse.rdf4j.query.algebra.Var;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.algebra.ConjunctiveFilterExpr;
 import com.fluidops.fedx.algebra.FilterExpr;

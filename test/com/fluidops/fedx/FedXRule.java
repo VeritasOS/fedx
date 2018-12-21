@@ -6,13 +6,15 @@ import java.util.List;
 
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.EndpointFactory;
 
-public class FedXRule extends ExternalResource {
+public class FedXRule implements BeforeEachCallback, AfterEachCallback {
 
 	
 	private final File configurationPreset;
@@ -26,7 +28,7 @@ public class FedXRule extends ExternalResource {
 	}
 
 	@Override
-	protected void before() throws Throwable {
+	public void beforeEach(ExtensionContext ctx) throws Exception {
 		Config.initialize();
 		List<Endpoint> endpoints;
 		if (configurationPreset!=null)
@@ -38,7 +40,7 @@ public class FedXRule extends ExternalResource {
 	}
 	
 	@Override
-	protected void after() {
+	public void afterEach(ExtensionContext ctx) {
 		try {
 			FederationManager.getInstance().shutDown();
 		} catch (FedXException e) {

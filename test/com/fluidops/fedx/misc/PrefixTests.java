@@ -3,7 +3,7 @@ package com.fluidops.fedx.misc;
 import java.util.Arrays;
 
 import org.eclipse.rdf4j.query.MalformedQueryException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.QueryManager;

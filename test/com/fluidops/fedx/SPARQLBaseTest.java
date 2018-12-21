@@ -19,9 +19,9 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TemporaryFolder;
 
 import com.fluidops.fedx.server.NativeStoreServer;
@@ -58,14 +58,15 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	
 
 	private static REPOSITORY_TYPE repositoryType = REPOSITORY_TYPE.SPARQLREPOSITORY;
-		
-	@Rule
+
+	@RegisterExtension
 	public FedXRule fedxRule = new FedXRule();
+
 
 	// use Junit temporary folder (but not as Rule!)
 	static TemporaryFolder tempFolder = new TemporaryFolder();
 	
-	@BeforeClass
+	@BeforeAll
 	public static void initTest() throws Exception
 	{
 		log = Logger.getLogger(SPARQLBaseTest.class);
@@ -82,7 +83,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	}
 	
 	
-	@AfterClass
+	@AfterAll
 	public static void afterTest() throws Exception {
 		if (server!=null)
 			server.shutdown();

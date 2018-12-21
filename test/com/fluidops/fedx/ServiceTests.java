@@ -2,7 +2,7 @@ package com.fluidops.fedx;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.structures.Endpoint;
 

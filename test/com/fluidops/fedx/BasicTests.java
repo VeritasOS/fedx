@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.Statement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BasicTests extends SPARQLBaseTest {
 

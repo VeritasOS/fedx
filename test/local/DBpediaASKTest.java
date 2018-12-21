@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.FedXBaseTest;
 import com.fluidops.fedx.FedXRule;

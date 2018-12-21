@@ -3,7 +3,7 @@ package com.fluidops.fedx.optimizer;
 import java.util.Arrays;
 
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.SPARQLBaseTest;
 

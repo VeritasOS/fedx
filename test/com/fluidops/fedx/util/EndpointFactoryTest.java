@@ -3,7 +3,7 @@ package com.fluidops.fedx.util;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.FedXRule;
 import com.fluidops.fedx.exception.FedXException;

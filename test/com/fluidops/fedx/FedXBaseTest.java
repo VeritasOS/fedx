@@ -36,7 +36,7 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
@@ -46,7 +46,7 @@ public class FedXBaseTest {
 	public static Logger log;
 	
 	
-	@BeforeClass
+	@BeforeAll
 	public static void initLogging() throws Exception	{
 		
 		if (System.getProperty("log4j.configuration")==null)
