@@ -14,11 +14,9 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.Update;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.SPARQLBaseTest;
@@ -26,15 +24,13 @@ import com.fluidops.fedx.structures.Endpoint;
 
 public class WriteTest extends SPARQLBaseTest {
 
-	@Rule
-	public ExpectedException error = ExpectedException.none();
 	
-	@Before
+	@BeforeEach
 	public void nativeStoreOnly() {
 		assumeNativeStore();
 	}
 	
-	@Before
+	@BeforeEach
 	public void configure() {
 		// allow empty federation members
 		fedxRule.setConfig("validateRepositoryConnections", "false");
@@ -56,21 +52,21 @@ public class WriteTest extends SPARQLBaseTest {
 		
 		// test that statement is returned from federation
 		List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
-		Assert.assertEquals(1 ,stmts.size());
-		Assert.assertEquals(st, stmts.get(0));
+		Assertions.assertEquals(1, stmts.size());
+		Assertions.assertEquals(st, stmts.get(0));
 		conn.close();
 		
 		// check that the statement is actually written to endpoint 1
 		RepositoryConnection ep1Conn = ep1.getConn();
 		stmts = Iterations.asList(ep1Conn.getStatements(null, null, null, true));
-		Assert.assertEquals(1 ,stmts.size());
-		Assert.assertEquals(st, stmts.get(0));
+		Assertions.assertEquals(1, stmts.size());
+		Assertions.assertEquals(st, stmts.get(0));
 		ep1Conn.close();
 		
 		// check that endpoint 2 is empty
 		RepositoryConnection ep2Conn = ep2.getConn();
 		stmts = Iterations.asList(ep2Conn.getStatements(null, null, null, true));
-		Assert.assertEquals(0 ,stmts.size());
+		Assertions.assertEquals(0, stmts.size());
 		ep1Conn.close();
 	}
 	
@@ -79,14 +75,15 @@ public class WriteTest extends SPARQLBaseTest {
 		
 		prepareTest(Arrays.asList("/tests/basic/data_emptyStore.ttl", "/tests/basic/data_emptyStore.ttl"));
 		
-		Assert.assertEquals(false, fedxRule.getRepository().isWritable());
+		Assertions.assertEquals(false, fedxRule.getRepository().isWritable());
 		
-		error.expect(UnsupportedOperationException.class);
-		
-		Statement st = simpleStatement();		
-		RepositoryConnection conn = fedxRule.getRepository().getConnection();		
-		conn.add(st);
-		conn.close();		
+		Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+			Statement st = simpleStatement();
+			RepositoryConnection conn = fedxRule.getRepository().getConnection();
+			conn.add(st);
+			conn.close();
+		});
+
 	}
 	
 	@Test
@@ -104,8 +101,8 @@ public class WriteTest extends SPARQLBaseTest {
 		
 		// test that statement is returned from federation
 		List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
-		Assert.assertEquals(1 ,stmts.size());
-		Assert.assertEquals(RDF.TYPE, stmts.get(0).getPredicate());
+		Assertions.assertEquals(1, stmts.size());
+		Assertions.assertEquals(RDF.TYPE, stmts.get(0).getPredicate());
 		conn.close();		
 	}
 	
@@ -126,12 +123,12 @@ public class WriteTest extends SPARQLBaseTest {
 		// test that statement is returned from federation
 		RepositoryConnection conn = fedxRule.getRepository().getConnection();	
 		List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
-		Assert.assertEquals(1 ,stmts.size());
-		Assert.assertEquals(st, stmts.get(0));
+		Assertions.assertEquals(1, stmts.size());
+		Assertions.assertEquals(st, stmts.get(0));
 		
 		conn.remove(st.getSubject(), null, null);
 		
-		Assert.assertEquals(0, conn.size());
+		Assertions.assertEquals(0, conn.size());
 		
 		conn.close();
 		

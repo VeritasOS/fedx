@@ -7,7 +7,7 @@ import org.eclipse.rdf4j.query.algebra.Compare.CompareOp;
 import org.eclipse.rdf4j.query.algebra.ValueConstant;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.eclipse.rdf4j.query.algebra.Var;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.algebra.ConjunctiveFilterExpr;
@@ -23,7 +23,7 @@ public class FilterUtilTest {
 		FilterExpr right = createFilterExpr("age", 25, CompareOp.LT);
 		ConjunctiveFilterExpr expr = new ConjunctiveFilterExpr(left, right);
 		
-		Assert.assertEquals(
+		Assertions.assertEquals(
 				"( ( ?age > '15'^^<http://www.w3.org/2001/XMLSchema#int> ) && ( ?age < '25'^^<http://www.w3.org/2001/XMLSchema#int> ) )",
 				FilterUtils.toSparqlString(expr));
 	}

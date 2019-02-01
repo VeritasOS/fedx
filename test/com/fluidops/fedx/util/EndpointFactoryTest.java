@@ -1,9 +1,9 @@
 package com.fluidops.fedx.util;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.fluidops.fedx.FedXRule;
 import com.fluidops.fedx.exception.FedXException;
@@ -12,8 +12,8 @@ import com.fluidops.fedx.structures.Endpoint.EndpointType;
 
 public class EndpointFactoryTest {
 
-	@Rule
-	public FedXRule fedx = new FedXRule();
+	@RegisterExtension
+	public FedXRule fedxRule = new FedXRule();
 	
 	@Test
 	public void testValidEndpoint() throws Exception {
@@ -27,19 +27,19 @@ public class EndpointFactoryTest {
 			throw ex;
 		}
 		
-		Assert.assertEquals("http://dbpedia.org", e.getName());
-		Assert.assertEquals("sparql_dbpedia.org_sparql", e.getId());
-		Assert.assertEquals("http://dbpedia.org/sparql", e.getEndpoint());
-		Assert.assertEquals(EndpointType.SparqlEndpoint, e.getType());
+		Assertions.assertEquals("http://dbpedia.org", e.getName());
+		Assertions.assertEquals("sparql_dbpedia.org_sparql", e.getId());
+		Assertions.assertEquals("http://dbpedia.org/sparql", e.getEndpoint());
+		Assertions.assertEquals(EndpointType.SparqlEndpoint, e.getType());
 	}
 	
 	@Test
-	@Ignore // needs to be fixed, connection timeout needs to be set
+	@Disabled // needs to be fixed, connection timeout needs to be set
 	public void testNotReachableEndpoint() throws Exception {
 		
 		try {
 			EndpointFactory.loadSPARQLEndpoint("http://invalid.org/not_sparql");
-			Assert.fail("Expected exception that endpoint is invalid");
+			Assertions.fail("Expected exception that endpoint is invalid");
 		} catch (Exception expected) {
 			
 		}

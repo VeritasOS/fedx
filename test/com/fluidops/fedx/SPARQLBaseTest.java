@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TemporaryFolder;
@@ -224,10 +225,10 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	
 	protected void ignoreForNativeStore() {
 		// ignore these tests for native store
-		org.junit.Assume.assumeTrue("Test is ignored for native store federation", isSPARQLServer());
+		Assumptions.assumeTrue(isSPARQLServer(), "Test is ignored for native store federation");
 	}
 	
 	protected void assumeNativeStore() {
-		org.junit.Assume.assumeTrue("Test can be executed with native store federation only.", server instanceof NativeStoreServer);
+		Assumptions.assumeTrue(server instanceof NativeStoreServer, "Test can be executed with native store federation only.");
 	}
 }

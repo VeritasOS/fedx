@@ -12,7 +12,7 @@ public class EmbeddedServer {
 	public static final String HOST = "localhost";
 	public static final int PORT = 18080;
 	public static final String CONTEXT_PATH = "/";
-	public static final String WAR_PATH = "./build/test/openrdf-sesame.war";
+	public static final String WAR_PATH = "./build/test/rdf4j-server.war";
 
 	private final Server jetty;
 

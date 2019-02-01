@@ -12,9 +12,9 @@ import org.eclipse.rdf4j.query.algebra.Var;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.fluidops.fedx.FedXBaseTest;
 import com.fluidops.fedx.FedXRule;
@@ -30,8 +30,7 @@ import com.fluidops.fedx.util.FedXUtil;
 
 public class DBpediaASKTest extends FedXBaseTest {
 
-	
-	@Rule
+	@RegisterExtension
 	public FedXRule fedx = new FedXRule();
 	
 	@Test
@@ -74,7 +73,7 @@ public class DBpediaASKTest extends FedXBaseTest {
 		
 		ExclusiveGroup group = new ExclusiveGroup(ownedNodes, owner, qInfo);
 		
-		Assert.assertTrue(ep.getTripleSource().hasStatements(group, ep.getConn(), EmptyBindingSet.getInstance()));
+		Assertions.assertTrue(ep.getTripleSource().hasStatements(group, ep.getConn(), EmptyBindingSet.getInstance()));
 		
 		ep.shutDown();
 	}

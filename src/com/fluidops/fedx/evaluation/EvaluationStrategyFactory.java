@@ -47,7 +47,7 @@ public class EvaluationStrategyFactory {
 	
 	private static FederationEvalStrategy instantiate(String evalStrategyClass) {
 		try {
-			return (FederationEvalStrategy)Class.forName(evalStrategyClass).newInstance();
+			return (FederationEvalStrategy) Class.forName(evalStrategyClass).getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new IllegalStateException("Class " + evalStrategyClass + " could not be instantiated.", e);
 		} catch (ClassNotFoundException e) {

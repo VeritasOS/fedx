@@ -35,7 +35,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 
 import com.fluidops.fedx.exception.FedXException;
@@ -90,7 +90,7 @@ public class FedXBaseTest {
 				
 				boolean queryResult = ((BooleanQuery)query).evaluate();
 				boolean expectedResult = readExpectedBooleanQueryResult(expectedResultFile);
-				Assert.assertEquals(expectedResult, queryResult);
+				Assertions.assertEquals(expectedResult, queryResult);
 			}
 			else {
 				throw new RuntimeException("Unexpected query type: " + query.getClass());
@@ -123,7 +123,7 @@ public class FedXBaseTest {
 		
 		actualQueryPlan = actualQueryPlan.replace("sparql_localhost:18080_repositories_", "");
 		actualQueryPlan = actualQueryPlan.replace("remote_", "");
-		Assert.assertEquals(expectedQueryPlan, actualQueryPlan);
+		Assertions.assertEquals(expectedQueryPlan, actualQueryPlan);
 		
 	}
 	
@@ -352,7 +352,7 @@ public class FedXBaseTest {
 			}
 	
 			log.error(message.toString());
-			Assert.fail(message.toString());
+			Assertions.fail(message.toString());
 		}
 		
 	}
@@ -383,7 +383,7 @@ public class FedXBaseTest {
 			}
 	
 			log.error(message.toString());
-			Assert.fail(message.toString());
+			Assertions.fail(message.toString());
 		}
 	}	
 

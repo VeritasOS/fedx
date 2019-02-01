@@ -164,6 +164,8 @@ test.enabled = false
 
 task testNativeStore(type: Test, dependsOn: classes) {
 	
+	useJUnitPlatform()
+	
 	systemProperty 'repositoryType', 'NATIVE'
 	reports.junitXml.destination = file('target/test-results/NATIVE')
 	reports.html.destination = file('target/test-results/NATIVE')
@@ -183,6 +185,8 @@ task testNativeStore(type: Test, dependsOn: classes) {
 
 task testSparqlRepository(type: Test, dependsOn: classes) {
 	
+	useJUnitPlatform()
+	
 	systemProperty 'repositoryType', 'SPARQLREPOSITORY'
 	reports.junitXml.destination = file('target/test-results/SPARQLREPOSITORY')
 	reports.html.destination = file('target/test-results/SPARQLREPOSITORY')
@@ -201,6 +205,8 @@ task testSparqlRepository(type: Test, dependsOn: classes) {
 }
 
 task testRemoteRepository(type: Test, dependsOn: classes) {
+	
+	useJUnitPlatform()
 	
 	systemProperty 'repositoryType', 'REMOTEREPOSITORY'
 	reports.junitXml.destination = file('target/test-results/REMOTEREPOSITORY')

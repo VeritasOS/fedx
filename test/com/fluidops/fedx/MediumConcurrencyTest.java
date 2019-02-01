@@ -11,8 +11,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class MediumConcurrencyTest extends SPARQLBaseTest {
@@ -25,14 +25,14 @@ public class MediumConcurrencyTest extends SPARQLBaseTest {
 
 	private static ExecutorService executor;
 
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass()
 	{
 
 		executor = Executors.newFixedThreadPool(10);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void afterClass()
 	{
 		if (executor != null)
