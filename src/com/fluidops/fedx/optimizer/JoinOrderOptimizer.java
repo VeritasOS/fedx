@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.eclipse.rdf4j.query.algebra.BindingSetAssignment;
 import org.eclipse.rdf4j.query.algebra.Projection;
 import org.eclipse.rdf4j.query.algebra.Service;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
@@ -159,6 +160,10 @@ public class JoinOrderOptimizer {
 			return new ArrayList<String>(p.getBindingNames());
 		}
 		
+		if (tupleExpr instanceof BindingSetAssignment) {
+			return new ArrayList<>();
+		}
+
 		throw new FedXRuntimeException("Type " + tupleExpr.getClass().getSimpleName() + " not supported for cost estimation. If you run into this, please report a bug.");
 		
 	}
@@ -179,6 +184,8 @@ public class JoinOrderOptimizer {
 			return estimateCost( (FedXService)tupleExpr, joinVars);
 		if (tupleExpr instanceof Projection)
 			return estimateCost( (Projection)tupleExpr, joinVars);
+		if (tupleExpr instanceof BindingSetAssignment)
+			return 0;
 		
 		
 		log.warn("No cost estimation for " + tupleExpr.getClass().getSimpleName() + " available.");

@@ -65,4 +65,11 @@ public class BasicTests extends SPARQLBaseTest {
 		Set<Statement> res = getStatements(null, null, null);
 		compareGraphs(res, readExpectedGraphQueryResult("/tests/basic/query02.ttl"));
 	}
+
+	@Test
+	public void testValuesClause() throws Exception {
+		/* test query with values clause */
+		prepareTest(Arrays.asList("/tests/basic/data01endpoint1.ttl", "/tests/basic/data01endpoint2.ttl"));
+		execute("/tests/basic/query_values.rq", "/tests/basic/query_values.srx", false);
+	}
 }

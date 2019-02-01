@@ -1,6 +1,7 @@
 Changelog
 
 FedX 5.2.0 SNAPSHOT
+ * basic support for values clause
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
  * Technical Improvements
