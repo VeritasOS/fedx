@@ -27,12 +27,14 @@ import org.eclipse.rdf4j.query.algebra.evaluation.impl.ConstantOptimizer;
 import org.eclipse.rdf4j.query.algebra.evaluation.impl.DisjunctiveConstraintOptimizer;
 import org.eclipse.rdf4j.sail.SailException;
 
+import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.FedX;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.SingleSourceQuery;
 import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.structures.FedXDataset;
 import com.fluidops.fedx.structures.QueryInfo;
 
 
@@ -45,9 +47,16 @@ public class Optimizer {
 	public static TupleExpr optimize(TupleExpr parsed, Dataset dataset, BindingSet bindings, 
 			FederationEvalStrategy strategy, QueryInfo queryInfo) throws SailException
 	{
-		
-		FedX fed = FederationManager.getInstance().getFederation();
-		List<Endpoint> members = fed.getMembers();
+		List<Endpoint> members;
+		if (dataset instanceof FedXDataset) {
+			// run the query against a selected set of endpoints
+			FedXDataset ds = (FedXDataset)dataset;
+			members = EndpointManager.getEndpointManager().getEndpoints(ds.getEndpoints());
+		} else {
+			// evaluate against entire federation
+			FedX fed = FederationManager.getInstance().getFederation();
+			members = fed.getMembers();
+		}
 		
 		// if the federation has a single member only, evaluate the entire query there
 		if (members.size()==1 && queryInfo.getQuery()!=null)

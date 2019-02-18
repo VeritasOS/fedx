@@ -143,7 +143,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	
 	
 	
-	protected void prepareTest(List<String> sparqlEndpointData) throws Exception {
+	protected List<Endpoint> prepareTest(List<String> sparqlEndpointData) throws Exception {
 		
 		// clear federation and cache
 		super.prepareTest();
@@ -159,10 +159,13 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 		}
 		
 		// configure federation
+		List<Endpoint> endpoints = new ArrayList<>();
 		for (i=1; i<=sparqlEndpointData.size(); i++) {
 			Endpoint e = server.loadEndpoint(i);
+			endpoints.add(e);
 			FederationManager.getInstance().addEndpoint(e, true);
 		}
+		return endpoints;
 	}
 	
 

@@ -2,6 +2,8 @@ Changelog
 
 FedX 5.2.0 SNAPSHOT
  * basic support for values clause
+ * support for dynamic federations
+   - use FedxDataset to define the endpoints for a given query execution
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
  * Technical Improvements

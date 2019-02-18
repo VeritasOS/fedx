@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -18,6 +17,8 @@ public class FedXRule implements BeforeEachCallback, AfterEachCallback {
 
 	
 	private final File configurationPreset;
+
+	protected Repository repository;
 		
 	public FedXRule(File configurationPreset) {
 		this.configurationPreset = configurationPreset;
@@ -35,7 +36,7 @@ public class FedXRule implements BeforeEachCallback, AfterEachCallback {
 			endpoints = EndpointFactory.loadFederationMembers(configurationPreset);
 		else
 			endpoints = Collections.<Endpoint>emptyList();
-		FedXFactory.initializeFederation(endpoints);
+		repository = FedXFactory.initializeFederation(endpoints);
 		FederationManager.getInstance().getCache().clear();
 	}
 	
@@ -61,7 +62,7 @@ public class FedXRule implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	public Repository getRepository() {
-		return new SailRepository(FederationManager.getInstance().getFederation());	
+		return repository;
 	}
 	
 }

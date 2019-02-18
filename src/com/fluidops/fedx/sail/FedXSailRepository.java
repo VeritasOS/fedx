@@ -17,7 +17,6 @@ package com.fluidops.fedx.sail;
 
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.SailException;
 
@@ -36,7 +35,7 @@ public class FedXSailRepository extends SailRepository
 	}
 
 	@Override
-	public SailRepositoryConnection getConnection() throws RepositoryException {
+	public FedXSailRepositoryConnection getConnection() throws RepositoryException {
 		try {
 			return new FedXSailRepositoryConnection(this, this.getSail().getConnection());
 		}

@@ -1,10 +1,17 @@
 package com.fluidops.fedx;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.junit.jupiter.api.Test;
+
+import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.structures.FedXDataset;
 
 public class BasicTests extends SPARQLBaseTest {
 
@@ -71,5 +78,42 @@ public class BasicTests extends SPARQLBaseTest {
 		/* test query with values clause */
 		prepareTest(Arrays.asList("/tests/basic/data01endpoint1.ttl", "/tests/basic/data01endpoint2.ttl"));
 		execute("/tests/basic/query_values.rq", "/tests/basic/query_values.srx", false);
+	}
+
+	@Test
+	public void testFederationSubSetQuery() throws Exception {
+		String ns1 = "http://namespace1.org/";
+		String ns2 = "http://namespace2.org/";
+		List<Endpoint> endpoints = prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl",
+				"/tests/data/data3.ttl",
+				"/tests/data/data4.ttl"));
+		RepositoryConnection conn = fedxRule.getRepository().getConnection();
+		TupleQuery tq = conn.prepareTupleQuery("SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }");
+		TupleQueryResult result = tq.evaluate();
+
+		TupleQueryResult expected = tupleQueryResultBuilder(Arrays.asList("person"))
+				.add(Arrays.asList(vf.createIRI(ns1, "Person_1"))).add(Arrays.asList(vf.createIRI(ns1, "Person_2")))
+				.add(Arrays.asList(vf.createIRI(ns1, "Person_3"))).add(Arrays.asList(vf.createIRI(ns1, "Person_4")))
+				.add(Arrays.asList(vf.createIRI(ns1, "Person_5"))).add(Arrays.asList(vf.createIRI(ns2, "Person_6")))
+				.add(Arrays.asList(vf.createIRI(ns2, "Person_7"))).add(Arrays.asList(vf.createIRI(ns2, "Person_8")))
+				.add(Arrays.asList(vf.createIRI(ns2, "Person_9"))).add(Arrays.asList(vf.createIRI(ns2, "Person_10")))
+				.build();
+
+		compareTupleQueryResults(result, expected, false);
+
+		// evaluate against ep 1 and ep 3 only
+		FedXDataset fedxDataset = new FedXDataset(tq.getDataset());
+		fedxDataset.addEndpoint(endpoints.get(0).getId());
+		fedxDataset.addEndpoint(endpoints.get(2).getId());
+		tq.setDataset(fedxDataset);
+		result = tq.evaluate();
+
+		expected = tupleQueryResultBuilder(Arrays.asList("person")).add(Arrays.asList(vf.createIRI(ns1, "Person_1")))
+				.add(Arrays.asList(vf.createIRI(ns1, "Person_2"))).add(Arrays.asList(vf.createIRI(ns1, "Person_3")))
+				.add(Arrays.asList(vf.createIRI(ns1, "Person_4"))).add(Arrays.asList(vf.createIRI(ns1, "Person_5")))
+				.build();
+
+		compareTupleQueryResults(result, expected, false);
+
 	}
 }

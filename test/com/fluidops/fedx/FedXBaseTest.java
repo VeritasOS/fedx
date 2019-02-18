@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.io.IOUtil;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -23,6 +25,7 @@ import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.dawg.DAWGTestResultSetUtil;
+import org.eclipse.rdf4j.query.impl.ListBindingSet;
 import org.eclipse.rdf4j.query.impl.MutableTupleQueryResult;
 import org.eclipse.rdf4j.query.impl.TupleQueryResultBuilder;
 import org.eclipse.rdf4j.query.resultio.BooleanQueryResultParserRegistry;
@@ -40,6 +43,7 @@ import org.junit.jupiter.api.BeforeAll;
 
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
+import com.google.common.collect.Lists;
 
 public class FedXBaseTest {
 
@@ -55,6 +59,7 @@ public class FedXBaseTest {
 		log = Logger.getLogger(FedXBaseTest.class);
 	}
 	
+	protected static final ValueFactory vf = SimpleValueFactory.getInstance();
 	
 	/**
 	 * Execute a testcase, both queryFile and expectedResultFile must be files 
@@ -262,6 +267,10 @@ public class FedXBaseTest {
 		}
 	}
 
+	protected SimpleTupleQueryResultBuilder tupleQueryResultBuilder(List<String> bindingNames) {
+		return new SimpleTupleQueryResultBuilder(bindingNames);
+	}
+
 	/**
 	 * Compare two tuple query results
 	 * 
@@ -385,6 +394,61 @@ public class FedXBaseTest {
 			log.error(message.toString());
 			Assertions.fail(message.toString());
 		}
-	}	
+	}
+
+	/**
+	 * A builder for {@link TupleQueryResult}s.
+	 * 
+	 * @author as
+	 *
+	 */
+	public static class SimpleTupleQueryResultBuilder {
+
+		private final List<String> bindingNames;
+		private final List<BindingSet> bindings = Lists.newArrayList();
+
+		private SimpleTupleQueryResultBuilder(List<String> bindingNames) {
+			this.bindingNames = bindingNames;
+		}
+
+		/**
+		 * Add the {@link BindingSet} to the result.
+		 * 
+		 * @param b
+		 * @return
+		 * @throws IllegalArgumentException if the provided binding names is not a
+		 *                                  subset of the defined result binding names
+		 */
+		public SimpleTupleQueryResultBuilder add(BindingSet b) throws IllegalArgumentException {
+
+			// check if the binding names are a subset of defined binding names
+			if (!bindingNames.containsAll(b.getBindingNames()))
+				throw new IllegalArgumentException(
+						"Provided binding set does must be a subset of defined binding names: " + bindingNames
+								+ ". Was: " + b.getBindingNames());
+			this.bindings.add(b);
+			return this;
+		}
+
+		public SimpleTupleQueryResultBuilder add(List<? extends Value> values) {
+			if (values.size() != bindingNames.size()) {
+				throw new IllegalArgumentException("Values for each binding name required.");
+			}
+			BindingSet b = new ListBindingSet(bindingNames, values);
+			return add(b);
+		}
+
+		@SuppressWarnings("unchecked")
+		public SimpleTupleQueryResultBuilder add(List<? extends Value>... rows) {
+			for (List<? extends Value> values : rows) {
+				add(values);
+			}
+			return this;
+		}
+
+		public TupleQueryResult build() {
+			return new MutableTupleQueryResult(bindingNames, bindings);
+		}
+	}
 
 }
