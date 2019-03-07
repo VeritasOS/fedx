@@ -1,5 +1,7 @@
 package com.fluidops.fedx.server;
 
+import java.io.File;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -12,7 +14,7 @@ public class EmbeddedServer {
 	public static final String HOST = "localhost";
 	public static final int PORT = 18080;
 	public static final String CONTEXT_PATH = "/";
-	public static final String WAR_PATH = "./build/test/rdf4j-server.war";
+	public static final String WAR_PATH = "./build/test/rdf4j-server/";
 
 	private final Server jetty;
 
@@ -31,6 +33,7 @@ public class EmbeddedServer {
 
 		WebAppContext webapp = new WebAppContext();
 		webapp.setContextPath(contextPath);
+		webapp.setTempDirectory(new File("temp/webapp/"));
 		webapp.setWar(warPath);
 		jetty.setHandler(webapp);
 	}
