@@ -23,11 +23,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
@@ -43,6 +45,7 @@ import com.fluidops.fedx.provider.NativeStoreProvider;
 import com.fluidops.fedx.provider.RemoteRepositoryGraphRepositoryInformation;
 import com.fluidops.fedx.provider.RemoteRepositoryProvider;
 import com.fluidops.fedx.provider.RepositoryInformation;
+import com.fluidops.fedx.provider.RepositoryProvider;
 import com.fluidops.fedx.provider.SPARQLGraphRepositoryInformation;
 import com.fluidops.fedx.provider.SPARQLProvider;
 import com.fluidops.fedx.structures.Endpoint;
@@ -58,6 +61,7 @@ import com.fluidops.fedx.structures.Endpoint.EndpointType;
  */
 public class EndpointFactory {
 
+	private static final Logger logger = Logger.getLogger(EndpointFactory.class);
 	
 	/**
 	 * Construct a SPARQL endpoint using the the provided information.
@@ -109,6 +113,30 @@ public class EndpointFactory {
 	
 	}
 	
+	/**
+	 * Load an {@link Endpoint} for a given (configured) Repository.
+	 * 
+	 * Note that {@link EndpointType} is set to {@link EndpointType#Other}
+	 * 
+	 * @param id                     the identifier, e.g. "myRepository"
+	 * @param repository             the constructed repository (not initialized)
+	 * @return the initialized endpoint
+	 * @throws FedXException
+	 */
+	public static Endpoint loadEndpoint(String id, Repository repository)
+			throws FedXException {
+		EndpointProvider repProvider = new RepositoryProvider(repository);
+		String name = "http://" + id;
+		String location = "http://unknown";
+		try {
+			location = repository.getDataDir().getAbsolutePath();
+		} catch (Exception e) {
+			logger.debug("Failed to use data dir as location, using unknown instead: " + e.getMessage());
+			logger.trace("Details:", e);
+		}
+		return repProvider.loadEndpoint(new RepositoryInformation(id, name, location, EndpointType.Other));
+	}
+
 	/**
 	 * Construct a NativeStore endpoint using the provided information.
 	 * 

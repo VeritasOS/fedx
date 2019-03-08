@@ -148,6 +148,10 @@ public class Endpoint  {
 		return endpointClassification;
 	}
 
+	public void setEndpointClassification(EndpointClassification endpointClassification) {
+		this.endpointClassification = endpointClassification;
+	}
+
 	public boolean isLocal() {
 		return endpointClassification==EndpointClassification.Local;
 	}
@@ -236,6 +240,10 @@ public class Endpoint  {
 
 	public EndpointType getType() {
 		return type;
+	}
+	
+	public void setType(EndpointType type) {
+		this.type = type;
 	}
 
 	public boolean isInitialized() {

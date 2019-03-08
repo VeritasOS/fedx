@@ -5,18 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
 import org.junit.rules.TemporaryFolder;
 
+import com.fluidops.fedx.repository.ConfigurableSailRepository;
 import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
+import com.fluidops.fedx.structures.Endpoint.EndpointType;
 import com.fluidops.fedx.util.EndpointFactory;
 
 public class NativeStoreServer extends TemporaryFolder implements Server {
 
-	private List<Repository> repositories = new ArrayList<Repository>();
+	private List<Repository> repositories = new ArrayList<>();
 	
-	public List<Repository> initialize(int nRepositories) throws Exception {
+	@Override
+	public void initialize(int nRepositories) throws Exception {
 		try {
 			this.before();
 		} catch (Throwable e) {
@@ -24,17 +27,16 @@ public class NativeStoreServer extends TemporaryFolder implements Server {
 		}
 		File baseDir = newFolder();
 		for (int i=1; i<=nRepositories; i++) {
-			Repository repo = new SailRepository(new NativeStore(new File(baseDir, "endpoint"+i)));
+			ConfigurableSailRepository repo = new ConfigurableSailRepository(
+					new NativeStoreExt(new File(baseDir, "endpoint" + i)), true);
 			repo.initialize();
 			repositories.add(repo);
 			repo.shutDown();
 		}
-		return repositories;
 	}
 	
+	@Override
 	public void shutdown() throws Exception {
-		for (Repository r : repositories)
-			r.shutDown();
 		try {
 			this.after();
 		} catch (Throwable e) {
@@ -44,6 +46,15 @@ public class NativeStoreServer extends TemporaryFolder implements Server {
 
 	@Override
 	public Endpoint loadEndpoint(int i) throws Exception {
-		return EndpointFactory.loadNativeEndpoint(repositories.get(i-1).getDataDir().getAbsolutePath());
+		Endpoint e = EndpointFactory.loadEndpoint("endpoint" + i, repositories.get(i - 1));
+		e.setEndpointClassification(EndpointClassification.Local);
+		e.setType(EndpointType.NativeStore);
+		return e;
 	}
+
+	@Override
+	public ConfigurableSailRepository getRepository(int i) {
+		return (ConfigurableSailRepository) repositories.get(i - 1);
+	}
+
 }

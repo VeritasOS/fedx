@@ -41,8 +41,6 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 
-import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.google.common.collect.Lists;
 
 public class FedXBaseTest {
@@ -131,19 +129,7 @@ public class FedXBaseTest {
 		Assertions.assertEquals(expectedQueryPlan, actualQueryPlan);
 		
 	}
-	
-	protected void applyConfig(String key, String value) {
-		Config.getConfig();
-	}
-	
-	protected void resetConfig(String ...fedxConfig) {
-		Config.reset();
-		try	{
-			Config.initialize(fedxConfig);
-		} catch (FedXException e) {
-			throw new FedXRuntimeException(e);
-		}
-	}
+
 	
 	protected void prepareTest() throws RepositoryException {
 		// reset fedx

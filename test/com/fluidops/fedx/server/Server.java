@@ -1,9 +1,6 @@
 package com.fluidops.fedx.server;
 
-import java.util.List;
-
-import org.eclipse.rdf4j.repository.Repository;
-
+import com.fluidops.fedx.repository.ConfigurableSailRepository;
 import com.fluidops.fedx.structures.Endpoint;
 
 /**
@@ -16,9 +13,18 @@ import com.fluidops.fedx.structures.Endpoint;
  */
 public interface Server {
 
-	public List<Repository> initialize(int nRepositories) throws Exception;
+	public void initialize(int nRepositories) throws Exception;
 	
 	public void shutdown() throws Exception;
 	
 	public Endpoint loadEndpoint(int i) throws Exception;
+
+	/**
+	 * Returns the actual {@link ConfigurableSailRepository} instance for the
+	 * endpoint
+	 * 
+	 * @param i the endpoint index starting with 1
+	 * @return
+	 */
+	public ConfigurableSailRepository getRepository(int i);
 }

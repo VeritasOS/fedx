@@ -22,9 +22,11 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TemporaryFolder;
 
+import com.fluidops.fedx.repository.RepositorySettings;
 import com.fluidops.fedx.server.NativeStoreServer;
 import com.fluidops.fedx.server.SPARQLEmbeddedServer;
 import com.fluidops.fedx.server.Server;
@@ -51,10 +53,11 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	public static Logger log;
 	
 
-	// either of the following servers is used (depending on repositoryType)
+	/**
+	 * the server, e.g. SparqlEmbeddedServer or NativeStoreServer
+	 */
 	private static Server server;
 	
-	private static List<Repository> repositories;
 	
 	
 
@@ -90,6 +93,16 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 			server.shutdown();
 	}
 	
+	@BeforeEach
+	public void beforeEachTest() throws Exception {
+		// reset operations counter and fail after
+		for (int i = 1; i <= MAX_ENDPOINTS; i++) {
+			RepositorySettings repoSettings = repoSettings(i);
+			repoSettings.resetOperationsCounter();
+			repoSettings.setFailAfter(-1);
+		}
+	}
+
 	public boolean isSPARQLServer() {
 		return server instanceof SPARQLEmbeddedServer;
 	}
@@ -109,7 +122,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 			repositoryIds.add("endpoint"+i);
 		server = new SPARQLEmbeddedServer(repositoryIds, repositoryType==REPOSITORY_TYPE.REMOTEREPOSITORY);
 
-		repositories = server.initialize(MAX_ENDPOINTS);
+		server.initialize(MAX_ENDPOINTS);
 	}
 
 	/**
@@ -122,7 +135,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	private static void initializeLocalNativeStores() throws Exception {
 		
 		server = new NativeStoreServer();
-		repositories = server.initialize(MAX_ENDPOINTS);
+		server.initialize(MAX_ENDPOINTS);
 	}
 
 	
@@ -138,7 +151,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	 * @return
 	 */
 	protected static Repository getRepository(int i) {
-		return repositories.get(i-1);
+		return server.getRepository(i);
 	}
 	
 	
@@ -155,7 +168,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	
 		int i=1;	// endpoint id, start with 1
 		for (String s : sparqlEndpointData) {
-			loadDataSet(getRepository(i++), s);
+			loadDataSet(server.getRepository(i++), s);
 		}
 		
 		// configure federation
@@ -183,7 +196,12 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	{
 		log.debug("loading dataset...");
 		InputStream dataset = SPARQLBaseTest.class.getResourceAsStream(datasetFile);
-		rep.initialize();
+
+		boolean needToShutdown = false;
+		if (!rep.isInitialized()) {
+			rep.initialize();
+			needToShutdown = true;
+		}
 		RepositoryConnection con = rep.getConnection();
 		try {
 			con.clear();
@@ -192,7 +210,9 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 		finally {
 			dataset.close();
 			con.close();
-			rep.shutDown();
+			if (needToShutdown) {
+				rep.shutDown();
+			}
 			// TODO workaround for a bug in Sesame to avoid close HTTPClient
 			if (rep instanceof SessionManagerDependent)
 				((SessionManagerDependent) rep).setHttpClientSessionManager(null);
@@ -233,5 +253,15 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	
 	protected void assumeNativeStore() {
 		Assumptions.assumeTrue(server instanceof NativeStoreServer, "Test can be executed with native store federation only.");
+	}
+
+	/**
+	 * Return the {@link RepositorySettings} for configuring the repository
+	 * 
+	 * @param endpoint the endpoint index, starting with 1
+	 * @return
+	 */
+	protected RepositorySettings repoSettings(int endpoint) {
+		return server.getRepository(endpoint);
 	}
 }

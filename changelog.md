@@ -9,6 +9,7 @@ FedX 5.2.0 SNAPSHOT
  * Technical Improvements
    - use Gradle 5 Build Environment
    - migrate unit tests to junit 5
+   - test infrastructure for simulating errornous environments
 
 FedX 5.1.0 (2018-06-18)
  * Switch license to Apache License 2.0
