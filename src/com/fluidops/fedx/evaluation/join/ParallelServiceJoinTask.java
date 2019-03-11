@@ -24,7 +24,7 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import com.fluidops.fedx.algebra.FedXService;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 
 /**
  * A task implementation representing the evaluation of a SERVICE which
@@ -33,7 +33,7 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
  * 
  * @author Andreas Schwarte
  */
-public class ParallelServiceJoinTask implements ParallelTask<BindingSet> {
+public class ParallelServiceJoinTask extends ParallelTaskBase<BindingSet> {
 	
 	protected final FederationEvalStrategy strategy;
 	protected final FedXService expr;

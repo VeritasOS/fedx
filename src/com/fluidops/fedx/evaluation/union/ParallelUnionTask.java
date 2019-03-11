@@ -25,7 +25,7 @@ import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.QueryStringUtil;
 
@@ -34,7 +34,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
  * 
  * @author Andreas Schwarte
  */
-public class ParallelUnionTask implements ParallelTask<BindingSet> {
+public class ParallelUnionTask extends ParallelTaskBase<BindingSet> {
 	
 	protected final TripleSource tripleSource;
 	protected final RepositoryConnection conn;

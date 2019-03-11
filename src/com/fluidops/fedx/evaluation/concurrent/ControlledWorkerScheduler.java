@@ -15,9 +15,9 @@
  */
 package com.fluidops.fedx.evaluation.concurrent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -94,7 +94,14 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T> {
 		
 		WorkerRunnable runnable = new WorkerRunnable(task);
 
-		executor.submit(runnable);
+		Future<?> future = executor.submit(runnable);
+
+		// register the future to the task
+		if (task instanceof ParallelTaskBase<?>) {
+			((ParallelTaskBase<?>) task).setScheduledFuture(future);
+		}
+		task.getQueryInfo().registerScheduledTask(task);
+
 		// TODO rejected execution exception?
 		
 	}	
@@ -147,59 +154,8 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T> {
 			throw new FedXRuntimeException(e);
 		}
 	}
-	
-	/**
-	 * Abort all task belonging to control
-	 * 
-	 * @param control
-	 */
-	@SuppressWarnings("unchecked")
-	public void abort(ParallelExecutor<T> control) {
-		log.debug("Aborting tasks for executor " + control + " due to previous error.");
 
-		if (control.isFinished())
-		{
-			log.debug("Join executor is already finished or aborted, no tasks are aborted.");
-			return;
-		}
-
-		List<Runnable> allTasks = new ArrayList<>();
-		_taskQueue.drainTo(allTasks);
-		for (Runnable t : allTasks)
-		{
-			WorkerRunnable wt = ((WorkerRunnable) t);
-			if (wt.task.getControl().equals(control))
-			{
-				continue;
-			}
-			executor.submit(t);
-		}
-	}
 	
-	/**
-	 * Abort all task belonging to query with provided id (i.e. from QueryInfo)
-	 * 
-	 * @param queryId
-	 * 			the valid queryId or -1 if not available
-	 */
-	@SuppressWarnings("unchecked")
-	public void abort(int queryId) {
-		log.debug("Aborting tasks for query with id " + queryId + ".");
-		if (queryId<0)
-			return;
-		
-		List<Runnable> allTasks = new ArrayList<>();
-		_taskQueue.drainTo(allTasks);
-		for (Runnable t : allTasks)
-		{
-			WorkerRunnable wt = ((WorkerRunnable) t);
-			if (wt.task.getControl().getQueryId() == queryId)
-			{
-				continue;
-			}
-			executor.submit(t);
-		}
-	}
 	
 
 	@Override
@@ -292,7 +248,7 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T> {
 				}
 				CloseableIteration<T, QueryEvaluationException> res = task.performTask();
 				inTask = false;
-				taskControl.addResult(res);						
+				taskControl.addResult(res);
 
 				taskControl.done();		// in most cases this is a no-op
 			} catch (Exception e) {

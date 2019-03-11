@@ -119,10 +119,9 @@ public class QueryManager {
 	public void abortQuery(QueryInfo queryInfo) {
 		synchronized (queryInfo) {
 			if (!runningQueries.contains(queryInfo))
-				return;		
+				return;
 			log.info("Aborting query " + queryInfo.getQueryID());
-			federationManager.getJoinScheduler().abort(queryInfo.getQueryID());
-			federationManager.getUnionScheduler().abort(queryInfo.getQueryID());
+			queryInfo.abort();
 			runningQueries.remove(queryInfo);
 		}
 	}

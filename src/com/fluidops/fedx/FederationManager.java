@@ -429,7 +429,20 @@ public class FederationManager {
 			log.warn("Failed to shutdown executor:" + e.getMessage());
 			log.debug("Details:", e);
 		}
+		try {
+			joinScheduler.shutdown();
+		} catch (Exception e) {
+			log.warn("Failed to shutdown join scheduler: " + e.getMessage());
+			log.debug("Details: ", e);
+		}
+		try {
+			unionScheduler.shutdown();
+		} catch (Exception e) {
+			log.warn("Failed to shutdown union scheduler: " + e.getMessage());
+			log.debug("Details: ", e);
+		}
 		federation.shutDownInternal();
+
 		cache.persist();
 		Config.reset();
 		EndpointManager.getEndpointManager().shutDown();

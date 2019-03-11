@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
@@ -45,7 +47,7 @@ import com.fluidops.fedx.cache.CacheUtils;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.OptimizationException;
 import com.fluidops.fedx.structures.Endpoint;
@@ -211,8 +213,7 @@ public class SourceSelection {
 		private ControlledWorkerScheduler<BindingSet> scheduler = FederationManager.getInstance().getJoinScheduler();
 		private CountDownLatch latch;
 		private boolean finished=false;
-		private Thread initiatorThread;
-		protected List<Exception> errors = new ArrayList<Exception>();
+		protected List<Exception> errors = new CopyOnWriteArrayList<>();
 		
 
 		private SourceSelectionExecutorWithLatch(SourceSelection sourceSelection) {
@@ -229,13 +230,12 @@ public class SourceSelection {
 			if (tasks.size()==0)
 				return;
 			
-			initiatorThread = Thread.currentThread();
 			latch = new CountDownLatch(tasks.size());
 			for (CheckTaskPair task : tasks)
 				scheduler.schedule( new ParallelCheckTask(task.e, task.t, this) );
 			
 			try	{
-				latch.await(); 	// TODO maybe add timeout here
+				latch.await(30, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				log.debug("Error during source selection. Thread got interrupted.");
 			}
@@ -244,10 +244,15 @@ public class SourceSelection {
 			
 			// check for errors:
 			if (errors.size()>0) {
-				log.error(errors.size() + " errors were reported:");
+				StringBuilder sb = new StringBuilder();
+				sb.append(
+						errors.size() + " errors were reported while optimizing query " + getQueryInfo().getQueryID());
+
 				for (Exception e : errors)
-					log.error(ExceptionUtil.getExceptionString("Error occured", e));
-								
+					sb.append("\n" + ExceptionUtil.getExceptionString("Error occured", e));
+
+				log.debug(sb.toString());
+
 				Exception ex = errors.get(0);
 				errors.clear();
 				if (ex instanceof OptimizationException)
@@ -267,10 +272,9 @@ public class SourceSelection {
 
 		@Override
 		public void toss(Exception e) {
+			latch.countDown();
 			errors.add(e);
-			scheduler.abort(getQueryId());	// abort all tasks belonging to this query id
-			if (initiatorThread!=null)
-				initiatorThread.interrupt();
+			getQueryInfo().abort();
 		}
 
 		@Override
@@ -282,8 +286,8 @@ public class SourceSelection {
 		}
 
 		@Override
-		public int getQueryId()	{
-			return sourceSelection.queryInfo.getQueryID();
+		public QueryInfo getQueryInfo() {
+			return sourceSelection.queryInfo;
 		}
 	}
 	
@@ -303,7 +307,7 @@ public class SourceSelection {
 	 * 
 	 * @author Andreas Schwarte
 	 */
-	protected static class ParallelCheckTask implements ParallelTask<BindingSet> {
+	protected static class ParallelCheckTask extends ParallelTaskBase<BindingSet> {
 
 		protected final Endpoint endpoint;
 		protected final StatementPattern stmt;
@@ -333,7 +337,6 @@ public class SourceSelection {
 				
 				return null;
 			} catch (Exception e) {
-				this.control.toss(e);
 				throw new OptimizationException("Error checking results for endpoint " + endpoint.getId() + ": " + e.getMessage(), e);
 			}
 		}
@@ -341,7 +344,13 @@ public class SourceSelection {
 		@Override
 		public ParallelExecutor<BindingSet> getControl() {
 			return control;
-		}		
+		}
+
+		@Override
+		public void cancel() {
+			control.latch.countDown();
+			super.cancel();
+		}
 	}
 	
 		

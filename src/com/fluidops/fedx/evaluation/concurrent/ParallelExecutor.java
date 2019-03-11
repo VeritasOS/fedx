@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 
 import com.fluidops.fedx.evaluation.join.JoinExecutorBase;
 import com.fluidops.fedx.evaluation.union.UnionExecutorBase;
+import com.fluidops.fedx.structures.QueryInfo;
 
 
 /**
@@ -65,9 +66,9 @@ public interface ParallelExecutor<T> extends Runnable {
 
 	
 	/**
-	 * Return the query id of the associated query, or -1 if unknown
+	 * Return the query info of the associated query
 	 * 
-	 * @return the query id
+	 * @return the query info
 	 */
-	public int getQueryId();
+	public QueryInfo getQueryInfo();
 }

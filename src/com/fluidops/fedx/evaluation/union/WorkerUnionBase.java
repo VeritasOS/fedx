@@ -53,9 +53,7 @@ public abstract class WorkerUnionBase<T> extends UnionExecutorBase<T> {
 	}
 	
 	@Override
-	public int getQueryId() {
-		if (queryInfo!=null)
-			return queryInfo.getQueryID();
-		return -1;
+	public QueryInfo getQueryInfo() {
+		return queryInfo;
 	}
 }

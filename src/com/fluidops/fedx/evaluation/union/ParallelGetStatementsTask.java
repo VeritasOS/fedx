@@ -26,7 +26,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 
 /**
  * A task implementation to retrieve statements for a given {@link StatementPattern}
@@ -34,7 +34,7 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
  * 
  * @author Andreas Schwarte
  */
-public class ParallelGetStatementsTask implements ParallelTask<Statement> {
+public class ParallelGetStatementsTask extends ParallelTaskBase<Statement> {
 
 	protected final ParallelExecutor<Statement> unionControl;
 	protected final Resource subj;

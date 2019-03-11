@@ -183,6 +183,10 @@ public class FedXConnection extends AbstractSailConnection
 				public ParallelExecutor<Resource> getControl() {
 					return union;
 				}
+
+				@Override
+				public void cancel() {
+				}
 			});
 		}
 		

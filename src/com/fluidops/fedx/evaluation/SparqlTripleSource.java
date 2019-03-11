@@ -242,8 +242,11 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 		
 		return new ExceptionConvertingIteration<Statement, QueryEvaluationException>(repoResult) {
 			@Override
-			protected QueryEvaluationException convert(Exception arg0) {
-				return new QueryEvaluationException(arg0);
+			protected QueryEvaluationException convert(Exception ex) {
+				if (ex instanceof QueryEvaluationException) {
+					return (QueryEvaluationException) ex;
+				}
+				return new QueryEvaluationException(ex);
 			}
 		};		
 	}

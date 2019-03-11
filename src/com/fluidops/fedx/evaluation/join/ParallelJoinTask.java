@@ -22,7 +22,7 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 
 /**
  * A task implementation representing a join, i.e. the provided expression is evaluated 
@@ -30,7 +30,7 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
  * 
  * @author Andreas Schwarte
  */
-public class ParallelJoinTask implements ParallelTask<BindingSet> {
+public class ParallelJoinTask extends ParallelTaskBase<BindingSet> {
 	
 	protected final FederationEvalStrategy strategy;
 	protected final TupleExpr expr;

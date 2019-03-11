@@ -24,6 +24,7 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.FedXService;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
+import com.fluidops.fedx.structures.QueryInfo;
 
 
 /**
@@ -99,8 +100,8 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 	}
 
 	@Override
-	public int getQueryId()	{
-		return service.getQueryInfo().getQueryID();
+	public QueryInfo getQueryInfo() {
+		return service.getQueryInfo();
 	}
 
 	@Override
@@ -128,7 +129,7 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 		}
 		
 		if (rightIter.hasNext())
-			return rightIter.next();		
+			return rightIter.next();
 		
 		return null;
 	}
@@ -140,7 +141,7 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 	 * 
 	 * @author Andreas Schwarte
 	 */
-	private class ParallelServiceTask implements ParallelTask<BindingSet> {
+	private class ParallelServiceTask extends ParallelTaskBase<BindingSet> {
 	
 
 		@Override

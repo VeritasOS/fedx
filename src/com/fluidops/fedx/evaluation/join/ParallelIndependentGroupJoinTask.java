@@ -25,7 +25,7 @@ import com.fluidops.fedx.algebra.IndependentJoinGroup;
 import com.fluidops.fedx.algebra.StatementTupleExpr;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 
 
 /**
@@ -34,7 +34,7 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
  * 
  * @author Andreas Schwarte
  */
-public class ParallelIndependentGroupJoinTask implements ParallelTask<BindingSet> {
+public class ParallelIndependentGroupJoinTask extends ParallelTaskBase<BindingSet> {
 
 	
 	protected final FederationEvalStrategy strategy;

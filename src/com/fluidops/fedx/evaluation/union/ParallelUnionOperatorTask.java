@@ -22,14 +22,14 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
+import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 
 /**
  * A task implementation representing a UNION operator expression to be evaluated.
  * 
  * @author Andreas Schwarte
  */
-public class ParallelUnionOperatorTask implements ParallelTask<BindingSet> {
+public class ParallelUnionOperatorTask extends ParallelTaskBase<BindingSet> {
 
 	protected final ParallelExecutor<BindingSet> unionControl;
 	protected final FederationEvalStrategy strategy;

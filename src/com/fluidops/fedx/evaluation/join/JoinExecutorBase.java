@@ -25,6 +25,7 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.QueueCursor;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
+import com.fluidops.fedx.evaluation.concurrent.FedXQueueCursor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 import com.fluidops.fedx.structures.QueryInfo;
 
@@ -58,7 +59,7 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	protected volatile boolean closed;
 	protected boolean finished = false;
 	
-	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> rightQueue = new QueueCursor<CloseableIteration<T, QueryEvaluationException>>(1024);
+	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> rightQueue = new FedXQueueCursor<T>(1024);
 
 	
 	public JoinExecutorBase(FederationEvalStrategy strategy, CloseableIteration<T, QueryEvaluationException> leftIter, TupleExpr rightArg,
@@ -191,13 +192,11 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	 * @return the ID
 	 */
 	public String getId() {
-		return "ID=(id:" + joinId + "; query:" + getQueryId() + ")";
+		return "ID=(id:" + joinId + "; query:" + getQueryInfo().getQueryID() + ")";
 	}
 	
 	@Override
-	public int getQueryId() {
-		if (queryInfo!=null)
-			return queryInfo.getQueryID();
-		return -1;
+	public QueryInfo getQueryInfo() {
+		return queryInfo;
 	}
 }

@@ -18,6 +18,8 @@ package com.fluidops.fedx.evaluation.concurrent;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 
+import com.fluidops.fedx.structures.QueryInfo;
+
 
 /**
  * Interface for any parallel task that can be performed in Scheduler implementations.
@@ -36,4 +38,17 @@ public interface ParallelTask<T> {
 	 * @return the control executor
 	 */
 	public ParallelExecutor<T> getControl();
+
+	/**
+	 * 
+	 * @return the {@link QueryInfo}
+	 */
+	public default QueryInfo getQueryInfo() {
+		return getControl().getQueryInfo();
+	}
+
+	/**
+	 * Optional implementation to cancel this task on a best effort basis
+	 */
+	public void cancel();
 }

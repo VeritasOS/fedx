@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.impl.QueueCursor;
 
+import com.fluidops.fedx.evaluation.concurrent.FedXQueueCursor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 
 
@@ -47,7 +48,7 @@ public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEv
 	protected volatile boolean closed;
 	protected boolean finished = true;
 	
-	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> result = new QueueCursor<CloseableIteration<T, QueryEvaluationException>>(1024);
+	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> result = new FedXQueueCursor<T>(1024);
 	protected CloseableIteration<T, QueryEvaluationException> rightIter;
 	
 	
