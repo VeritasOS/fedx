@@ -26,6 +26,7 @@ import org.eclipse.rdf4j.query.impl.QueueCursor;
 
 import com.fluidops.fedx.evaluation.concurrent.FedXQueueCursor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
+import com.fluidops.fedx.exception.ExceptionUtil;
 
 
 /**
@@ -64,8 +65,8 @@ public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEv
 
 		try {
 			union();
-		} catch (Exception e) {
-			toss(e);
+		} catch (Throwable t) {
+			toss(ExceptionUtil.toException(t));
 		} finally {
 			finished=true;
 			result.done();

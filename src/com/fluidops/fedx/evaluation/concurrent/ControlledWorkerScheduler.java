@@ -29,6 +29,7 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import com.fluidops.fedx.evaluation.join.ControlledWorkerBoundJoin;
 import com.fluidops.fedx.evaluation.join.ControlledWorkerJoin;
 import com.fluidops.fedx.evaluation.union.ControlledWorkerUnion;
+import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 
 
@@ -251,14 +252,13 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T> {
 				taskControl.addResult(res);
 
 				taskControl.done();		// in most cases this is a no-op
-			} catch (Exception e) {
+			} catch (Throwable t) {
 				if (aborted)
 				{
 					return;
 				}
-				log.warn("Exception encountered while evaluating task (" + e.getClass().getSimpleName() + "): " + e.getMessage());
-				taskControl.toss(e);
-				
+				log.debug("Exception encountered while evaluating task (" + t.getClass().getSimpleName() + "): " + t.getMessage());
+				taskControl.toss(ExceptionUtil.toException(t));
 			}
 			
 		}

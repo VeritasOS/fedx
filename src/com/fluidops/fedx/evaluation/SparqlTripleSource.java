@@ -109,9 +109,10 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 	
 			return new ConsumingIteration(res);
 			
-		} catch (QueryEvaluationException ex) {
+		} catch (Throwable ex) {
 			Iterations.closeCloseable(res);
-			throw ExceptionUtil.traceExceptionSourceAndRepair(conn, ex, "Subquery: " + preparedQuery);			
+			// convert into QueryEvaluationException with additional info
+			throw ExceptionUtil.traceExceptionSourceAndRepair(conn, ex, "Subquery: " + preparedQuery);
 		}
 	}
 
@@ -157,7 +158,8 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 				monitorRemoteRequest();
 				boolean hasStatements = query.evaluate();
 				return hasStatements;
-			} catch (QueryEvaluationException ex) {
+			} catch (Throwable ex) {
+				// convert into QueryEvaluationException with additional info
 				throw ExceptionUtil.traceExceptionSourceAndRepair(conn, ex, "Subquery: " + queryString);			
 			}
 			
@@ -167,17 +169,14 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 			TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			disableInference(query);
 			
-			TupleQueryResult qRes = null;
-			try {
-				monitorRemoteRequest();
-				qRes = query.evaluate();
+			monitorRemoteRequest();
+			try (TupleQueryResult qRes = query.evaluate()) {
+
 				boolean hasStatements = qRes.hasNext();
 				return hasStatements;
-			} catch (QueryEvaluationException ex) {
+			} catch (Throwable ex) {
+				// convert into QueryEvaluationException with additional info
 				throw ExceptionUtil.traceExceptionSourceAndRepair(conn, ex, "Subquery: " + queryString);			
-			} finally {
-				if (qRes!=null)
-					qRes.close();
 			}
 		}
 		
@@ -196,17 +195,14 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 			TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			disableInference(query);
 			
-			TupleQueryResult qRes = null;
-			try {
-				monitorRemoteRequest();
-				qRes = query.evaluate();
+			monitorRemoteRequest();
+			try (TupleQueryResult qRes = query.evaluate()) {
+
 				boolean hasStatements = qRes.hasNext();
 				return hasStatements;
-			} catch (QueryEvaluationException ex) {
+			} catch (Throwable ex) {
+				// convert into QueryEvaluationException with additional info
 				throw ExceptionUtil.traceExceptionSourceAndRepair(conn, ex, "Subquery: " + queryString);			
-			} finally {
-				if (qRes!=null)
-					qRes.close();
 			}
 		}		
 		

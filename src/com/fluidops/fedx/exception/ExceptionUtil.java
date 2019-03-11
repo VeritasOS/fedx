@@ -68,7 +68,8 @@ public class ExceptionUtil {
 	 * @return
 	 * 		 	a modified exception with endpoint source
 	 */
-	public static QueryEvaluationException traceExceptionSource(RepositoryConnection conn, QueryEvaluationException ex, String additionalInfo) {
+	public static QueryEvaluationException traceExceptionSource(RepositoryConnection conn, Throwable ex,
+			String additionalInfo) {
 		
 		Endpoint e = EndpointManager.getEndpointManager().getEndpoint(conn);
 		
@@ -92,6 +93,9 @@ public class ExceptionUtil {
 			log.trace("No http error found");
 		}
 
+		if (!(ex instanceof QueryEvaluationException)) {
+			message += ". Original exception type: " + ex.getClass().getName();
+		}
 		
 		QueryEvaluationException res = new QueryEvaluationException("@ " + eID + " - " + message + ". " + additionalInfo, ex.getCause());
 		res.setStackTrace(ex.getStackTrace());
@@ -106,7 +110,8 @@ public class ExceptionUtil {
 	 * @param ex
 	 * @return the exception
 	 */
-	public static QueryEvaluationException traceExceptionSourceAndRepair(RepositoryConnection conn, QueryEvaluationException ex, String additionalInfo) {
+	public static QueryEvaluationException traceExceptionSourceAndRepair(RepositoryConnection conn, Throwable ex,
+			String additionalInfo) {
 		repairConnection(conn, ex);
 		return traceExceptionSource(conn, ex, additionalInfo);
 	}
@@ -123,7 +128,8 @@ public class ExceptionUtil {
 	 * @throws FedXRuntimeException
 	 * 				if the connection could not be repaired
 	 */
-	public static void repairConnection(RepositoryConnection conn, Exception ex) throws FedXQueryException, FedXRuntimeException {
+	public static void repairConnection(RepositoryConnection conn, Throwable ex)
+			throws FedXQueryException, FedXRuntimeException {
 
 		Throwable cause = ex.getCause();
 		while (cause != null) {
@@ -150,7 +156,7 @@ public class ExceptionUtil {
 	 * @return
 	 * 		the exception in a convenient representation
 	 */
-	public static String getExceptionString(String msg, Exception ex) {
+	public static String getExceptionString(String msg, Throwable ex) {
 		return msg + " " + ex.getClass().getSimpleName() + ": " + ex.getMessage();
 	}
 	
@@ -194,5 +200,24 @@ public class ExceptionUtil {
 		newEx.setStackTrace(ex.getStackTrace());
 		
 		return newEx;
+	}
+
+	/**
+	 * Converts the {@link Throwable} to an {@link Exception}. If it is already of
+	 * type exception, it is returned as is. Otherwise, we create a new exception,
+	 * and attache the stack trace and a meaningful message.
+	 * 
+	 * @param t
+	 * @return the {@link Exception}
+	 */
+	public static Exception toException(Throwable t) {
+		Exception e;
+		if (t instanceof Exception) {
+			e = (Exception) t;
+		} else {
+			e = new Exception("" + t.getMessage() + ". Original type: " + t.getClass());
+			e.setStackTrace(t.getStackTrace());
+		}
+		return e;
 	}
 }
