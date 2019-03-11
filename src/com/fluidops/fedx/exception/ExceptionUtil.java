@@ -86,10 +86,10 @@ public class ExceptionUtil {
 		message = message==null ? "n/a" : message;
 		Matcher m = httpErrorPattern.matcher(message);
 		if (m.matches()) {
-			log.error("HTTP error detected for endpoint " + eID + ":\n" + message);
+			log.debug("HTTP error detected for endpoint " + eID + ":\n" + message);
 			message = "HTTP Error: " + m.group(1);
 		} else {
-			log.info("No http error found");
+			log.trace("No http error found");
 		}
 
 		

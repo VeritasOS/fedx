@@ -65,14 +65,14 @@ public class ControlledWorkerUnion<T> extends WorkerUnionBase<T> {
 	@Override
 	public void done()
 	{
-		phaser.arriveAndDeregister();
 		super.done();
+		phaser.arriveAndDeregister();
 	}
 
 	@Override
 	public void toss(Exception e)
 	{
-		phaser.arriveAndDeregister();
 		super.toss(e);
+		phaser.arriveAndDeregister();
 	}
 }

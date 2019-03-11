@@ -251,4 +251,8 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 		};		
 	}
 
+	@Override
+	public String toString() {
+		return "Sparql Triple Source: Endpoint - " + endpoint.getId();
+	}
 }

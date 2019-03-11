@@ -15,6 +15,8 @@
  */
 package com.fluidops.fedx.evaluation.join;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
@@ -43,7 +45,7 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 
 	public static Logger log = Logger.getLogger(JoinExecutorBase.class);
 	
-	protected static int NEXT_JOIN_ID = 1;
+	protected static AtomicInteger NEXT_JOIN_ID = new AtomicInteger(1);
 	
 	/* Constants */
 	protected final FederationEvalStrategy strategy;		// the evaluation strategy
@@ -68,7 +70,7 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 		this.leftIter = leftIter;
 		this.rightArg = rightArg;
 		this.bindings = bindings;
-		this.joinId = NEXT_JOIN_ID++;
+		this.joinId = NEXT_JOIN_ID.getAndIncrement();
 		this.queryInfo = queryInfo;
 	}
 	
@@ -163,9 +165,6 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	@Override
 	public void handleClose() throws QueryEvaluationException {
 		closed = true;
-		if (evaluationThread != null) {
-			evaluationThread.interrupt();
-		}
 		
 		if (rightIter != null) {
 			rightIter.close();

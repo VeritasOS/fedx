@@ -15,6 +15,8 @@
  */
 package com.fluidops.fedx.evaluation.union;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
@@ -39,7 +41,7 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEvaluationException> implements ParallelExecutor<T> {
 
 	public static Logger log = Logger.getLogger(UnionExecutorBase.class);
-	protected static int NEXT_UNION_ID = 1;
+	protected static final AtomicInteger NEXT_UNION_ID = new AtomicInteger(1);
 	
 	/* Constants */
 	protected final int unionId;							// the union id
@@ -53,7 +55,7 @@ public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEv
 	
 	
 	public UnionExecutorBase() {
-		this.unionId = NEXT_UNION_ID++;
+		this.unionId = NEXT_UNION_ID.getAndIncrement();
 	}
 	
 
