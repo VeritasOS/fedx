@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
-import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.QueryManager;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.EndpointFactory;
@@ -39,7 +39,7 @@ public class DBpediaDemo {
 		endpoints.add( EndpointFactory.loadSPARQLEndpoint("dbpedia", "http://dbpedia.org/sparql"));
 		endpoints.add( EndpointFactory.loadSPARQLEndpoint("nytimes", "http://api.talis.com/stores/nytimes/services/sparql"));
 
-		FedXFactory.initializeFederation(endpoints);
+		Repository repo = FedXFactory.initializeFederation(endpoints);
 		
 		String q = "prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 				"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " +
@@ -56,13 +56,14 @@ public class DBpediaDemo {
 	
 		
 		TupleQuery query = QueryManager.prepareTupleQuery(q);
-		TupleQueryResult res = query.evaluate();
+		try (TupleQueryResult res = query.evaluate()) {
 		
-		while (res.hasNext()) {
-			System.out.println(res.next());
+			while (res.hasNext()) {
+				System.out.println(res.next());
+			}
 		}
 		
-		FederationManager.getInstance().shutDown();
+		repo.shutDown();
 		System.out.println("Done.");
 		System.exit(0);
 		

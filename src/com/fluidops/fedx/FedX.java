@@ -161,7 +161,8 @@ public class FedX implements Sail {
 	 * 				if not all members could be shut down
 	 */
 	protected void shutDownInternal() throws FedXException {
-		List<Exception> errors = new ArrayList<Exception>(2);
+
+		List<Exception> errors = new ArrayList<>();
 		for (Endpoint member : members) {
 			try {
 				member.shutDown();
@@ -172,7 +173,7 @@ public class FedX implements Sail {
 		}
 		
 		if (errors.size()>0)
-			throw new FedXException("At least one federation member could not be shut down.", errors.get(0));
+			throw new SailException("Federation could not be shut down. See logs for details.");
 		
 		open = false;
 	}

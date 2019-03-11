@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
 
 import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.FederationManager;
@@ -17,7 +18,7 @@ public class Demo7 {
 		
 		// the fedx config implicitly defines a dataConfig
 		String fedxConfig = "examples/fedxConfig-dataCfg.prop";
-		FedXFactory.initializeFederation(fedxConfig, Collections.<Endpoint>emptyList());
+		Repository repo = FedXFactory.initializeFederation(fedxConfig, Collections.<Endpoint>emptyList());
 		
 		QueryManager qm = FederationManager.getInstance().getQueryManager();
 		qm.addPrefixDeclaration("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -28,13 +29,14 @@ public class Demo7 {
 			+ "?President dbpedia:party ?Party . }";
 		
 		TupleQuery query = QueryManager.prepareTupleQuery(q);
-		TupleQueryResult res = query.evaluate();
+		try (TupleQueryResult res = query.evaluate()) {
 		
-		while (res.hasNext()) {
-			System.out.println(res.next());
+			while (res.hasNext()) {
+				System.out.println(res.next());
+			}
 		}
 		
-		FederationManager.getInstance().shutDown();
+		repo.shutDown();
 		System.out.println("Done.");
 		System.exit(0);
 		

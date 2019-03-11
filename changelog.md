@@ -6,6 +6,7 @@ FedX 5.2.0 SNAPSHOT
    - use FedxDataset to define the endpoints for a given query execution
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
+ * improvements to shutdown behavior
  * Technical Improvements
    - use Gradle 5 Build Environment
    - migrate unit tests to junit 5

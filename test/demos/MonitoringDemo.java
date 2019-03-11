@@ -7,7 +7,6 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
-import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.monitoring.MonitoringUtil;
 
 public class MonitoringDemo {
@@ -26,18 +25,19 @@ public class MonitoringDemo {
 			+ "?President dbpedia-owl:party ?Party . }";
 		
 		TupleQuery query = repo.getConnection().prepareTupleQuery(QueryLanguage.SPARQL, q);
-		TupleQueryResult res = query.evaluate();
+		try (TupleQueryResult res = query.evaluate()) {
+
+			int count = 0;
+			while (res.hasNext()) {
+				res.next();
+				count++;
+			}
+			System.out.println("# Done, " + count + " results");
 		
-		int count = 0;
-		while (res.hasNext()) {
-			res.next();
-			count++;
+			MonitoringUtil.printMonitoringInformation();
 		}
-		System.out.println("# Done, " + count + " results");
 		
-		MonitoringUtil.printMonitoringInformation();
-		
-		FederationManager.getInstance().shutDown();
+		repo.shutDown();
 		System.out.println("Done.");
 		System.exit(0);
 		

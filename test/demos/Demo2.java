@@ -6,7 +6,6 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 
 import com.fluidops.fedx.FedXFactory;
-import com.fluidops.fedx.FederationManager;
 
 public class Demo2 {
 
@@ -27,13 +26,14 @@ public class Demo2 {
 		    + "?Int <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/text> ?IntEffect . }";
 		    
 		TupleQuery query = repo.getConnection().prepareTupleQuery(QueryLanguage.SPARQL, q);
-		TupleQueryResult res = query.evaluate();
+		try (TupleQueryResult res = query.evaluate()) {
 		
-		while (res.hasNext()) {
-			System.out.println(res.next());
+			while (res.hasNext()) {
+				System.out.println(res.next());
+			}
 		}
 		
-		FederationManager.getInstance().shutDown();
+		repo.shutDown();
 		System.out.println("Done.");
 		System.exit(0);
 		

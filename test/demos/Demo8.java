@@ -23,10 +23,12 @@ public class Demo8 {
 			+ "?President rdf:type dbpedia-owl:President .\n"
 			+ "?President dbpedia-owl:party ?Party . }";
 		TupleQuery query = repo.getConnection().prepareTupleQuery(QueryLanguage.SPARQL, q);
-		TupleQueryResult res = query.evaluate();
-		while (res.hasNext()) {
-			System.out.println(res.next());
+		try (TupleQueryResult res = query.evaluate()) {
+			while (res.hasNext()) {
+				System.out.println(res.next());
+			}
 		}
+		repo.shutDown();
 		System.out.println("#Done");
 		System.exit(0);
 	}

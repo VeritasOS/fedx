@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
-import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.QueryManager;
 
 public class Demo4
@@ -17,7 +17,7 @@ public class Demo4
 	{
 
 		Config.initialize();
-		FedXFactory.initializeSparqlFederation(Arrays.asList(
+		Repository repo = FedXFactory.initializeSparqlFederation(Arrays.asList(
 				"http://dbpedia.org/sparql",
 				"http://data.semanticweb.org/sparql"));
 
@@ -28,14 +28,14 @@ public class Demo4
 				+ "?President dbpedia-owl:party ?Party . }";
 
 		TupleQuery query = QueryManager.prepareTupleQuery(q);
-		TupleQueryResult res = query.evaluate();
+		try (TupleQueryResult res = query.evaluate()) {
 
-		while (res.hasNext())
-		{
-			System.out.println(res.next());
+			while (res.hasNext()) {
+				System.out.println(res.next());
+			}
 		}
 
-		FederationManager.getInstance().shutDown();
+		repo.shutDown();
 		System.out.println("Done.");
 		System.exit(0);
 

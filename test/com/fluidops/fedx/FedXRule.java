@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.EndpointFactory;
 
@@ -42,11 +41,7 @@ public class FedXRule implements BeforeEachCallback, AfterEachCallback {
 	
 	@Override
 	public void afterEach(ExtensionContext ctx) {
-		try {
-			FederationManager.getInstance().shutDown();
-		} catch (FedXException e) {
-			throw new RuntimeException(e);
-		}
+		repository.shutDown();
 	}
 
 	public void addEndpoint(Endpoint e) {

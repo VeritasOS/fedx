@@ -85,13 +85,14 @@ String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
 	+ "?President dbpedia-owl:party ?Party . }";
 
 TupleQuery query = repo.getConnection().prepareTupleQuery(QueryLanguage.SPARQL, q);
-TupleQueryResult res = query.evaluate();
+try (TupleQueryResult res = query.evaluate())
 
-while (res.hasNext()) {
-	System.out.println(res.next());
+	while (res.hasNext()) {
+		System.out.println(res.next());
+	}
 }
 
-FederationManager.getInstance().shutDown();
+repo.shutDown();
 System.out.println("Done.");
 System.exit(0);
 </pre>
@@ -230,14 +231,14 @@ Evaluate query 5 at the specified local Sesame NativeStores of DBpedia and NYTim
 
 <h3>Contact</h3>
 
-<p>If you have any questions, concerns or if you find any bugs, please do not hesitate to send an email to
-our mailing list iwb-discussion (at) googlegroups.com
+<p>If you have any questions, concerns or if you find any bugs, please do not hesitate to contact
+us on our <a href="https://github.com/VeritasOS/fedx">FedX Github page</a> 
 </p>
 
 
-<p>(c) 2018 Veritas Technologies LLC <br/>
+<p>(c) 2019 Veritas Technologies LLC <br/>
 <a href="http://www.veritas.com">http://www.veritas.com</a><br/>
-Last updated: 18.06.2018
+Last updated: 11.03.2019
 </p>
 
 </div>

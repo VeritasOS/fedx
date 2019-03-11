@@ -10,12 +10,12 @@
 
 <a href="../Index.html">back</a>
 
-<p>FedX is implemented as a Sesame SAIL. To initialize FedX and the underlying federation SAIL, we 
+<p>FedX is implemented as a RDF4J SAIL. To initialize FedX and the underlying federation SAIL, we 
 provide the FedXFactory class, which provides various methods for intuitive configuration. In the 
 following, we present various Java code snippets that illustrate how FedX can be used in an application.<p>
 
 <p>Basically, FedX can be used and accessed using the SAIL architecture (see 
-<a href="http://www.openrdf.org/doc/sesame2/system/ch05.html" target="_blank">Sesame SAIL documentation</a> for details.). 
+<a href="http://docs.rdf4j.org/sail/" target="_blank">RDF4J SAIL documentation</a> for details.). 
 The (initialized) SailRepository can be obtained from any FedXFactory initialization method, the SAIL optionally can be
 obtained via the FederationManager. Besides using the Repository interface for creating queries, 
 we also provide a <i>QueryManager</i> class to conveniently create queries. The advantage of the <i>QueryManager</i> over 
@@ -42,13 +42,14 @@ String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
 	+ "?President dbpedia-owl:party ?Party . }";
 
 TupleQuery query = repo.getConnection().prepareTupleQuery(QueryLanguage.SPARQL, q);
-TupleQueryResult res = query.evaluate();
+try (TupleQueryResult res = query.evaluate()) {
 
-while (res.hasNext()) {
-	System.out.println(res.next());
+	while (res.hasNext()) {
+		System.out.println(res.next());
+	}
 }
 
-FederationManager.getInstance().shutDown();
+repo.shutDown();
 System.out.println("Done.");
 System.exit(0);
 </pre>
@@ -61,7 +62,7 @@ the query.</p>
 
 <pre>
 Config.initialize();
-FedXFactory.initializeSparqlFederation(Arrays.asList(
+Repository repo = FedXFactory.initializeSparqlFederation(Arrays.asList(
 		"http://dbpedia.org/sparql",
 		"http://data.semanticweb.org/sparql"));
 
@@ -72,13 +73,14 @@ String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 		+ "?President dbpedia-owl:party ?Party . }";
 
 TupleQuery query = QueryManager.prepareTupleQuery(q);
-TupleQueryResult res = query.evaluate();
+try (TupleQueryResult res = query.evaluate()) {
 
-while (res.hasNext()) {
-	System.out.println(res.next());
+	while (res.hasNext()) {
+		System.out.println(res.next());
+	}
 }
 
-FederationManager.getInstance().shutDown();
+repo.shutDown();
 System.out.println("Done.");
 System.exit(0);
 </pre>
@@ -103,13 +105,14 @@ String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 	+ "?President dbpedia-owl:party ?Party . }";
 
 TupleQuery query = repo.getConnection().prepareTupleQuery(QueryLanguage.SPARQL, q);
-TupleQueryResult res = query.evaluate();
+try (TupleQueryResult res = query.evaluate()) {
 
-while (res.hasNext()) {
-	System.out.println(res.next());
+	while (res.hasNext()) {
+		System.out.println(res.next());
+	}
 }
 
-FederationManager.getInstance().shutDown();
+repo.shutDown();
 System.out.println("Done.");
 System.exit(0);
 </pre>
@@ -123,20 +126,21 @@ via the dataConfig property. Note that also <a href="prefixDeclarations.html">PR
 <pre>
 // the FedX config implicitly defines a dataConfig
 String fedxConfig = "examples/fedxConfig-withPrefixDecl.prop";
-FedXFactory.initializeFederation(fedxConfig, Collections.&lt;Endpoint&gt;emptyList());
+Repository repo = FedXFactory.initializeFederation(fedxConfig, Collections.&lt;Endpoint&gt;emptyList());
 
 String q = "SELECT ?President ?Party WHERE {\n"
 	+ "?President rdf:type dbpedia:President .\n"
 	+ "?President dbpedia:party ?Party . }";
 
 TupleQuery query = QueryManager.prepareTupleQuery(q);
-TupleQueryResult res = query.evaluate();
+try (TupleQueryResult res = query.evaluate()) {
 
-while (res.hasNext()) {
-	System.out.println(res.next());
+	while (res.hasNext()) {
+		System.out.println(res.next());
+	}
 }
 
-FederationManager.getInstance().shutDown();
+repo.shutDown();
 System.out.println("Done.");
 System.exit(0);
 </pre>
@@ -160,13 +164,14 @@ String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
 	+ "?President dbpedia-owl:party ?Party . }";
 
 TupleQuery query = QueryManager.prepareTupleQuery(q);
-TupleQueryResult res = query.evaluate();
+try (TupleQueryResult res = query.evaluate()) {
 
-while (res.hasNext()) {
-	System.out.println(res.next());
+	while (res.hasNext()) {
+		System.out.println(res.next());
+	}
 }
 
-FederationManager.getInstance().shutDown();
+repo.shutDown();
 System.out.println("Done.");
 System.exit(0);
 </pre>

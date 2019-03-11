@@ -68,15 +68,15 @@ import com.fluidops.fedx.util.Version;
  * The factory {@link FedXFactory} provides various functions for initialization of FedX and should 
  * be used as the entry point for any application using FedX.<p>
  * 
- * <code>
+ * <pre>
  * Config.initialize(fedxConfig);
  * List&ltEndpoint&gt members = ...			// e.g. use EndpointFactory methods
- * FedX fed = FedXFactory.initializeFederation(members);
- * SailRepository repo = new SailRepository(fed);
+ * Repository repo = FedXFactory.initializeFederation(endpoints);
  * ReositoryConnection conn = repo.getConnection();
  * 
  * // Do something with the connection, e.g. query evaluation
- * </code>
+ * repo.shutDown();
+ * </pre>
  * 
  * @author Andreas Schwarte
  *
@@ -100,7 +100,8 @@ public class FederationManager {
 	
 	/**
 	 * Initialize the Singleton {@link FederationManager} instance with the provided information. The
-	 * {@link FederationManager} remains initialized until {@link #shutDown()} is invoked. 
+	 * {@link FederationManager} remains initialized until {@link #shutDown()} is invoked, usually
+	 * this is done by invoking {@link Repository#shutDown()}:
 	 * 
 	 * @param members
 	 * 				initialize the federation with a list of repository members, null and empty lists are allowed
@@ -108,6 +109,7 @@ public class FederationManager {
 	 * 				the cache instance to be used
 	 * @param statistics
 	 * 				the statistics instance to be used
+	 * @return the initialized {@link Repository} representing the federation. Needs to be shut down by the caller
 	 */
 	public static SailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
 		if (instance!=null)
@@ -416,6 +418,11 @@ public class FederationManager {
 	 * 				if an error occurs while shutting down the federation
 	 */
 	public void shutDown() throws FedXException {
+		if (instance == null) {
+			log.warn("Federation is already shut down. Ignoring.");
+			log.debug("Details:", new Exception("Trace"));
+			return;
+		}
 		log.info("Shutting down federation and all underlying repositories ...");
 		// Abort all running queries
 		QueryManager.instance.shutdown();

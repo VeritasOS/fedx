@@ -152,7 +152,10 @@ public class FedXConnection extends AbstractSailConnection
 		
 		// the write strategy needs to be closed
 		try {
-			getWriteStrategyInternal().close();
+			// Note: access the field directly to not initialize write connection
+			if (this.writeStrategy != null) {
+				this.writeStrategy.close();
+			}
 		} catch (RepositoryException e) {
 			throw new SailException(e);
 		}
