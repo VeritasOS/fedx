@@ -65,7 +65,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class SourceSelection {
 
-	public static Logger log = LoggerFactory.getLogger(SourceSelection.class);
+	private static final Logger log = LoggerFactory.getLogger(SourceSelection.class);
 	
 	protected final List<Endpoint> endpoints;
 	protected final Cache cache;
@@ -236,7 +236,10 @@ public class SourceSelection {
 				scheduler.schedule( new ParallelCheckTask(task.e, task.t, this) );
 			
 			try	{
-				latch.await(30, TimeUnit.SECONDS);
+				boolean completed = latch.await(30, TimeUnit.SECONDS);
+				if (!completed) {
+					throw new OptimizationException("Source selection has run into a timeout");
+				}
 			} catch (InterruptedException e) {
 				log.debug("Error during source selection. Thread got interrupted.");
 			}

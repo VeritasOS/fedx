@@ -63,6 +63,7 @@ dependencies {
 	implementation("org.eclipse.rdf4j:rdf4j-repository-sail:$rdf4jVersion") {
 		exclude group: 'com.google.guava', module: 'guava' // to avoid transitive behavior
 	}
+	compileOnly group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '3.1.12', transitive: false
 	implementation "org.eclipse.rdf4j:rdf4j-queryresultio-sparqljson:$rdf4jVersion"
 	implementation "org.eclipse.rdf4j:rdf4j-queryresultio-sparqlxml:$rdf4jVersion"
 	implementation("org.eclipse.rdf4j:rdf4j-sail-nativerdf:$rdf4jVersion") {

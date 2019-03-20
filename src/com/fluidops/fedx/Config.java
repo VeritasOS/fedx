@@ -45,7 +45,7 @@ import com.fluidops.fedx.provider.ProviderUtil;
  */
 public class Config {
 
-	protected static Logger log = LoggerFactory.getLogger(Config.class);
+	protected static final Logger log = LoggerFactory.getLogger(Config.class);
 	
 	private static Config instance = null;
 	
@@ -69,7 +69,7 @@ public class Config {
 	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 */
-	public static void initialize(String ...fedxConfig) throws FedXException {
+	public static synchronized void initialize(String... fedxConfig) throws FedXException {
 		if (instance!=null)
 			throw new FedXRuntimeException("Config is already initialized.");
 		instance = new Config();

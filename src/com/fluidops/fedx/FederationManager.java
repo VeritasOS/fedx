@@ -84,7 +84,7 @@ import com.fluidops.fedx.util.Version;
  */
 public class FederationManager {
 
-	public static Logger log = LoggerFactory.getLogger(FederationManager.class);
+	private static final Logger log = LoggerFactory.getLogger(FederationManager.class);
 	
 	/**
 	 * The Federation type definition: Local, Remote, Hybrid
@@ -112,7 +112,7 @@ public class FederationManager {
 	 * 				the statistics instance to be used
 	 * @return the initialized {@link Repository} representing the federation. Needs to be shut down by the caller
 	 */
-	public static SailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
+	public static synchronized SailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
 		if (instance!=null)
 			throw new FedXRuntimeException("FederationManager already initialized.");
 		
@@ -154,8 +154,8 @@ public class FederationManager {
 		if (prefixFile!=null) {
 			QueryManager qm = instance.getQueryManager();
 			Properties props = new Properties();
-			try	{
-				props.load(new FileInputStream(new File(prefixFile)));
+			try (FileInputStream fin = new FileInputStream(new File(prefixFile))) {
+				props.load(fin);
 			} catch (IOException e)	{
 				throw new FedXRuntimeException("Error loading prefix properties: " + e.getMessage());
 			}
@@ -418,7 +418,7 @@ public class FederationManager {
 	 * @throws FedXException
 	 * 				if an error occurs while shutting down the federation
 	 */
-	public void shutDown() throws FedXException {
+	public synchronized void shutDown() throws FedXException {
 		if (instance == null) {
 			log.warn("Federation is already shut down. Ignoring.");
 			log.debug("Details:", new Exception("Trace"));

@@ -18,6 +18,7 @@ package com.fluidops.fedx;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +88,7 @@ import com.fluidops.fedx.util.Version;
  * @author Andreas Schwarte
  *
  */
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "DM_EXIT", justification = "CLI exit")
 public class CLI {
 
 	protected enum OutputFormat { STDOUT, JSON, XML; }
@@ -394,7 +396,7 @@ public class CLI {
 	
 	protected String readArg(List<String> args, String... expected) {
 		if (args.size()==0)
-			error("Unexpected end of args, expected: " + expected, false);
+			error("Unexpected end of args, expected: " + Arrays.asList(expected), false);
 		return args.remove(0);
 	}
 	
@@ -405,8 +407,8 @@ public class CLI {
 		
 		QueryManager qm = FederationManager.getInstance().getQueryManager();
 		Properties props = new Properties();
-		try	{
-			props.load(CLI.class.getResourceAsStream("/com/fluidops/fedx/commonPrefixesCli.prop"));
+		try (InputStream in = CLI.class.getResourceAsStream("/com/fluidops/fedx/commonPrefixesCli.prop")) {
+			props.load(in);
 		} catch (IOException e)	{
 			throw new FedXRuntimeException("Error loading prefix properties: " + e.getMessage());
 		}
@@ -439,7 +441,9 @@ public class CLI {
 			else if (outputFormat == OutputFormat.JSON) {
 				
 				File out = new File("results/"+ outFolder + "/q_" + queryId + ".json");
-				out.getParentFile().mkdirs();
+				if (!out.getParentFile().mkdirs()) {
+					error("Failed to create output directories", false);
+				}
 				
 				System.out.println("Results are being written to " + out.getPath());
 				
@@ -463,7 +467,9 @@ public class CLI {
 			else if (outputFormat == OutputFormat.XML) {
 				
 				File out = new File("results/" + outFolder + "/q_" + queryId + ".xml");
-				out.getParentFile().mkdirs();
+				if (!out.getParentFile().mkdirs()) {
+					error("Failed to create output directories", false);
+				}
 				
 				System.out.println("Results are being written to " + out.getPath());
 				
