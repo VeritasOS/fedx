@@ -16,6 +16,7 @@
 package com.fluidops.fedx.evaluation;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
@@ -177,11 +178,12 @@ public class SparqlFederationEvalStrategy extends FederationEvalStrategy {
 			TripleSource tripleSource, BindingSet bindings) throws RepositoryException,
 			MalformedQueryException, QueryEvaluationException {
 		
-		Boolean isEvaluated = false;
+		AtomicBoolean isEvaluated = new AtomicBoolean(false);
 			
 		try  {
 			String preparedQuery = QueryStringUtil.selectQueryString(group, bindings, group.getFilterExpr(), isEvaluated);
-			return tripleSource.getStatements(preparedQuery, conn, bindings, (isEvaluated ? null : group.getFilterExpr()));				
+			return tripleSource.getStatements(preparedQuery, conn, bindings,
+					(isEvaluated.get() ? null : group.getFilterExpr()));
 		} catch (IllegalQueryException e) {
 			/* no projection vars, e.g. local vars only, can occur in joins */
 			if (tripleSource.hasStatements(group, conn, bindings))

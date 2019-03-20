@@ -15,6 +15,8 @@
  */
 package com.fluidops.fedx.algebra;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -65,7 +67,7 @@ public class StatementSourcePattern extends FedXStatementPattern {
 					
 		try {
 			
-			Boolean isEvaluated = false;	// is filter evaluated in prepared query
+			AtomicBoolean isEvaluated = new AtomicBoolean(false);	// is filter evaluated in prepared query
 			String preparedQuery = null;	// used for some triple sources
 			WorkerUnionBase<BindingSet> union = FederationManager.getInstance().createWorkerUnion(queryInfo);
 			
@@ -94,7 +96,7 @@ public class StatementSourcePattern extends FedXStatementPattern {
 						}
 					}
 					 
-					union.addTask(new ParallelPreparedUnionTask(union, preparedQuery, t, conn, bindings, (isEvaluated ? null : filterExpr)));
+					union.addTask(new ParallelPreparedUnionTask(union, preparedQuery, t, conn, bindings, (isEvaluated.get() ? null : filterExpr)));
 					
 				} else {
 					union.addTask(new ParallelUnionTask(union, this, t, conn, bindings, filterExpr));

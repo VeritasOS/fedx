@@ -16,6 +16,7 @@
 package com.fluidops.fedx.evaluation;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
@@ -178,9 +179,10 @@ public class SailFederationEvalStrategy extends FederationEvalStrategy {
 			QueryEvaluationException {
 
 		// simple thing: use a prepared query
-		Boolean isEvaluated = false;
+		AtomicBoolean isEvaluated = new AtomicBoolean(false);
 		TupleExpr preparedQuery = QueryAlgebraUtil.selectQuery(group, bindings, group.getFilterExpr(), isEvaluated);
-		return tripleSource.getStatements(preparedQuery, conn, bindings, (isEvaluated ? null : group.getFilterExpr()));
+		return tripleSource.getStatements(preparedQuery, conn, bindings,
+				(isEvaluated.get() ? null : group.getFilterExpr()));
 	
 		// other option (which might be faster for sesame native stores): join over the statements
 		// TODO implement this and evaluate if it is faster ..

@@ -18,6 +18,7 @@ package com.fluidops.fedx.util;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
@@ -135,7 +136,8 @@ public class QueryAlgebraUtil {
 	 * @return the SELECT query
 	 * @throws IllegalQueryException
 	 */
-	public static TupleExpr selectQuery( StatementPattern stmt, BindingSet bindings, FilterValueExpr filterExpr, Boolean evaluated) throws IllegalQueryException {
+	public static TupleExpr selectQuery(StatementPattern stmt, BindingSet bindings, FilterValueExpr filterExpr,
+			AtomicBoolean evaluated) throws IllegalQueryException {
 		
 		Set<String> varNames = new HashSet<String>();
 		TupleExpr expr = constructStatement(stmt, varNames, bindings);
@@ -146,9 +148,10 @@ public class QueryAlgebraUtil {
 		if (filterExpr!=null) {
 			try {
 				expr = new Filter(expr, FilterUtils.toFilter(filterExpr));
-				evaluated = true;
-			} catch (FilterConversionException e) {
-				log.warn("Filter could not be evaluated remotely. " + e.getMessage());
+				evaluated.set(true);
+			} catch (Exception e) {
+				log.debug("Filter could not be evaluated remotely: " + e.getMessage());
+				log.trace("Details: ", e);
 			}
 		}
 	
@@ -176,7 +179,8 @@ public class QueryAlgebraUtil {
 	 * 
 	 * @return the SELECT query
 	 */
-	public static TupleExpr selectQuery( ExclusiveGroup group, BindingSet bindings, FilterValueExpr filterExpr, Boolean evaluated) {
+	public static TupleExpr selectQuery(ExclusiveGroup group, BindingSet bindings, FilterValueExpr filterExpr,
+			AtomicBoolean evaluated) {
 		
 		
 		Set<String> varNames = new HashSet<String>();
@@ -205,9 +209,10 @@ public class QueryAlgebraUtil {
 		if (filterExpr!=null) {
 			try {
 				expr = new Filter(expr, FilterUtils.toFilter(filterExpr));
-				evaluated = true;
-			} catch (FilterConversionException e) {
-				log.warn("Filter could not be evaluated remotely. " + e.getMessage());
+				evaluated.set(true);
+			} catch (Exception e) {
+				log.debug("Filter could not be evaluated remotely: " + e.getMessage());
+				log.trace("Details:", e);
 			}
 		}
 		

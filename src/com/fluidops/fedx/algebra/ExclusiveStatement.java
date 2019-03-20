@@ -15,6 +15,8 @@
  */
 package com.fluidops.fedx.algebra;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -71,7 +73,7 @@ public class ExclusiveStatement extends FedXStatementPattern {
 		
 			if (t.usePreparedQuery()) {
 				
-				Boolean isEvaluated = false;	// is filter evaluated
+				AtomicBoolean isEvaluated = new AtomicBoolean(false); // is filter evaluated
 				String preparedQuery;
 				try {
 					preparedQuery = QueryStringUtil.selectQueryString(this, bindings, filterExpr, isEvaluated);
@@ -83,7 +85,7 @@ public class ExclusiveStatement extends FedXStatementPattern {
 					return new EmptyIteration<BindingSet, QueryEvaluationException>();
 				}
 								
-				return t.getStatements(preparedQuery, ownedConnection, bindings, (isEvaluated ? null : filterExpr) );
+				return t.getStatements(preparedQuery, ownedConnection, bindings, (isEvaluated.get() ? null : filterExpr) );
 				
 			} else {
 				return t.getStatements(this, ownedConnection, bindings, filterExpr);

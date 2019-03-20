@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -45,7 +46,6 @@ import com.fluidops.fedx.algebra.IndependentJoinGroup;
 import com.fluidops.fedx.algebra.StatementTupleExpr;
 import com.fluidops.fedx.evaluation.SparqlFederationEvalStrategyWithValues;
 import com.fluidops.fedx.evaluation.iterator.BoundJoinVALUESConversionIteration;
-import com.fluidops.fedx.exception.FilterConversionException;
 import com.fluidops.fedx.exception.IllegalQueryException;
 
 /**
@@ -140,7 +140,8 @@ public class QueryStringUtil {
 	 * @throws IllegalQueryException
 	 * 				if the query does not have any free variables
 	 */
-	public static String selectQueryString( FedXStatementPattern stmt, BindingSet bindings, FilterValueExpr filterExpr, Boolean evaluated) throws IllegalQueryException {
+	public static String selectQueryString(FedXStatementPattern stmt, BindingSet bindings, FilterValueExpr filterExpr,
+			AtomicBoolean evaluated) throws IllegalQueryException {
 		
 		Set<String> varNames = new HashSet<String>();
 		String s = constructStatement(stmt, varNames, bindings);
@@ -160,13 +161,14 @@ public class QueryStringUtil {
 		
 		res.append(" WHERE { ").append(s);
 		
-		if (filterExpr!=null) {
+		if (filterExpr != null) {
 			try {
 				String filter = FilterUtils.toSparqlString(filterExpr);
 				res.append("FILTER ").append(filter);
-				evaluated = true;
-			} catch (FilterConversionException e) {
-				log.warn("Filter could not be evaluated remotely. " + e.getMessage());
+				evaluated.set(true);
+			} catch (Exception e) {
+				log.debug("Filter could not be evaluated remotely. " + e.getMessage());
+				log.trace("Details: ", e);
 			}
 		}
 	
@@ -192,7 +194,8 @@ public class QueryStringUtil {
 	 * @throws IllegalQueryException 
 	 * 
 	 */
-	public static String selectQueryString( ExclusiveGroup group, BindingSet bindings, FilterValueExpr filterExpr, Boolean evaluated) throws IllegalQueryException  {
+	public static String selectQueryString(ExclusiveGroup group, BindingSet bindings, FilterValueExpr filterExpr,
+			AtomicBoolean evaluated) throws IllegalQueryException {
 		
 		StringBuilder sb = new StringBuilder();
 		Set<String> varNames = new HashSet<String>();
@@ -219,9 +222,10 @@ public class QueryStringUtil {
 			try {
 				String filter = FilterUtils.toSparqlString(filterExpr);
 				res.append("FILTER ").append(filter);
-				evaluated = true;
-			} catch (FilterConversionException e) {
-				log.warn("Filter could not be evaluated remotely. " + e.getMessage());
+				evaluated.set(true);
+			} catch (Exception e) {
+				log.debug("Filter could not be evaluated remotely. " + e.getMessage());
+				log.trace("Details", e);
 			}
 		}
 		
