@@ -142,6 +142,7 @@ spotbugs {
 	sourceSets = [sourceSets.main]
 	ignoreFailures = true
 	reportsDir = project.file("target/reports/spotbugs/")
+	excludeFilter = project.file("build/spotbugs/FilterTests.xml")
 }
 
 tasks.withType(com.github.spotbugs.SpotBugsTask) {

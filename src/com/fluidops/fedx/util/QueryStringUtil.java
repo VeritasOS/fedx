@@ -840,9 +840,7 @@ public class QueryStringUtil {
 	 */
 	public static List<String> loadQueries(String queryFile) throws FileNotFoundException, IOException {
 		ArrayList<String> res = new ArrayList<String>();
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new FileReader(queryFile));
+		try (BufferedReader in = new BufferedReader(new FileReader(queryFile));) {
 			String tmp;
 			String tmpQuery = "";
 			while ((tmp = in.readLine()) != null){
@@ -858,9 +856,6 @@ public class QueryStringUtil {
 			if (!tmpQuery.equals(""))
 				res.add(tmpQuery);
 			return res;
-		} finally {
-			if (in!=null)
-				in.close();
 		}
 		
 	}

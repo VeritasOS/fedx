@@ -117,16 +117,14 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 
 		if (rightIter==null) {	
 			// block if not evaluated
-			if (rightIter == null) {
-				try {
-					boolean completed = latch.await(30, TimeUnit.SECONDS); // TODO make configurable
-					if (!completed) {
-						throw new QueryEvaluationException("Timeout during service evaluation");
-					}
-				} catch (InterruptedException e) {
-					log.debug("Error while evaluating service expression. Thread got interrupted.");
-					error = e;
+			try {
+				boolean completed = latch.await(30, TimeUnit.SECONDS); // TODO make configurable
+				if (!completed) {
+					throw new QueryEvaluationException("Timeout during service evaluation");
 				}
+			} catch (InterruptedException e) {
+				log.debug("Error while evaluating service expression. Thread got interrupted.");
+				error = e;
 			}
 		}
 		

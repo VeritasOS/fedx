@@ -48,6 +48,7 @@ import com.fluidops.fedx.structures.SubQuery;
  * @author Andreas Schwarte
  *
  */
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "OBJECT_DESERIALIZATION", justification = "Will be replaced at some point in the future.")
 public class MemoryCache implements Cache {
 
 	private static final Logger log = LoggerFactory.getLogger(MemoryCache.class);
@@ -151,10 +152,8 @@ public class MemoryCache implements Cache {
 		
 		if (!f.exists())
 			return;
-		try {
-			ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( new FileInputStream(f)));
+		try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(f)))) {
 			cache = (HashMap<SubQuery, CacheEntry>)in.readObject();
-			in.close();
 		} catch (Exception e) {
 			throw new FedXException("Error initializing cache.", e);
 		}
@@ -170,11 +169,9 @@ public class MemoryCache implements Cache {
 		
 		// XXX write to a temporary file first, to prevent a corrupt file
 		
-		try {
-			ObjectOutputStream out = new ObjectOutputStream( new BufferedOutputStream( new FileOutputStream( new File(cacheLocation))));
+		try (ObjectOutputStream out = new ObjectOutputStream(
+				new BufferedOutputStream(new FileOutputStream(new File(cacheLocation))))) {
 			out.writeObject(this.cache);
-			out.flush();
-			out.close();	
 		} catch (Exception e) {
 			throw new FedXException("Error persisting cache data.", e);
 		}
@@ -186,8 +183,4 @@ public class MemoryCache implements Cache {
 		cache = new HashMap<SubQuery, CacheEntry>();
 		
 	}
-
-
-
-
 }

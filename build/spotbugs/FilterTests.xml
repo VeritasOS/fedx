@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is supposed to be an exclusion-filter for spotbugs -->
+<FindBugsFilter>
+	<!-- exclude all tests -->
+	<Match>
+		<Class name="~.*Test" />
+	</Match>
+	<Match>
+		<Bug pattern="PATH_TRAVERSAL_IN" />
+	</Match>
+	<Match>
+		<Bug pattern="TESTING" />
+	</Match>
+	<Match>
+		<Bug pattern="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE" />
+	</Match>
+	<!-- include only patterns ranked from 1-17 (i.e ignore unimportant patterns) -->
+	<Match>
+		<Rank value="17"/>
+	</Match>
+</FindBugsFilter>
