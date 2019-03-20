@@ -26,11 +26,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.evaluation.DelegateFederatedServiceResolver;
@@ -83,7 +84,7 @@ import com.fluidops.fedx.util.Version;
  */
 public class FederationManager {
 
-	public static Logger log = Logger.getLogger(FederationManager.class);
+	public static Logger log = LoggerFactory.getLogger(FederationManager.class);
 	
 	/**
 	 * The Federation type definition: Local, Remote, Hybrid

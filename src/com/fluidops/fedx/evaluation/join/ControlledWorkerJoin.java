@@ -18,11 +18,12 @@ package com.fluidops.fedx.evaluation.join;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
@@ -43,7 +44,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class ControlledWorkerJoin extends JoinExecutorBase<BindingSet> {
 
-	public static Logger log = Logger.getLogger(ControlledWorkerJoin.class);
+	public static Logger log = LoggerFactory.getLogger(ControlledWorkerJoin.class);
 	
 	protected final ControlledWorkerScheduler<BindingSet> scheduler;
 

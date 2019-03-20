@@ -18,12 +18,13 @@ package com.fluidops.fedx.evaluation.join;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.algebra.CheckStatementPattern;
@@ -43,7 +44,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class SynchronousBoundJoin extends SynchronousJoin {
 
-	public static Logger log = Logger.getLogger(SynchronousBoundJoin.class);
+	public static Logger log = LoggerFactory.getLogger(SynchronousBoundJoin.class);
 	
 	
 	public SynchronousBoundJoin(FederationEvalStrategy strategy,

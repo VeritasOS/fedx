@@ -19,9 +19,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.cache.MemoryCache;
@@ -41,7 +42,7 @@ import com.fluidops.fedx.util.EndpointFactory;
  */
 public class FedXFactory {
 
-	protected static Logger log = Logger.getLogger(FedXFactory.class);
+	protected static Logger log = LoggerFactory.getLogger(FedXFactory.class);
 	
 	
 	

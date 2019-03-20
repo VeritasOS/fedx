@@ -18,7 +18,6 @@ package com.fluidops.fedx.evaluation;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.SingletonIteration;
@@ -45,6 +44,8 @@ import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sparql.federation.CollectionIteration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.EndpointManager;
@@ -95,7 +96,7 @@ import com.fluidops.fedx.util.FedXUtil;
  */
 public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 	
-	public static Logger log = Logger.getLogger(FederationEvalStrategy.class);
+	public static Logger log = LoggerFactory.getLogger(FederationEvalStrategy.class);
 	
 	
 	protected Executor executor;

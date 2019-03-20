@@ -18,7 +18,6 @@ package com.fluidops.fedx;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.DistinctIteration;
 import org.eclipse.rdf4j.common.iteration.ExceptionConvertingIteration;
@@ -38,6 +37,8 @@ import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.helpers.AbstractSail;
 import org.eclipse.rdf4j.sail.helpers.AbstractSailConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
@@ -74,7 +75,7 @@ import com.fluidops.fedx.write.WriteStrategy;
 public class FedXConnection extends AbstractSailConnection
 {
 	
-	public static Logger log = Logger.getLogger(FedXConnection.class);
+	public static Logger log = LoggerFactory.getLogger(FedXConnection.class);
 	protected FedX federation;
 	
 	/**

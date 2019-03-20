@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.IsolationLevel;
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -28,6 +27,8 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.FedXException;
@@ -52,7 +53,7 @@ import com.fluidops.fedx.write.WriteStrategy;
  */
 public class FedX implements Sail {
 
-	public static Logger log = Logger.getLogger(FedX.class);
+	public static Logger log = LoggerFactory.getLogger(FedX.class);
 	
 	protected final List<Endpoint> members = new ArrayList<Endpoint>();
 	protected boolean open = false;

@@ -20,7 +20,8 @@ import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class Version {
 
-	protected static Logger log = Logger.getLogger(Version.class);
+	protected static Logger log = LoggerFactory.getLogger(Version.class);
 	
 	/* fields with default values (i.e. if not started from jar) */
 	protected static String project = "FedX";

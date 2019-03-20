@@ -7,6 +7,11 @@ FedX 5.2.0 SNAPSHOT
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
  * improvements to shutdown behavior
+ * revising of logging infrastructure
+   - use SLF4J as logging API
+   - make logging backend optional (adapters via SLF4j)
+   - migrate (optional) logging backend to log4j 2
+   - redefine logging behavior for CLI
  * Technical Improvements
    - use Gradle 5 Build Environment
    - migrate unit tests to junit 5

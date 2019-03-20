@@ -1,10 +1,5 @@
 package demos;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -65,7 +60,7 @@ public class HttpRepoTest {
 	
 	public static void main(String[] args) throws Exception {
 		
-		configureLogging();
+
 		
 		repo = new HTTPRepository("http://factforge.net/sparql");
 		repo.initialize();		
@@ -77,22 +72,6 @@ public class HttpRepoTest {
 		
 		System.out.println("Done");
 		repo.shutDown();
-	}
-	
-	
-	
-
-	protected static void configureLogging() {
-		
-		Logger rootLogger = Logger.getRootLogger();
-		if (!rootLogger.getAllAppenders().hasMoreElements()) {
-			rootLogger.setLevel(Level.ALL); 
-			rootLogger.addAppender(new NullAppender() );      
-		}
-		
-		Logger l = Logger.getLogger("httpclient.wire");
-		rootLogger.setLevel(Level.ALL);
-		l.addAppender(new ConsoleAppender(new PatternLayout("%5p [%t] (%F:%L) - %m%n")));			
 	}
 	
 

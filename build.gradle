@@ -47,9 +47,10 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.9.7'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
 	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.7'
-	implementation 'log4j:log4j:1.2.16'
-	implementation 'org.slf4j:slf4j-api:1.7.0'
-	implementation 'org.slf4j:slf4j-log4j12:1.7.0'
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.26'
+	runtime group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+	runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+	runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.2', transitive: false
 	implementation('com.google.guava:guava:27.0.1-jre') {
 		transitive = false
 	}
@@ -155,7 +156,7 @@ javadoc {
 		
 	options.docTitle = "<h1>$title</h1>"
 	options.header = "<img src=\"images/fluidops.png\" />"
-	options.bottom = "<i>Copyright &#169; 2008-2017 fluid Operations AG. All Rights Reserved.</i>"
+	options.bottom = "<i>Copyright &#169; 2018 Veritas Technologies LLC. All Rights Reserved.</i>"
 }
 
 // fail on JavaDoc errors
@@ -261,6 +262,10 @@ task deploy(type: Copy, dependsOn: ["jar"] ) {
 	into(".") {
 		from 'build'
 		include 'README.txt'
+	}
+	
+	into("etc") {
+		from 'etc'
 	}
 	
 	into("examples") {

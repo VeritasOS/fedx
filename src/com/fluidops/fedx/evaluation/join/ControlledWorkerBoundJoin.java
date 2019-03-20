@@ -19,11 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.algebra.BoundJoinTupleExpr;
@@ -53,7 +54,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class ControlledWorkerBoundJoin extends ControlledWorkerJoin {
 
-	public static Logger log = Logger.getLogger(ControlledWorkerBoundJoin.class);
+	public static Logger log = LoggerFactory.getLogger(ControlledWorkerBoundJoin.class);
 	
 	public ControlledWorkerBoundJoin(ControlledWorkerScheduler<BindingSet> scheduler, FederationEvalStrategy strategy,
 			CloseableIteration<BindingSet, QueryEvaluationException> leftIter,

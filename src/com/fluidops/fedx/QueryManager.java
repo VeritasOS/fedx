@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.query.BooleanQuery;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.MalformedQueryException;
@@ -40,6 +39,8 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.sail.SailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
@@ -59,7 +60,7 @@ import com.fluidops.fedx.structures.QueryType;
 public class QueryManager {
 
 	
-	public static Logger log = Logger.getLogger(QueryManager.class);
+	public static Logger log = LoggerFactory.getLogger(QueryManager.class);
 	
 	
 	// singleton behavior: initialized in constructor of FederationManager

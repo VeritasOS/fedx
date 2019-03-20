@@ -22,12 +22,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.query.algebra.BindingSetAssignment;
 import org.eclipse.rdf4j.query.algebra.Projection;
 import org.eclipse.rdf4j.query.algebra.Service;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.ExclusiveStatement;
@@ -55,7 +56,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class JoinOrderOptimizer {
 
-	public static Logger log = Logger.getLogger(JoinOrderOptimizer.class);
+	public static Logger log = LoggerFactory.getLogger(JoinOrderOptimizer.class);
 	
 	public static List<TupleExpr> optimizeJoinOrder(List<TupleExpr> joinArgs) {
 		

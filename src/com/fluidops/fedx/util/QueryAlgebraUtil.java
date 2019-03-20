@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -38,6 +37,8 @@ import org.eclipse.rdf4j.query.algebra.Union;
 import org.eclipse.rdf4j.query.algebra.ValueConstant;
 import org.eclipse.rdf4j.query.algebra.Var;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.ExclusiveStatement;
@@ -53,7 +54,7 @@ import com.fluidops.fedx.exception.IllegalQueryException;
  */
 public class QueryAlgebraUtil {
 
-	public static Logger log = Logger.getLogger(QueryAlgebraUtil.class);
+	public static Logger log = LoggerFactory.getLogger(QueryAlgebraUtil.class);
 	
 	/**
 	 * returns true iff there is at least one free variable, i.e. there is no binding

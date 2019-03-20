@@ -15,54 +15,58 @@
  */
 package com.fluidops.fedx.monitoring;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.Config;
 import com.fluidops.fedx.structures.QueryInfo;
 
 /**
- * Convenience class which writes the query backlog to a file, 
- * default: logs/queryLog.log
+ * Convenience class which writes the query backlog a logger with the name
+ * "QueryLog". The logger is configured using the available logging framework.
+ * <p>
+ * Requires monitoring to be enabled:
+ * </p>
+ * 
+ * <ul>
+ * <li>{@link Config#isEnableMonitoring()}</li>
+ * <li>{@link Config#isLogQueries()}</li>
+ * </ul>
  * 
  * @author Andreas Schwarte
  *
  */
 public class QueryLog
 {
-	public static Logger log = Logger.getLogger(QueryLog.class);
+	public static Logger log = LoggerFactory.getLogger(QueryLog.class);
 	
+	private final AtomicBoolean active = new AtomicBoolean(false);
 	private Logger queryLog;
-	private File queryLogFile = new File("logs", "queryLog.log");
+
 
 	public QueryLog() throws IOException {
-		log.info("Initializing query log, output file: " + queryLogFile.getName());
+		log.info("Initializing logging of queries");
 		initQueryLog();
 	}
 	
 	private void initQueryLog() throws IOException {
-		queryLog = Logger.getLogger("QueryBackLog");
-		queryLog.setAdditivity(false);
-		queryLog.setLevel(Level.INFO);
-		queryLog.removeAllAppenders();
-		
-		Layout layout = new PatternLayout("%d{yyyy-MM-dd HH:mm:ss}: %m%n");
-		
-		RollingFileAppender appender = new RollingFileAppender(layout, queryLogFile.getAbsolutePath(), true);
-		appender.setMaxFileSize("1024KB");
-		appender.setMaxBackupIndex(5);
-		queryLog.addAppender(appender);		
+
+		queryLog = LoggerFactory.getLogger("QueryLog");
+
+		// activate the given logger
+		active.set(true);
 	}
 	
 	public void logQuery(QueryInfo query) {
-		queryLog.info(query.getQuery().replace("\r\n", " ").replace("\n", " "));
-		if (log.isTraceEnabled())
+		if (active.get()) {
+			queryLog.info(query.getQuery().replace("\r\n", " ").replace("\n", " "));
+		}
+		if (log.isTraceEnabled()) {
 			log.trace("#Query: " + query.getQuery());
+		}
 	}
 
 }

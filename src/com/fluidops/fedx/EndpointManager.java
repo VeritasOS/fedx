@@ -23,10 +23,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.query.algebra.evaluation.federation.FederatedService;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.FedXException;
@@ -44,7 +45,7 @@ import com.fluidops.fedx.structures.Endpoint;
  */
 public class EndpointManager {
 	
-	protected static Logger log = Logger.getLogger(EndpointManager.class);
+	protected static Logger log = LoggerFactory.getLogger(EndpointManager.class);
 	
 	/*
 	 * TODO

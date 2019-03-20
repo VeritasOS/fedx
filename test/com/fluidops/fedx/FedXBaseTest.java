@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.io.IOUtil;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Statement;
@@ -40,6 +39,8 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -51,10 +52,10 @@ public class FedXBaseTest {
 	@BeforeAll
 	public static void initLogging() throws Exception	{
 		
-		if (System.getProperty("log4j.configuration")==null)
-			System.setProperty("log4j.configuration", "file:build/test/log4j-debug.properties");
+		if (System.getProperty("log4j.configurationFile") == null)
+			System.setProperty("log4j.configurationFile", "file:build/test/log4j-debug.properties");
 		
-		log = Logger.getLogger(FedXBaseTest.class);
+		log = LoggerFactory.getLogger(FedXBaseTest.class);
 	}
 	
 	protected static final ValueFactory vf = SimpleValueFactory.getInstance();

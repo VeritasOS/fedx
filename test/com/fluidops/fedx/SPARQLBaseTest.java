@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.http.client.SessionManagerDependent;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
@@ -25,6 +24,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.repository.RepositorySettings;
 import com.fluidops.fedx.server.NativeStoreServer;
@@ -73,7 +74,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	@BeforeAll
 	public static void initTest() throws Exception
 	{
-		log = Logger.getLogger(SPARQLBaseTest.class);
+		log = LoggerFactory.getLogger(SPARQLBaseTest.class);
 		
 		if (System.getProperty("repositoryType")!=null)
 			repositoryType = REPOSITORY_TYPE.valueOf(System.getProperty("repositoryType"));

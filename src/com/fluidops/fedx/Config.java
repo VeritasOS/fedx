@@ -20,7 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.MemoryCache;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
@@ -44,7 +45,7 @@ import com.fluidops.fedx.provider.ProviderUtil;
  */
 public class Config {
 
-	protected static Logger log = Logger.getLogger(Config.class);
+	protected static Logger log = LoggerFactory.getLogger(Config.class);
 	
 	private static Config instance = null;
 	
@@ -209,9 +210,11 @@ public class Config {
 	}
 	
 	/**
-	 * Flag to enable/disable query logging via {@link QueryLog}. Default=false
-	 * The {@link QueryLog} facility allows to log all queries to a file. See 
-	 * {@link QueryLog} for details. 
+	 * Flag to enable/disable query logging via {@link QueryLog}. Default=false The
+	 * {@link QueryLog} facility allows to log all queries to a file. See
+	 * {@link QueryLog} for details.
+	 * 
+	 * Required {@link Config#isEnableMonitoring()} to be active.
 	 * 
 	 * @return whether queries are logged
 	 */
@@ -309,7 +312,7 @@ public class Config {
 	 * 		whether the query plan is printed to std out
 	 */
 	public boolean isDebugQueryPlan() {
-		return Boolean.parseBoolean( props.getProperty("debugQueryPlan", "false"));
+		return Boolean.parseBoolean(props.getProperty("debugQueryPlan", "false"));
 	}
 	
 	/**

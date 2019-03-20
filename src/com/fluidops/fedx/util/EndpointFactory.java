@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -35,6 +34,8 @@ import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.exception.FedXException;
@@ -61,7 +62,7 @@ import com.fluidops.fedx.structures.Endpoint.EndpointType;
  */
 public class EndpointFactory {
 
-	private static final Logger logger = Logger.getLogger(EndpointFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(EndpointFactory.class);
 	
 	/**
 	 * Construct a SPARQL endpoint using the the provided information.

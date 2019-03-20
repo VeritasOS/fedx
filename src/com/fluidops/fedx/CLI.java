@@ -26,12 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -61,8 +55,6 @@ import com.fluidops.fedx.util.Version;
  * [Configuration] (optional)
  * Optionally specify the configuration to be used
  *      -c path/to/fedxConfig
- *      -verbose {0|1|2|3}
- *      -logtofile
  *      -p path/to/prefixConfig
  *      -planOnly
  *      
@@ -100,8 +92,6 @@ public class CLI {
 	protected enum OutputFormat { STDOUT, JSON, XML; }
 	
 	protected String fedxConfig=null;
-	protected int verboseLevel=0;
-	protected boolean logtofile = false;
 	protected boolean planOnly = false;
 	protected String prefixDeclarations = null;
 	protected List<Endpoint> endpoints = new ArrayList<Endpoint>();
@@ -119,6 +109,7 @@ public class CLI {
 			new CLI().run(args);
 		} catch (Exception e) {
 			System.out.println("Error while using the FedX CLI. System will exit. \nDetails: " + e.getMessage());
+			e.printStackTrace();
 			System.exit(1);
 		}
 	}
@@ -126,15 +117,15 @@ public class CLI {
 	
 	
 	public void run(String[] args) {
-		configureRootLogger();
+
+		// activate logging to stdout if verbose is set
+		configureLogging();
 		
 		System.out.println("FedX Cli " + Version.getLongVersion());
 		
 		// parse the arguments and construct config
 		parse(args);
 		
-		// activate logging to stdout if verbose is set
-		configureLogging();
 						
 		
 		if (Config.getConfig().getDataConfig()!=null) {
@@ -233,12 +224,8 @@ public class CLI {
 	/**
 	 * Parse the FedX Configuration,
 	 *  1) -c path/to/fedxconfig.prop
-	 *  2) -verbose [%lvl$]
-	 *  3) -logtofile
-	 *  4) -p path/to/prefixDeclaration.prop
-	 *  5) -planOnly	 
-	 *  
-	 *  WHERE lvl is 0=off (default), 1=INFO, 2=DEBUG, 3=TRACE
+	 *  2) -p path/to/prefixDeclaration.prop
+	 *  3) -planOnly	 
 	 *  
 	 * @param args
 	 */
@@ -249,24 +236,6 @@ public class CLI {
 		if (arg.equals("-c")) {
 			readArg(args);											// remove -c
 			fedxConfig = readArg(args, "path/to/fedxConfig.ttl");	// remove path
-		}
-		
-		// verbose
-		else if (arg.equals("-verbose")) {
-			verboseLevel = 1;
-			readArg(args);
-			try {
-				verboseLevel = Integer.parseInt(args.get(0));
-				readArg(args);
-			} catch (Exception numberFormat) {
-				; // ignore
-			}
-		}
-		
-		// logtofile
-		else if (arg.equals("-logtofile")) {
-			readArg(args);
-			logtofile = true;
 		}
 		
 		// prefixConfiguration
@@ -551,8 +520,6 @@ public class CLI {
 		System.out.println("[Configuration] (optional)");
 		System.out.println("Optionally specify the configuration to be used");
 		System.out.println("\t-c path/to/fedxConfig");
-		System.out.println("\t-verbose {0|1|2|3}");
-		System.out.println("\t-logtofile");
 		System.out.println("\t-p path/to/prefixDeclarations");
 		System.out.println("\t-planOnly");
 		System.out.println("");
@@ -591,40 +558,15 @@ public class CLI {
 	 */
 	protected void configureLogging() {
 		
-		//Logger rootLogger = Logger.getRootLogger();
-		Logger l = Logger.getLogger("com.fluidops.fedx");
-		Logger rootLogger = Logger.getRootLogger();
-		if (verboseLevel>0) {
-			//Logger pkgLogger = rootLogger.getLoggerRepository().getLogger("com.fluidops.fedx"); 
-			if (verboseLevel==1) {
-				rootLogger.setLevel(Level.INFO);
-				l.setLevel(Level.INFO);
-			} else if (verboseLevel==1) {
-				rootLogger.setLevel(Level.DEBUG);
-				l.setLevel(Level.DEBUG);
-			}	else if (verboseLevel>2) {
-				rootLogger.setLevel(Level.ALL);
-				l.setLevel(Level.ALL);
-			}
-				
-			if (logtofile) {
-				try {
-					l.addAppender( new FileAppender(new PatternLayout("%5p %d{yyyy-MM-dd hh:mm:ss} [%t] (%F:%L) - %m%n"), "logs/fedx_cli.log"));
-				} catch (IOException e) {
-					System.out.println("WARN: File Logging could not be initialized: " + e.getMessage());
-				}				
+		if (System.getProperty("log4j.configurationFile") == null) {
+			File logFile = new File("etc/log4j.properties");
+			if (!logFile.exists()) {
+				System.out.println(
+						"WARN: Log4j configuration not found in 'etc/log4j.properties. Logging features may not fully work.");
 			} else {
-				l.addAppender(new ConsoleAppender(new PatternLayout("%5p [%t] (%F:%L) - %m%n")));
+				System.setProperty("log4j.configurationFile", "file:etc/log4j.properties");
 			}
-		}		
-	}
-	
-	protected void configureRootLogger() {
-		
-		Logger rootLogger = Logger.getRootLogger();
-		if (!rootLogger.getAllAppenders().hasMoreElements()) {
-			rootLogger.setLevel(Level.ALL); 
-			rootLogger.addAppender(new NullAppender() );      
 		}
 	}
+
 }

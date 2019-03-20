@@ -15,12 +15,13 @@
  */
 package com.fluidops.fedx.evaluation.iterator;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.FilterIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
@@ -33,7 +34,7 @@ import com.fluidops.fedx.evaluation.FederationEvalStrategy;
  */
 public class FilteringIteration extends FilterIteration<BindingSet, QueryEvaluationException> {
 	
-	public static Logger log = Logger.getLogger(FilteringIteration.class);	
+	public static Logger log = LoggerFactory.getLogger(FilteringIteration.class);
 	
 	protected FilterValueExpr filterExpr;
 	protected FederationEvalStrategy strategy;

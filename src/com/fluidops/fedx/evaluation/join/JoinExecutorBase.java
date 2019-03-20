@@ -17,7 +17,6 @@ package com.fluidops.fedx.evaluation.join;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
@@ -25,6 +24,8 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.QueueCursor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.FedXQueueCursor;
@@ -44,7 +45,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEvaluationException> implements ParallelExecutor<T> {
 
-	public static Logger log = Logger.getLogger(JoinExecutorBase.class);
+	public static Logger log = LoggerFactory.getLogger(JoinExecutorBase.class);
 	
 	protected static AtomicInteger NEXT_JOIN_ID = new AtomicInteger(1);
 	

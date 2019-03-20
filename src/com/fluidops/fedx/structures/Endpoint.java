@@ -18,10 +18,11 @@ package com.fluidops.fedx.structures;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.evaluation.TripleSource;
@@ -46,7 +47,7 @@ import com.fluidops.fedx.exception.FedXRuntimeException;
  */
 public class Endpoint  {
 	
-	public static Logger log = Logger.getLogger(Endpoint.class);
+	public static Logger log = LoggerFactory.getLogger(Endpoint.class);
 	
 	/**
 	 * Classify endpoints into remote or local ones.

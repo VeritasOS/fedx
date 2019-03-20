@@ -26,10 +26,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.model.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.exception.EntryAlreadyExistsException;
 import com.fluidops.fedx.exception.EntryUpdateException;
@@ -49,7 +50,7 @@ import com.fluidops.fedx.structures.SubQuery;
  */
 public class MemoryCache implements Cache {
 
-	public static Logger log = Logger.getLogger(MemoryCache.class);
+	public static Logger log = LoggerFactory.getLogger(MemoryCache.class);
 	
 	protected HashMap<SubQuery, CacheEntry> cache = new HashMap<SubQuery, CacheEntry>();
 	protected String cacheLocation;

@@ -15,7 +15,6 @@
  */
 package com.fluidops.fedx.evaluation;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.ExceptionConvertingIteration;
@@ -39,6 +38,8 @@ import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreConnectionExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
@@ -58,7 +59,7 @@ import com.fluidops.fedx.util.QueryAlgebraUtil;
  */
 public class SailTripleSource extends TripleSourceBase implements TripleSource{
 
-	public static Logger log = Logger.getLogger(SailTripleSource.class);
+	public static Logger log = LoggerFactory.getLogger(SailTripleSource.class);
 	
 
 	SailTripleSource(Endpoint endpoint) {

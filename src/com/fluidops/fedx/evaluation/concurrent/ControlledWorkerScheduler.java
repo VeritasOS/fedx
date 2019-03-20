@@ -22,9 +22,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.evaluation.join.ControlledWorkerBoundJoin;
 import com.fluidops.fedx.evaluation.join.ControlledWorkerJoin;
@@ -49,7 +50,7 @@ import com.fluidops.fedx.exception.FedXRuntimeException;
  */
 public class ControlledWorkerScheduler<T> implements Scheduler<T> {
 
-	protected static final Logger log = Logger.getLogger(ControlledWorkerScheduler.class);
+	protected static final Logger log = LoggerFactory.getLogger(ControlledWorkerScheduler.class);
 
 	
 	protected ExecutorService executor;

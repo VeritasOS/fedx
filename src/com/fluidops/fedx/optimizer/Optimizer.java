@@ -18,7 +18,6 @@ package com.fluidops.fedx.optimizer;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.Dataset;
 import org.eclipse.rdf4j.query.algebra.QueryRoot;
@@ -26,6 +25,8 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.evaluation.impl.ConstantOptimizer;
 import org.eclipse.rdf4j.query.algebra.evaluation.impl.DisjunctiveConstraintOptimizer;
 import org.eclipse.rdf4j.sail.SailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.FedX;
@@ -41,7 +42,7 @@ import com.fluidops.fedx.structures.QueryInfo;
 
 public class Optimizer {
 
-	public static Logger logger = Logger.getLogger(Optimizer.class);
+	public static Logger logger = LoggerFactory.getLogger(Optimizer.class);
 	
 	
 	public static TupleExpr optimize(TupleExpr parsed, Dataset dataset, BindingSet bindings, 

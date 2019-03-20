@@ -15,11 +15,12 @@
  */
 package com.fluidops.fedx.evaluation.concurrent;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.FedXService;
@@ -36,7 +37,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, QueryEvaluationException> implements ParallelExecutor<BindingSet> {
 	
-	public static Logger log = Logger.getLogger(ParallelServiceExecutor.class);
+	public static Logger log = LoggerFactory.getLogger(ParallelServiceExecutor.class);
 	
 	protected final FedXService service;
 	protected final FederationEvalStrategy strategy;

@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -35,6 +34,8 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.algebra.Var;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.ExclusiveStatement;
@@ -56,7 +57,7 @@ public class QueryStringUtil {
 	
 	/* TODO make operations more performant, i.e. use same instance of StringBuilder more permanently */
 
-	public static Logger log = Logger.getLogger(QueryStringUtil.class);
+	public static Logger log = LoggerFactory.getLogger(QueryStringUtil.class);
 	
 	/**
 	 * A dummy URI which is used as a replacement for {@link BNode}s in {@link #appendBNode(StringBuilder, BNode)}

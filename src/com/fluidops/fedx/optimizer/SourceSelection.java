@@ -25,13 +25,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.FederationManager;
@@ -64,7 +65,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class SourceSelection {
 
-	public static Logger log = Logger.getLogger(SourceSelection.class);
+	public static Logger log = LoggerFactory.getLogger(SourceSelection.class);
 	
 	protected final List<Endpoint> endpoints;
 	protected final Cache cache;

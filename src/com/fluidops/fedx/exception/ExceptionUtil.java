@@ -20,10 +20,11 @@ import java.net.SocketException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.structures.Endpoint;
@@ -36,7 +37,7 @@ import com.fluidops.fedx.structures.Endpoint;
  */
 public class ExceptionUtil {
 
-	protected static Logger log = Logger.getLogger(ExceptionUtil.class);
+	protected static Logger log = LoggerFactory.getLogger(ExceptionUtil.class);
 	
 	/**
 	 * Regex pattern to identify http error codes from the title of the returned document:
