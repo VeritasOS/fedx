@@ -45,7 +45,7 @@ import com.fluidops.fedx.structures.Endpoint;
  */
 public class EndpointManager {
 	
-	protected static Logger log = LoggerFactory.getLogger(EndpointManager.class);
+	protected static final Logger log = LoggerFactory.getLogger(EndpointManager.class);
 	
 	/*
 	 * TODO
@@ -76,7 +76,7 @@ public class EndpointManager {
 	 * 
 	 * @param endpoints
 	 */
-	public static void initialize(List<Endpoint> endpoints) {
+	public static synchronized void initialize(List<Endpoint> endpoints) {
 		if (instance!=null)
 			throw new FedXRuntimeException("Endpoint Manager already initialized.");
 		instance = new EndpointManager(endpoints);
@@ -271,7 +271,7 @@ public class EndpointManager {
 	/**
 	 * Shutdown the endpoint manager, called from {@link FederationManager#shutDown()}
 	 */
-	protected void shutDown() {
+	protected synchronized void shutDown() {
 		instance=null;
 	}
 }

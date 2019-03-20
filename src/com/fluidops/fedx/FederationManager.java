@@ -117,7 +117,7 @@ public class FederationManager {
 			throw new FedXRuntimeException("FederationManager already initialized.");
 		
 		log.info("Initializing federation manager ...");
-		log.info("FedX Version Information: " + Version.getVersionString());		
+		log.info("FedX Version Information: " + Version.getVersionInfo().getVersionString());
 
 		monitoring = MonitoringFactory.createMonitoring();
 		

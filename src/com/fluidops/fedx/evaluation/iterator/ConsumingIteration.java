@@ -56,7 +56,7 @@ public class ConsumingIteration implements CloseableIteration<BindingSet, QueryE
 	/**
 	 * The index of the next element that will be returned by a call to {@link #next()}.
 	 */
-	private volatile int currentIndex = 0;
+	private int currentIndex = 0;
 	
 	
 	public ConsumingIteration(CloseableIteration<BindingSet, QueryEvaluationException> iter) throws QueryEvaluationException {

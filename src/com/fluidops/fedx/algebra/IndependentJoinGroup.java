@@ -31,7 +31,7 @@ public class IndependentJoinGroup extends AbstractQueryModelNode implements Tupl
 	private static final long serialVersionUID = -12440690622448600L;
 
 	protected final List<StatementTupleExpr> members;
-	protected final QueryInfo queryInfo;
+	protected final transient QueryInfo queryInfo;
 		
 	public IndependentJoinGroup(List<StatementTupleExpr> members, QueryInfo queryInfo) {
 		super();

@@ -37,7 +37,7 @@ public class FedXService extends AbstractQueryModelNode implements TupleExpr, Bo
 	private static final long serialVersionUID = 7179501550561942879L;
 
 	protected Service expr;
-	protected QueryInfo queryInfo;
+	protected transient QueryInfo queryInfo;
 	protected boolean simple = true;		// consists of BGPs only
 	protected int nTriples = 0;
 

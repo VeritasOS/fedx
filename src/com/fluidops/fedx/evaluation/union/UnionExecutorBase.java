@@ -42,7 +42,7 @@ import com.fluidops.fedx.exception.ExceptionUtil;
  */
 public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEvaluationException> implements ParallelExecutor<T> {
 
-	public static Logger log = LoggerFactory.getLogger(UnionExecutorBase.class);
+	private static final Logger log = LoggerFactory.getLogger(UnionExecutorBase.class);
 	protected static final AtomicInteger NEXT_UNION_ID = new AtomicInteger(1);
 	
 	/* Constants */

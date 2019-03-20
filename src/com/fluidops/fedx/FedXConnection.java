@@ -75,7 +75,7 @@ import com.fluidops.fedx.write.WriteStrategy;
 public class FedXConnection extends AbstractSailConnection
 {
 	
-	public static Logger log = LoggerFactory.getLogger(FedXConnection.class);
+	private static final Logger log = LoggerFactory.getLogger(FedXConnection.class);
 	protected FedX federation;
 	
 	/**

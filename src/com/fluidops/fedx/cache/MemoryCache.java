@@ -50,7 +50,7 @@ import com.fluidops.fedx.structures.SubQuery;
  */
 public class MemoryCache implements Cache {
 
-	public static Logger log = LoggerFactory.getLogger(MemoryCache.class);
+	private static final Logger log = LoggerFactory.getLogger(MemoryCache.class);
 	
 	protected HashMap<SubQuery, CacheEntry> cache = new HashMap<SubQuery, CacheEntry>();
 	protected String cacheLocation;

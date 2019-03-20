@@ -37,7 +37,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, QueryEvaluationException> implements ParallelExecutor<BindingSet> {
 	
-	public static Logger log = LoggerFactory.getLogger(ParallelServiceExecutor.class);
+	protected static final Logger log = LoggerFactory.getLogger(ParallelServiceExecutor.class);
 	
 	protected final FedXService service;
 	protected final FederationEvalStrategy strategy;
@@ -65,7 +65,7 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 	public void run() {
 
 		ControlledWorkerScheduler<BindingSet> scheduler = FederationManager.getInstance().getUnionScheduler();
-		scheduler.schedule(new ParallelServiceTask());			
+		scheduler.schedule(new ParallelServiceTask());
 	}
 
 	@Override

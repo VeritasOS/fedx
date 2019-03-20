@@ -31,6 +31,8 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.evaluation.iterator.GraphToBindingSetConversionIteration;
@@ -42,6 +44,8 @@ import com.fluidops.fedx.util.QueryStringUtil;
 
 public abstract class TripleSourceBase implements TripleSource
 {
+	private static final Logger log = LoggerFactory.getLogger(TripleSourceBase.class);
+
 	protected final Monitoring monitoringService;
 	protected final Endpoint endpoint;
 
@@ -120,7 +124,10 @@ public abstract class TripleSourceBase implements TripleSource
 		// set includeInferred to false explicitly
 		try {
 			query.setIncludeInferred(false);
-		} catch (Exception e) { }
+		} catch (Exception e) {
+			log.debug("Failed to set include inferred: " + e.getMessage());
+			log.trace("Details:", e);
+		}
 	}
 	
 }

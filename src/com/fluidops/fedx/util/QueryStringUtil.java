@@ -57,7 +57,7 @@ public class QueryStringUtil {
 	
 	/* TODO make operations more performant, i.e. use same instance of StringBuilder more permanently */
 
-	public static Logger log = LoggerFactory.getLogger(QueryStringUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(QueryStringUtil.class);
 	
 	/**
 	 * A dummy URI which is used as a replacement for {@link BNode}s in {@link #appendBNode(StringBuilder, BNode)}

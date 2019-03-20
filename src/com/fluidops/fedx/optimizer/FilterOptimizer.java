@@ -55,7 +55,7 @@ import com.fluidops.fedx.exception.OptimizationException;
 public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationException> implements FedXOptimizer
 {
 
-	public static Logger log = LoggerFactory.getLogger(FilterOptimizer.class);
+	private static final Logger log = LoggerFactory.getLogger(FilterOptimizer.class);
 	
 	/* map containing the inserted values, i.e. filter values which could be
 	 * directly replaced into the query

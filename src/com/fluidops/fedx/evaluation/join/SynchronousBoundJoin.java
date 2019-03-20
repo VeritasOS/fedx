@@ -44,7 +44,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class SynchronousBoundJoin extends SynchronousJoin {
 
-	public static Logger log = LoggerFactory.getLogger(SynchronousBoundJoin.class);
+	private static final Logger log = LoggerFactory.getLogger(SynchronousBoundJoin.class);
 	
 	
 	public SynchronousBoundJoin(FederationEvalStrategy strategy,

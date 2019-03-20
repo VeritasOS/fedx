@@ -53,7 +53,7 @@ import com.fluidops.fedx.write.WriteStrategy;
  */
 public class FedX implements Sail {
 
-	public static Logger log = LoggerFactory.getLogger(FedX.class);
+	private static final Logger log = LoggerFactory.getLogger(FedX.class);
 	
 	protected final List<Endpoint> members = new ArrayList<Endpoint>();
 	protected boolean open = false;

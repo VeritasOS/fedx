@@ -60,7 +60,7 @@ import com.fluidops.fedx.structures.QueryType;
 public class QueryManager {
 
 	
-	public static Logger log = LoggerFactory.getLogger(QueryManager.class);
+	private static final Logger log = LoggerFactory.getLogger(QueryManager.class);
 	
 	
 	// singleton behavior: initialized in constructor of FederationManager
@@ -139,7 +139,7 @@ public class QueryManager {
 	 * Register a prefix declaration to be used during query evaluation. If a 
 	 * known prefix is used in a query, it is substituted in the parsing step.
 	 * 
-	 * If prefix is null, the corresponding entry is removed.
+	 * If namespace is null, the corresponding entry is removed.
 	 * 
 	 * @param prefix
 	 * 				a common prefix, e.g. rdf
@@ -147,7 +147,7 @@ public class QueryManager {
 	 * 				the corresponding namespace, e.g. "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	 */
 	public void addPrefixDeclaration(String prefix, String namespace) {
-		if (prefix==null) {
+		if (namespace==null) {
 			prefixDeclarations.remove(prefix);
 			return;
 		}

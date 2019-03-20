@@ -34,7 +34,7 @@ import com.fluidops.fedx.evaluation.FederationEvalStrategy;
  */
 public class FilteringIteration extends FilterIteration<BindingSet, QueryEvaluationException> {
 	
-	public static Logger log = LoggerFactory.getLogger(FilteringIteration.class);
+	private static final Logger log = LoggerFactory.getLogger(FilteringIteration.class);
 	
 	protected FilterValueExpr filterExpr;
 	protected FederationEvalStrategy strategy;

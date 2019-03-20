@@ -15,6 +15,8 @@
  */
 package com.fluidops.fedx.algebra;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * A factory that produces globally unique IDS which are used as node identifiers,
  * e.g. in {@link StatementSourcePattern}.
@@ -24,9 +26,9 @@ package com.fluidops.fedx.algebra;
 public class NodeFactory {
 
 	
-	private static int nextId = 1;
+	private static AtomicInteger nextId = new AtomicInteger(1);
 	
 	public static int getNextId() {
-		return nextId++;
+		return nextId.getAndIncrement();
 	}
 }

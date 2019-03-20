@@ -36,8 +36,8 @@ public class SingleSourceQuery extends AbstractQueryModelNode implements TupleEx
 	private static final long serialVersionUID = 5745172129911897271L;
 
 	private final TupleExpr parsedQuery;
-	private final Endpoint source;
-	private final QueryInfo queryInfo;
+	private final transient Endpoint source;
+	private final transient QueryInfo queryInfo;
 		
 	/**
 	 * @param parsedQuery

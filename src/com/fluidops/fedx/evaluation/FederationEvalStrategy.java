@@ -96,7 +96,7 @@ import com.fluidops.fedx.util.FedXUtil;
  */
 public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 	
-	public static Logger log = LoggerFactory.getLogger(FederationEvalStrategy.class);
+	private static final Logger log = LoggerFactory.getLogger(FederationEvalStrategy.class);
 	
 	
 	protected Executor executor;

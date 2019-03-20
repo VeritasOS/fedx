@@ -40,7 +40,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class QueryInfo {
 
-	protected static AtomicInteger NEXT_QUERY_ID = new AtomicInteger(1); // static id count
+	protected static final AtomicInteger NEXT_QUERY_ID = new AtomicInteger(1); // static id count
 	
 	private final int queryID;
 	private final String query;

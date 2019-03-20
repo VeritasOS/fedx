@@ -30,7 +30,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
  */
 public class ReadOnlyWriteStrategy implements WriteStrategy {
 
-	public static ReadOnlyWriteStrategy INSTANCE = new ReadOnlyWriteStrategy();
+	public static final ReadOnlyWriteStrategy INSTANCE = new ReadOnlyWriteStrategy();
 	
 	private ReadOnlyWriteStrategy() { }
 	

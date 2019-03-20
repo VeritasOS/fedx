@@ -123,7 +123,7 @@ public class CLI {
 		// activate logging to stdout if verbose is set
 		configureLogging();
 		
-		System.out.println("FedX Cli " + Version.getLongVersion());
+		System.out.println("FedX Cli " + Version.getVersionInfo().getLongVersion());
 		
 		// parse the arguments and construct config
 		parse(args);

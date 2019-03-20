@@ -32,49 +32,59 @@ import org.slf4j.LoggerFactory;
  */
 public class Version {
 
-	protected static Logger log = LoggerFactory.getLogger(Version.class);
+	protected static final Logger log = LoggerFactory.getLogger(Version.class);
 	
 	/* fields with default values (i.e. if not started from jar) */
-	protected static String project = "FedX";
-	protected static String date = "88.88.8888";
-	protected static String longVersion = "8.8 (build 8888)";
-	protected static String build = "8888";
-	protected static String version = "FedX 8.8";
-	protected static String contact = "info@fluidops.com";
-	protected static String companyName = "fluid Operations AG";
-	protected static String productName = "fluid FedX";
+	protected String project = "FedX";
+	protected String date = "88.88.8888";
+	protected String longVersion = "8.8 (build 8888)";
+	protected String build = "8888";
+	protected String version = "FedX 8.8";
+	protected String contact = "info@fluidops.com";
+	protected String companyName = "fluid Operations AG";
+	protected String productName = "fluid FedX";
 	
-    
-	static {
-		
-		try {
-			String jarPath = getJarPath();
-			
-			if (jarPath!=null) {
+
+	private static final Version instance = new Version();
+
+	/**
+	 * Return the version instance
+	 * 
+	 * @return
+	 */
+	public static Version getVersionInfo() {
+		return instance;
+	}
+
+	private Version() {
+		String jarPath = getJarPath();
+		if (jarPath != null) {
+			initializedVersionInfo(jarPath);
+		}
+	}
+
+	private void initializedVersionInfo(String jarPath) {
+
+		try (JarFile jar = new JarFile(jarPath)) {
 				
-				JarFile jar = new JarFile(jarPath);
-				
-				Manifest buildManifest = jar.getManifest();
-	    	    if(buildManifest!=null) {
-	    	    	project = buildManifest.getMainAttributes().getValue("project");
-	    	    	date = buildManifest.getMainAttributes().getValue("date");
-	    	        longVersion = buildManifest.getMainAttributes().getValue("version");
-	    	        build =  buildManifest.getMainAttributes().getValue("build");		// roughly svn version
-	    	        version = buildManifest.getMainAttributes().getValue("ProductVersion");
-	    	        contact =  buildManifest.getMainAttributes().getValue("ProductContact");  	       
-	    	        companyName = buildManifest.getMainAttributes().getValue("CompanyName");
-	    	        productName = buildManifest.getMainAttributes().getValue("ProductName");
-	    	    }
-	    	    
-	    	    jar.close();
+			Manifest buildManifest = jar.getManifest();
+			if (buildManifest != null) {
+				project = buildManifest.getMainAttributes().getValue("project");
+				date = buildManifest.getMainAttributes().getValue("date");
+				longVersion = buildManifest.getMainAttributes().getValue("version");
+				build = buildManifest.getMainAttributes().getValue("build"); // roughly svn version
+				version = buildManifest.getMainAttributes().getValue("ProductVersion");
+				contact = buildManifest.getMainAttributes().getValue("ProductContact");
+				companyName = buildManifest.getMainAttributes().getValue("CompanyName");
+				productName = buildManifest.getMainAttributes().getValue("ProductName");
 			}
 		} catch (Exception e) {
-			log.warn("Error while reading version from jar manifest.", e);
-			; 	// ignore
+			log.warn("Error while reading version from jar manifest: " + e.getMessage());
+			log.debug("Details:", e);
 		}
 	}
 	
-	protected static String getJarPath() {
+	protected String getJarPath() {
 
 		URL url = Version.class.getResource("/com/fluidops/fedx/util/Version.class");
 		String urlPath = url.getPath();
@@ -98,48 +108,48 @@ public class Version {
 	 * @return
 	 * 		the version string, i.e. 'FedX 1.0 alpha (build 1)'
 	 */
-	public static String getVersionString() {
+	public String getVersionString() {
 		return project + " " + longVersion;
 	}
 	
 	/**
 	 * print information to Stdout
 	 */
-	public static void printVersionInformation() {
+	public void printVersionInformation() {
 		System.out.println("Version Information: " + project + " " + longVersion);
 	}
 
 
 	
-	public static String getProject() {
+	public String getProject() {
 		return project;
 	}
 
-	public static String getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public static String getLongVersion() {
+	public String getLongVersion() {
 		return longVersion;
 	}
 
-	public static String getBuild() {
+	public String getBuild() {
 		return build;
 	}
 
-	public static String getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
-	public static String getContact() {
+	public String getContact() {
 		return contact;
 	}
 
-	public static String getCompanyName() {
+	public String getCompanyName() {
 		return companyName;
 	}
 
-	public static String getProductName() {
+	public String getProductName() {
 		return productName;
 	}
 	
@@ -149,7 +159,7 @@ public class Version {
      * @param args
      */
 	public static void main(String[] args) {
-	    printVersionInformation();
+		getVersionInfo().printVersionInformation();
 	}
 	
 }

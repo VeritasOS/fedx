@@ -45,9 +45,9 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEvaluationException> implements ParallelExecutor<T> {
 
-	public static Logger log = LoggerFactory.getLogger(JoinExecutorBase.class);
+	protected static final Logger log = LoggerFactory.getLogger(JoinExecutorBase.class);
 	
-	protected static AtomicInteger NEXT_JOIN_ID = new AtomicInteger(1);
+	protected static final AtomicInteger NEXT_JOIN_ID = new AtomicInteger(1);
 	
 	/* Constants */
 	protected final FederationEvalStrategy strategy;		// the evaluation strategy

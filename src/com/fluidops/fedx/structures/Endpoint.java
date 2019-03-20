@@ -47,7 +47,7 @@ import com.fluidops.fedx.exception.FedXRuntimeException;
  */
 public class Endpoint  {
 	
-	public static Logger log = LoggerFactory.getLogger(Endpoint.class);
+	private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
 	
 	/**
 	 * Classify endpoints into remote or local ones.

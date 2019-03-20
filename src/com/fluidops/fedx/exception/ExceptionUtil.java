@@ -37,7 +37,7 @@ import com.fluidops.fedx.structures.Endpoint;
  */
 public class ExceptionUtil {
 
-	protected static Logger log = LoggerFactory.getLogger(ExceptionUtil.class);
+	protected static final Logger log = LoggerFactory.getLogger(ExceptionUtil.class);
 	
 	/**
 	 * Regex pattern to identify http error codes from the title of the returned document:
@@ -49,7 +49,7 @@ public class ExceptionUtil {
 	 * }
 	 * </code>
 	 */
-	protected static Pattern httpErrorPattern = Pattern.compile(".*<title>(.*)</title>.*", Pattern.DOTALL);
+	protected static final Pattern httpErrorPattern = Pattern.compile(".*<title>(.*)</title>.*", Pattern.DOTALL);
 	
 	
 	/**

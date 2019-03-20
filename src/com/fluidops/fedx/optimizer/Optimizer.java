@@ -42,7 +42,7 @@ import com.fluidops.fedx.structures.QueryInfo;
 
 public class Optimizer {
 
-	public static Logger logger = LoggerFactory.getLogger(Optimizer.class);
+	private static final Logger logger = LoggerFactory.getLogger(Optimizer.class);
 	
 	
 	public static TupleExpr optimize(TupleExpr parsed, Dataset dataset, BindingSet bindings, 

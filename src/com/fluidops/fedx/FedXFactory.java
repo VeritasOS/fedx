@@ -42,7 +42,7 @@ import com.fluidops.fedx.util.EndpointFactory;
  */
 public class FedXFactory {
 
-	protected static Logger log = LoggerFactory.getLogger(FedXFactory.class);
+	protected static final Logger log = LoggerFactory.getLogger(FedXFactory.class);
 	
 	
 	

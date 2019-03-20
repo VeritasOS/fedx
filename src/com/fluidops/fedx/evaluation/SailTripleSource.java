@@ -59,7 +59,7 @@ import com.fluidops.fedx.util.QueryAlgebraUtil;
  */
 public class SailTripleSource extends TripleSourceBase implements TripleSource{
 
-	public static Logger log = LoggerFactory.getLogger(SailTripleSource.class);
+	private static final Logger log = LoggerFactory.getLogger(SailTripleSource.class);
 	
 
 	SailTripleSource(Endpoint endpoint) {

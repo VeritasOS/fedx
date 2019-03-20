@@ -41,7 +41,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class QueryLog
 {
-	public static Logger log = LoggerFactory.getLogger(QueryLog.class);
+	private static final Logger log = LoggerFactory.getLogger(QueryLog.class);
 	
 	private final AtomicBoolean active = new AtomicBoolean(false);
 	private Logger queryLog;

@@ -56,7 +56,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class JoinOrderOptimizer {
 
-	public static Logger log = LoggerFactory.getLogger(JoinOrderOptimizer.class);
+	private static final Logger log = LoggerFactory.getLogger(JoinOrderOptimizer.class);
 	
 	public static List<TupleExpr> optimizeJoinOrder(List<TupleExpr> joinArgs) {
 		

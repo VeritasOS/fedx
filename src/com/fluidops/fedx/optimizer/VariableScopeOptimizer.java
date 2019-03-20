@@ -50,7 +50,7 @@ import com.fluidops.fedx.structures.QueryInfo;
 public class VariableScopeOptimizer extends AbstractQueryModelVisitor<OptimizationException> implements FedXOptimizer
 {
 
-	public static Logger log = LoggerFactory.getLogger(VariableScopeOptimizer.class);
+	private static final Logger log = LoggerFactory.getLogger(VariableScopeOptimizer.class);
 	
 	protected final QueryInfo queryInfo;
 	protected final Set<String> globalVariables = new HashSet<String>();

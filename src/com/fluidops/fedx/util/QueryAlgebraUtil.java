@@ -45,7 +45,6 @@ import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.ExclusiveStatement;
 import com.fluidops.fedx.algebra.FilterValueExpr;
 import com.fluidops.fedx.algebra.IndependentJoinGroup;
-import com.fluidops.fedx.exception.FilterConversionException;
 import com.fluidops.fedx.exception.IllegalQueryException;
 
 /**
@@ -55,7 +54,7 @@ import com.fluidops.fedx.exception.IllegalQueryException;
  */
 public class QueryAlgebraUtil {
 
-	public static Logger log = LoggerFactory.getLogger(QueryAlgebraUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(QueryAlgebraUtil.class);
 	
 	/**
 	 * returns true iff there is at least one free variable, i.e. there is no binding

@@ -50,7 +50,7 @@ import com.fluidops.fedx.util.QueryStringUtil;
 public class StatementGroupOptimizer extends AbstractQueryModelVisitor<OptimizationException> implements FedXOptimizer
 {
 
-	public static Logger log = LoggerFactory.getLogger(StatementGroupOptimizer.class);
+	private static final Logger log = LoggerFactory.getLogger(StatementGroupOptimizer.class);
 	
 	protected final QueryInfo queryInfo;
 		

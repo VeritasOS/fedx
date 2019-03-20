@@ -54,7 +54,7 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class ControlledWorkerBoundJoin extends ControlledWorkerJoin {
 
-	public static Logger log = LoggerFactory.getLogger(ControlledWorkerBoundJoin.class);
+	private static final Logger log = LoggerFactory.getLogger(ControlledWorkerBoundJoin.class);
 	
 	public ControlledWorkerBoundJoin(ControlledWorkerScheduler<BindingSet> scheduler, FederationEvalStrategy strategy,
 			CloseableIteration<BindingSet, QueryEvaluationException> leftIter,
