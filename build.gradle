@@ -1,3 +1,7 @@
+plugins {
+	id "com.github.spotbugs" version "1.7.1"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
@@ -132,6 +136,27 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 	from sourceSets.main.java
 }
 
+spotbugs {
+	toolVersion = '3.1.12'
+	sourceSets = [sourceSets.main]
+	ignoreFailures = true
+	reportsDir = project.file("target/reports/spotbugs/")
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+	reports {
+		xml.enabled = false
+		html.enabled = true
+	}
+}
+	
+dependencies {
+	spotbugs 'com.github.spotbugs:spotbugs:3.1.12'
+	spotbugs 'com.github.spotbugs:spotbugs-annotations:3.1.12'
+	spotbugs 'org.slf4j:slf4j-simple:1.8.0-beta4'
+	
+	spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0'
+}
 
 javadoc {
 	
