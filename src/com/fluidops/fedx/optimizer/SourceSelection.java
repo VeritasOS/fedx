@@ -242,6 +242,7 @@ public class SourceSelection {
 				}
 			} catch (InterruptedException e) {
 				log.debug("Error during source selection. Thread got interrupted.");
+				errors.add(e);
 			}
 
 			finished = true;

@@ -50,7 +50,7 @@ public class Version {
 	/**
 	 * Return the version instance
 	 * 
-	 * @return
+	 * @return the {@link Version} instance
 	 */
 	public static Version getVersionInfo() {
 		return instance;

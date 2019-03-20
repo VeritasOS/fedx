@@ -15,6 +15,9 @@
  */
 package com.fluidops.fedx.evaluation.concurrent;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -47,6 +50,8 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 	protected boolean finished = false;
 	protected Exception error = null;
 	
+	private CountDownLatch latch = null;
+
 	/**
 	 * @param service
 	 * @param strategy
@@ -64,6 +69,7 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 	@Override
 	public void run() {
 
+		latch = new CountDownLatch(1);
 		ControlledWorkerScheduler<BindingSet> scheduler = FederationManager.getInstance().getUnionScheduler();
 		scheduler.schedule(new ParallelServiceTask());
 	}
@@ -71,21 +77,15 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 	@Override
 	public void addResult(CloseableIteration<BindingSet, QueryEvaluationException> res) {
 
-		synchronized (this) {
-			
-			rightIter = res;
-			this.notify();
-		}
-		
+		rightIter = res;
+		latch.countDown();
 	}
 
 	@Override
-	public void toss(Exception e)	{
+	public void toss(Exception e) {
 
-		synchronized (this) {
-			error = e;
-		}
-		
+		error = e;
+		latch.countDown();
 	}
 
 	@Override
@@ -114,21 +114,29 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 				throw (QueryEvaluationException)error;
 			throw new QueryEvaluationException(error);
 		}
-			
+
 		if (rightIter==null) {	
 			// block if not evaluated
-			synchronized (this) {
-				if (rightIter==null) {
-					try	{
-						// wait until the service expression is evaluated
-						this.wait();
-					}	catch (InterruptedException e)	{
-						log.debug("Interrupted exception while evaluating service.");
+			if (rightIter == null) {
+				try {
+					boolean completed = latch.await(30, TimeUnit.SECONDS); // TODO make configurable
+					if (!completed) {
+						throw new QueryEvaluationException("Timeout during service evaluation");
 					}
+				} catch (InterruptedException e) {
+					log.debug("Error while evaluating service expression. Thread got interrupted.");
+					error = e;
 				}
 			}
 		}
 		
+		// check again for error
+		if (error != null) {
+			if (error instanceof QueryEvaluationException)
+				throw (QueryEvaluationException) error;
+			throw new QueryEvaluationException(error);
+		}
+
 		if (rightIter.hasNext())
 			return rightIter.next();
 		
