@@ -427,61 +427,62 @@ public class CLI {
 		int count = 0;
 		long start = System.currentTimeMillis();
 		
-		TupleQueryResult res = query.evaluate();
-				
-		if (outputFormat == OutputFormat.STDOUT) {
-			while (res.hasNext()) {
-				System.out.println(res.next());
-				count++;
-			}
-		}
-		
-		else if (outputFormat == OutputFormat.JSON) {
+		try (TupleQueryResult res = query.evaluate()) {
 			
-			File out = new File("results/"+ outFolder + "/q_" + queryId + ".json");
-			out.getParentFile().mkdirs();
-			
-			System.out.println("Results are being written to " + out.getPath());
-			
-			try {
-				SPARQLResultsJSONWriter w = new SPARQLResultsJSONWriter(new FileOutputStream(out));
-				w.startQueryResult(res.getBindingNames());
-				
+			if (outputFormat == OutputFormat.STDOUT) {
 				while (res.hasNext()) {
-					w.handleSolution(res.next());
+					System.out.println(res.next());
 					count++;
 				}
-				
-				w.endQueryResult();
-			} catch (IOException e) {
-				error("IO Error while writing results of query " + queryId + " to JSON file: " + e.getMessage(), false);
-			} catch (TupleQueryResultHandlerException e) {
-				error("Tuple result error while writing results of query " + queryId + " to JSON file: " + e.getMessage(), false);
 			}
-		}
-		
-		else if (outputFormat == OutputFormat.XML) {
 			
-			File out = new File("results/" + outFolder + "/q_" + queryId + ".xml");
-			out.getParentFile().mkdirs();
-			
-			System.out.println("Results are being written to " + out.getPath());
-			
-			try {
-				SPARQLResultsXMLWriter w = new SPARQLResultsXMLWriter(new FileOutputStream(out));
-				w.startQueryResult(res.getBindingNames());
+			else if (outputFormat == OutputFormat.JSON) {
 				
-				while (res.hasNext()) {
-					w.handleSolution(res.next());
-					count++;
+				File out = new File("results/"+ outFolder + "/q_" + queryId + ".json");
+				out.getParentFile().mkdirs();
+				
+				System.out.println("Results are being written to " + out.getPath());
+				
+				try (FileOutputStream fout = new FileOutputStream(out)) {
+					SPARQLResultsJSONWriter w = new SPARQLResultsJSONWriter(fout);
+					w.startQueryResult(res.getBindingNames());
+					
+					while (res.hasNext()) {
+						w.handleSolution(res.next());
+						count++;
+					}
+					
+					w.endQueryResult();
+				} catch (IOException e) {
+					error("IO Error while writing results of query " + queryId + " to JSON file: " + e.getMessage(), false);
+				} catch (TupleQueryResultHandlerException e) {
+					error("Tuple result error while writing results of query " + queryId + " to JSON file: " + e.getMessage(), false);
 				}
+			}
+			
+			else if (outputFormat == OutputFormat.XML) {
 				
-				w.endQueryResult();
+				File out = new File("results/" + outFolder + "/q_" + queryId + ".xml");
+				out.getParentFile().mkdirs();
 				
-			} catch (IOException e) {
-				error("IO Error while writing results of query " + queryId + " to XML file: " + e.getMessage(), false);
-			} catch (TupleQueryResultHandlerException e) {
-				error("Tuple result error while writing results of query " + queryId + " to JSON file: " + e.getMessage(), false);
+				System.out.println("Results are being written to " + out.getPath());
+				
+				try (FileOutputStream fout = new FileOutputStream(out)) {
+					SPARQLResultsXMLWriter w = new SPARQLResultsXMLWriter(fout);
+					w.startQueryResult(res.getBindingNames());
+					
+					while (res.hasNext()) {
+						w.handleSolution(res.next());
+						count++;
+					}
+					
+					w.endQueryResult();
+					
+				} catch (IOException e) {
+					error("IO Error while writing results of query " + queryId + " to XML file: " + e.getMessage(), false);
+				} catch (TupleQueryResultHandlerException e) {
+					error("Tuple result error while writing results of query " + queryId + " to JSON file: " + e.getMessage(), false);
+				}
 			}
 		}
 		
