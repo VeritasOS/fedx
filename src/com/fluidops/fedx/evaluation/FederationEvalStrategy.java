@@ -16,6 +16,7 @@
 package com.fluidops.fedx.evaluation;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
@@ -269,7 +270,9 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		ControlledWorkerScheduler<BindingSet> joinScheduler = FederationManager.getInstance().getJoinScheduler();
 		
 		for (int i = 1, n = join.getNumberOfArguments(); i < n; i++) {
-			result = executeJoin(joinScheduler, result, join.getArg(i), bindings, join.getQueryInfo());
+
+			result = executeJoin(joinScheduler, result, join.getArg(i), join.getJoinVariables(i), bindings,
+					join.getQueryInfo());
 		}
 		return result;
 	}
@@ -305,11 +308,15 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 	 * @param joinScheduler
 	 * @param leftIter
 	 * @param rightArg
+	 * @param joinVariables
 	 * @param bindings
 	 * @return the result
 	 * @throws QueryEvaluationException
 	 */
-	protected abstract CloseableIteration<BindingSet, QueryEvaluationException> executeJoin(ControlledWorkerScheduler<BindingSet> joinScheduler, CloseableIteration<BindingSet, QueryEvaluationException> leftIter, TupleExpr rightArg, BindingSet bindings, QueryInfo queryInfo) throws QueryEvaluationException;
+	protected abstract CloseableIteration<BindingSet, QueryEvaluationException> executeJoin(
+			ControlledWorkerScheduler<BindingSet> joinScheduler,
+			CloseableIteration<BindingSet, QueryEvaluationException> leftIter, TupleExpr rightArg,
+			Set<String> joinVariables, BindingSet bindings, QueryInfo queryInfo) throws QueryEvaluationException;
 	
 	
 	

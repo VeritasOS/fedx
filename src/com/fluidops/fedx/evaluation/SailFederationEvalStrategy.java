@@ -16,6 +16,7 @@
 package com.fluidops.fedx.evaluation;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
@@ -162,10 +163,11 @@ public class SailFederationEvalStrategy extends FederationEvalStrategy {
 	public CloseableIteration<BindingSet, QueryEvaluationException> executeJoin(
 			ControlledWorkerScheduler<BindingSet> joinScheduler,
 			CloseableIteration<BindingSet, QueryEvaluationException> leftIter,
-			TupleExpr rightArg, BindingSet bindings, QueryInfo queryInfo)
+			TupleExpr rightArg, Set<String> joinVars, BindingSet bindings, QueryInfo queryInfo)
 			throws QueryEvaluationException {
 		
 		ControlledWorkerJoin join = new ControlledWorkerJoin(joinScheduler, this, leftIter, rightArg, bindings, queryInfo);
+		join.setJoinVars(joinVars);
 		executor.execute(join);
 		return join;
 	}

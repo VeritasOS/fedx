@@ -15,11 +15,14 @@
  */
 package com.fluidops.fedx.algebra;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
+import com.fluidops.fedx.optimizer.JoinOrderOptimizer;
 import com.fluidops.fedx.structures.QueryInfo;
 
 /**
@@ -53,6 +56,19 @@ public class NJoin extends NTuple implements TupleExpr {
 	@Override
 	public NJoin clone() {
 		return (NJoin)super.clone();
-	}	
+	}
 	
+	/**
+	 * Returns the commons variables of the join with the given index.
+	 * 
+	 * @param joinIndex the join index, starting with 1
+	 * @return the set of join variables
+	 */
+	public Set<String> getJoinVariables(int joinIndex) {
+
+		Set<String> joinVars = new HashSet<>();
+		joinVars.addAll(JoinOrderOptimizer.getFreeVars(getArg(joinIndex - 1)));
+		joinVars.retainAll(JoinOrderOptimizer.getFreeVars(getArg(joinIndex)));
+		return joinVars;
+	}
 }

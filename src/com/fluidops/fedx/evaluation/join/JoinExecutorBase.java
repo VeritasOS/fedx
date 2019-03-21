@@ -15,6 +15,7 @@
  */
 package com.fluidops.fedx.evaluation.join;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
@@ -57,6 +58,7 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	protected final QueryInfo queryInfo;
 	
 	/* Variables */
+	protected Set<String> joinVars; // might be unknown (i.e. null for some implementations)
 	protected volatile Thread evaluationThread;
 	protected CloseableIteration<T, QueryEvaluationException> leftIter;
 	protected CloseableIteration<T, QueryEvaluationException> rightIter;
@@ -199,5 +201,22 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	@Override
 	public QueryInfo getQueryInfo() {
 		return queryInfo;
+	}
+
+	/**
+	 * @return the join variables, might be <code>null</code> if unknown in the
+	 *         concrete implementation
+	 */
+	public Set<String> getJoinVars() {
+		return joinVars;
+	}
+
+	/**
+	 * Set the join variables
+	 * 
+	 * @param joinVars the join variables
+	 */
+	public void setJoinVars(Set<String> joinVars) {
+		this.joinVars = joinVars;
 	}
 }

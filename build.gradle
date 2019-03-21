@@ -6,7 +6,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
-version = "${System.env.BUILD_VERSION ?: '5.2.0-SNAPSHOT'}"
+version = "${System.env.BUILD_VERSION ?: '6.0.0-SNAPSHOT'}"
 project.ext.buildDate = "${System.env.BUILD_ID ?: new Date().format('yyyy-MM-dd HH:mm:ss')}"
 project.ext.buildNumber = "${System.env.BUILD_NUMBER ?: '8'}"
 project.ext.buildVersion = "${version}.${buildNumber}"

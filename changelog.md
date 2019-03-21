@@ -1,9 +1,11 @@
 Changelog
 
-FedX 5.2.0 SNAPSHOT
+FedX 6.0.0 SNAPSHOT
  * basic support for values clause
  * support for dynamic federations
    - use FedxDataset to define the endpoints for a given query execution
+ * provide hash join operator as an alternative for bound joins
+   - note: not yet active
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
  * improvements to shutdown behavior
