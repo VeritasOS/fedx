@@ -109,6 +109,9 @@ public class ServiceOptimizer extends AbstractQueryModelVisitor<OptimizationExce
 			}
 			
 			// check if we have a simple subquery now (i.e. only a simple BGP)
+			if (service.getArg() instanceof ExclusiveStatement) {
+				return service.getArg();
+			}
 			if (service.getArg() instanceof NJoin) {
 				NJoin j = (NJoin)service.getArg();
 				boolean simple = true;
@@ -121,8 +124,8 @@ public class ServiceOptimizer extends AbstractQueryModelVisitor<OptimizationExce
 				
 				if (simple) {
 					return new ExclusiveGroup(stmts, source, queryInfo);
-				}					
-			}		
+				}
+			}
 			
 		}
 		

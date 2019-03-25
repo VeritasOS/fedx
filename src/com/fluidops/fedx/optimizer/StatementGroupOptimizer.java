@@ -110,6 +110,7 @@ public class StatementGroupOptimizer extends AbstractQueryModelVisitor<Optimizat
 				ExclusiveStatement current = (ExclusiveStatement)t;
 				
 				List<ExclusiveStatement> l = null;
+				List<ExclusiveGroup> toRemoveFromArgs = null; // contains exclusive groups have to be removed
 				for (TupleExpr te : argsCopy) {		
 					/* in the remaining join args find exclusive statements
 					 * having the same source, and add to a list which is
@@ -123,18 +124,75 @@ public class StatementGroupOptimizer extends AbstractQueryModelVisitor<Optimizat
 								l.add(current);
 							}
 							l.add(check);
-						}							
-					}						
+						}
+					}
+					/*
+					 * also scan for exclusive groups having the same owner
+					 */
+					else if (te instanceof ExclusiveGroup) {
+						ExclusiveGroup check = (ExclusiveGroup) te;
+						if (check.getOwner().equals(current.getOwner())) {
+							if (l == null) {
+								l = new ArrayList<ExclusiveStatement>();
+								l.add(current);
+							}
+							if (toRemoveFromArgs == null) {
+								toRemoveFromArgs = new ArrayList<>();
+							}
+							toRemoveFromArgs.add(check);
+							l.addAll(check.getStatements());
+						}
+					}
 				}
 				
 				
 				// check if we can construct a group, otherwise add directly
 				if (l!=null) {
 					argsCopy.removeAll(l);
+					if (toRemoveFromArgs != null) {
+						argsCopy.removeAll(toRemoveFromArgs);
+					}
 					newArgs.add( new ExclusiveGroup(l, current.getOwner(), queryInfo ));
 				} else {
 					newArgs.add( current );
 				}
+			}
+			
+			/*
+			 * for (existing) exclusive groups (e.g. created by SERVICE clauses)
+			 * add potential ExclusiveStatements with the same source to the group
+			 */
+			else if (t instanceof ExclusiveGroup) {
+				
+				ExclusiveGroup current = (ExclusiveGroup) t;
+				
+				List<ExclusiveStatement> l = null;
+				for (TupleExpr te : argsCopy) {
+					/* in the remaining join args find exclusive statements
+					 * having the same source, and add to a list which is
+					 * later used to form an exclusive group
+					 */
+					if (te instanceof ExclusiveStatement) {
+						ExclusiveStatement check = (ExclusiveStatement)te;
+						if (check.getOwner().equals(current.getOwner())) {
+							if (l==null) {
+								l = new ArrayList<>();
+								l.addAll(current.getStatements());
+							}
+							l.add(check);
+						}
+					}
+				}
+
+				// check if we have a modification, otherwise add existing node
+				if (l != null) {
+					argsCopy.removeAll(l);
+					argsCopy.remove(current);
+					newArgs.add(new ExclusiveGroup(l, current.getOwner(), queryInfo));
+				} else {
+					newArgs.add(current);
+				}
+
 			}
 			
 			/*

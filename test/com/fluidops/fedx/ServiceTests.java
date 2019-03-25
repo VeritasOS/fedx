@@ -39,11 +39,26 @@ public class ServiceTests extends SPARQLBaseTest
 		/* test select query retrieving all persons from endpoint 1 (SERVICE) + exclusive statement => group */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
 
-		// TODO optimize query plan (=> group exclusive statements)
 		evaluateQueryPlan("/tests/service/query02.rq", "/tests/service/query02.qp");
 		execute("/tests/service/query02.rq", "/tests/service/query02.srx", false);
 	}
 	
+	@Test
+	public void test2_differentOrder() throws Exception {
+
+		assumeSparqlEndpoint();
+
+		/*
+		 * test select query retrieving all persons from endpoint 1 (SERVICE) +
+		 * exclusive statement => group In contrast to test2: order is different
+		 */
+		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl",
+				"/tests/data/data4.ttl"));
+
+		evaluateQueryPlan("/tests/service/query02a.rq", "/tests/service/query02a.qp");
+		execute("/tests/service/query02a.rq", "/tests/service/query02.srx", false);
+	}
+
 	@Test
 	public void test3() throws Exception {
 		
@@ -108,5 +123,19 @@ public class ServiceTests extends SPARQLBaseTest
 		execute("/tests/service/query07.rq", "/tests/service/query07.srx", false);			
 	}
 	
-	
+	@Test
+	public void test8() throws Exception {
+
+		assumeSparqlEndpoint();
+
+		/*
+		 * test select query retrieving all persons from endpoint 1 (SERVICE) +
+		 * exclusive statement => group
+		 */
+		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl",
+				"/tests/data/data4.ttl"));
+
+		evaluateQueryPlan("/tests/service/query08.rq", "/tests/service/query08.qp");
+		execute("/tests/service/query08.rq", "/tests/service/query08.srx", false);
+	}
 }
