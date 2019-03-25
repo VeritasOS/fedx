@@ -256,6 +256,11 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 		Assumptions.assumeTrue(server instanceof NativeStoreServer, "Test can be executed with native store federation only.");
 	}
 
+	protected void assumeSparqlEndpoint() {
+		Assumptions.assumeTrue(repositoryType == REPOSITORY_TYPE.SPARQLREPOSITORY,
+				"Test can be executed for SPARQL Repository only.");
+	}
+
 	/**
 	 * Return the {@link RepositorySettings} for configuring the repository
 	 * 

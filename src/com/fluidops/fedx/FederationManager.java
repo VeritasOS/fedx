@@ -449,12 +449,11 @@ public class FederationManager {
 			log.warn("Failed to shutdown union scheduler: " + e.getMessage());
 			log.debug("Details: ", e);
 		}
+		DelegateFederatedServiceResolver.shutdown(); // shutdown any federated service resolver
 		federation.shutDownInternal();
-
 		cache.persist();
 		Config.reset();
 		EndpointManager.getEndpointManager().shutDown();
-		DelegateFederatedServiceResolver.shutdown();
 		instance = null;
 		monitoring = null;
 	}

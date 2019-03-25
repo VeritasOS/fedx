@@ -12,11 +12,13 @@ public class ServiceTests extends SPARQLBaseTest
 	@Test
 	public void test1() throws Exception {
 		
-		ignoreForNativeStore();
+		assumeSparqlEndpoint();
 		
 		/* test select query retrieving all persons from endpoint 1 (SERVICE)*/
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
-		execute("/tests/service/query01.rq", "/tests/service/query01.srx", false);			
+
+		evaluateQueryPlan("/tests/service/query01.rq", "/tests/service/query01.qp");
+		execute("/tests/service/query01.rq", "/tests/service/query01.srx", false);
 	}
 	
 	@Test
@@ -24,23 +26,28 @@ public class ServiceTests extends SPARQLBaseTest
 		
 		/* test select query retrieving all persons from endpoint 1 (SERVICE) by name*/
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
-		execute("/tests/service/query01a.rq", "/tests/service/query01.srx", false);		
+
+		evaluateQueryPlan("/tests/service/query01a.rq", "/tests/service/query01.qp");
+		execute("/tests/service/query01a.rq", "/tests/service/query01.srx", false);
 	}	
 
 	@Test
 	public void test2() throws Exception {
 		
-		ignoreForNativeStore();
+		assumeSparqlEndpoint();
 		
 		/* test select query retrieving all persons from endpoint 1 (SERVICE) + exclusive statement => group */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
-		execute("/tests/service/query02.rq", "/tests/service/query02.srx", false);			
+
+		// TODO optimize query plan (=> group exclusive statements)
+		evaluateQueryPlan("/tests/service/query02.rq", "/tests/service/query02.qp");
+		execute("/tests/service/query02.rq", "/tests/service/query02.srx", false);
 	}
 	
 	@Test
 	public void test3() throws Exception {
 		
-		ignoreForNativeStore();
+		assumeSparqlEndpoint();
 		
 		/* test select query retrieving all persons from endpoint 1 (SERVICE), endpoint not part of federation => evaluate using SESAME*/
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
@@ -53,11 +60,13 @@ public class ServiceTests extends SPARQLBaseTest
 	public void test4() throws Exception {
 		
 		// evaluates by sparql endpoint URL, cannot be done with native store
-		ignoreForNativeStore();
+		assumeSparqlEndpoint();
 		
 		/* two service which form exclusive groups */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
-		execute("/tests/service/query04.rq", "/tests/service/query04.srx", false);			
+
+		evaluateQueryPlan("/tests/service/query04.rq", "/tests/service/query04.qp");
+		execute("/tests/service/query04.rq", "/tests/service/query04.srx", false);
 	}
 	
 	@Test
@@ -65,13 +74,15 @@ public class ServiceTests extends SPARQLBaseTest
 		
 		/* two service which form exclusive groups (resolving by name)*/
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
+
+		evaluateQueryPlan("/tests/service/query04a.rq", "/tests/service/query04.qp");
 		execute("/tests/service/query04a.rq", "/tests/service/query04a.srx", false);			
 	}
 	
 	@Test
 	public void test5() throws Exception {
 		
-		ignoreForNativeStore();
+		assumeSparqlEndpoint();
 		
 		/* two services, one becomes exclusive group, the other is evaluated as service (filter) */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
@@ -83,16 +94,14 @@ public class ServiceTests extends SPARQLBaseTest
 		
 		/* two services, one becomes exclusive group, the other is evaluated as service (filter), uses name of federation member in SERVICE */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
-		execute("/tests/service/query06.rq", "/tests/service/query06.srx", false);			
+		execute("/tests/service/query06.rq", "/tests/service/query06.srx", false);
 	}
 	
 	@Test
 	public void test7() throws Exception {
 		
 		// evaluates by sparql endpoint URL, cannot be done with native store
-		ignoreForNativeStore();
-		
-		fedxRule.enableDebug();
+		assumeSparqlEndpoint();
 		
 		/* two services, both evaluated as SERVICE (FILTER), uses name of federation member in SERVICE */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl", "/tests/data/data4.ttl"));
