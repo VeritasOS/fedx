@@ -9,6 +9,9 @@ FedX 6.0.0 SNAPSHOT
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
  * improvements to shutdown behavior
+ * refinement of query timeout handling
+   - properly handle globally configured max execution time
+   - support setting execution time per query
  * revising of logging infrastructure
    - use SLF4J as logging API
    - make logging backend optional (adapters via SLF4j)

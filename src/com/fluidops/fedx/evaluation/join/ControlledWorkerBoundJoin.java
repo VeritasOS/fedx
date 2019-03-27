@@ -139,13 +139,7 @@ public class ControlledWorkerBoundJoin extends ControlledWorkerJoin {
 		
 		log.debug("JoinStats: left iter of join #" + this.joinId + " had " + totalBindings + " results.");
 				
-		// wait until all tasks are executed
-		int maxTimeoutSeconds = Config.getConfig().getEnforceMaxQueryTime();
-		if (maxTimeoutSeconds <= 0)
-		{
-			maxTimeoutSeconds = 100;
-		}
-		phaser.awaitAdvanceInterruptibly(phaser.arrive(), maxTimeoutSeconds, TimeUnit.SECONDS);
+		phaser.awaitAdvanceInterruptibly(phaser.arrive(), queryInfo.getMaxRemainingTimeMS(), TimeUnit.MILLISECONDS);
 	}
 
 	/**

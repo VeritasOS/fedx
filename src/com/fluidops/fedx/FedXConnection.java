@@ -29,6 +29,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.Dataset;
+import org.eclipse.rdf4j.query.Operation;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
@@ -107,7 +108,8 @@ public class FedXConnection extends AbstractSailConnection
 				String queryString = getOriginalQueryString(bindings);
 				if (queryString==null)
 					logger.warn("Query string is null. Please check your FedX setup.");
-				QueryInfo queryInfo = new QueryInfo(queryString, getOriginalQueryType(bindings));
+				QueryInfo queryInfo = new QueryInfo(queryString, getOriginalQueryType(bindings),
+						getOriginalMaxExecutionTime(bindings));
 				FederationManager.getMonitoringService().monitorQuery(queryInfo);
 				query = Optimizer.optimize(query, dataset, bindings, strategy, queryInfo);
 			}  catch (Exception e) {
@@ -127,6 +129,7 @@ public class FedXConnection extends AbstractSailConnection
 		}
 		
 		try {
+			// TODO make sure to apply any external bindings
 			return strategy.evaluate(query, EmptyBindingSet.getInstance());
 		} catch (QueryEvaluationException e) {
 			throw new SailException(e);
@@ -175,7 +178,8 @@ public class FedXConnection extends AbstractSailConnection
 	@Override
 	protected CloseableIteration<? extends Resource, SailException> getContextIDsInternal() throws SailException {
 		
-		final WorkerUnionBase<Resource> union = new SynchronousWorkerUnion<Resource>(new QueryInfo("getContextIDsInternal", QueryType.UNKNOWN));	
+		final WorkerUnionBase<Resource> union = new SynchronousWorkerUnion<Resource>(
+				new QueryInfo("getContextIDsInternal", QueryType.UNKNOWN, 0));
 		
 		for (final Endpoint e : federation.getMembers()) {
 			union.addTask( new ParallelTask<Resource>() {
@@ -345,6 +349,22 @@ public class FedXConnection extends AbstractSailConnection
 		if (q!=null)
 			return QueryType.valueOf(q.stringValue());
 		return null;
+	}
+
+	/**
+	 * Return the original explicit {@link Operation#getMaxExecutionTime()} in
+	 * seconds, 0 if {@link Config#getEnforceMaxQueryTime()} should be applied.
+	 * 
+	 * @param b
+	 * @return
+	 */
+	private static int getOriginalMaxExecutionTime(BindingSet b) {
+		if (b == null)
+			return 0;
+		Value q = b.getValue(FedXSailRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME);
+		if (q != null)
+			return Integer.parseInt(q.stringValue());
+		return 0;
 	}
 
 	

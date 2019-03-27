@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,9 +119,9 @@ public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, Quer
 		if (rightIter==null) {	
 			// block if not evaluated
 			try {
-				boolean completed = latch.await(30, TimeUnit.SECONDS); // TODO make configurable
+				boolean completed = latch.await(getQueryInfo().getMaxRemainingTimeMS(), TimeUnit.MILLISECONDS);
 				if (!completed) {
-					throw new QueryEvaluationException("Timeout during service evaluation");
+					throw new QueryInterruptedException("Timeout during service evaluation");
 				}
 			} catch (InterruptedException e) {
 				log.debug("Error while evaluating service expression. Thread got interrupted.");

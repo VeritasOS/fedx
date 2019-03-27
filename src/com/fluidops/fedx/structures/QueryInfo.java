@@ -23,7 +23,10 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.Config;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
 import com.fluidops.fedx.util.QueryStringUtil;
 
@@ -40,22 +43,41 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class QueryInfo {
 
+	private static final Logger log = LoggerFactory.getLogger(QueryInfo.class);
+
 	protected static final AtomicInteger NEXT_QUERY_ID = new AtomicInteger(1); // static id count
 	
 	private final int queryID;
 	private final String query;
 	private final QueryType queryType;
+	private final long maxExecutionTimeMs;
+	private final long start;
 	
 	protected boolean aborted = false;
 
 	protected Set<ParallelTask<?>> scheduledSubtasks = ConcurrentHashMap.newKeySet();
 
 	public QueryInfo(String query, QueryType queryType) {
+		this(query, queryType, 0);
+	}
+
+	/**
+	 * 
+	 * @param query
+	 * @param queryType
+	 * @param maxExecutionTime the maximum explicit query time in seconds, if 0 use
+	 *                         {@link Config#getEnforceMaxQueryTime()}
+	 */
+	public QueryInfo(String query, QueryType queryType, int maxExecutionTime) {
 		super();
 		this.queryID = NEXT_QUERY_ID.getAndIncrement();
 
 		this.query = query;
 		this.queryType = queryType;
+
+		int _maxExecutionTime = maxExecutionTime <= 0 ? Config.getConfig().getEnforceMaxQueryTime() : maxExecutionTime;
+		this.maxExecutionTimeMs = _maxExecutionTime * 1000;
+		this.start = System.currentTimeMillis();
 	}
 
 	public QueryInfo(Resource subj, IRI pred, Value obj)
@@ -76,12 +98,30 @@ public class QueryInfo {
 	}
 
 	/**
+	 * 
+	 * @return the maximum remaining time in ms until the query runs into a timeout. If negative, timeout has been reached
+	 */
+	public long getMaxRemainingTimeMS() {
+		if (maxExecutionTimeMs <= 0) {
+			return Long.MAX_VALUE;
+		}
+		// compute max remaining time
+		// Note: return 1ms as a timeout to properly get this handled in executors
+		long runningTime = System.currentTimeMillis() - start;
+		long maxTime = maxExecutionTimeMs - runningTime;
+		if (log.isTraceEnabled()) {
+			log.trace("Applying max remaining time: " + maxTime);
+		}
+		return maxTime;
+	}
+
+	/**
 	 * Register a new scheduled task for this query.
 	 * 
 	 * @param task
 	 * @throws QueryEvaluationException if the query has been aborted
 	 */
-	public void registerScheduledTask(ParallelTask<?> task) throws QueryEvaluationException {
+	public synchronized void registerScheduledTask(ParallelTask<?> task) throws QueryEvaluationException {
 		if (aborted) {
 			throw new QueryEvaluationException("Query is aborted, cannot accept new tasks");
 		}
@@ -93,7 +133,7 @@ public class QueryInfo {
 	 * this point in time.
 	 * 
 	 */
-	public void abort() {
+	public synchronized void abort() {
 		if (aborted) {
 			return;
 		}

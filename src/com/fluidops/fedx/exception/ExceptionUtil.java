@@ -17,10 +17,12 @@ package com.fluidops.fedx.exception;
 
 import java.lang.reflect.Constructor;
 import java.net.SocketException;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -213,7 +215,9 @@ public class ExceptionUtil {
 	 */
 	public static Exception toException(Throwable t) {
 		Exception e;
-		if (t instanceof Exception) {
+		if (t instanceof TimeoutException) {
+			e = new QueryInterruptedException("Query evaluation has run into a timeout.", t);
+		} else if (t instanceof Exception) {
 			e = (Exception) t;
 		} else {
 			e = new Exception("" + t.getMessage() + ". Original type: " + t.getClass());

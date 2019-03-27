@@ -112,6 +112,17 @@ prefixDeclarations = examples/prefixDeclarations.prop
 	</tr>		
 </table>
 
+
+<h3>Query timeouts</h3>
+
+<p>FedX supports to define the maximum execution time for a query. This can be set on query level (Query#setMaxExecutionTime) 
+or globally using the FedX config setting <i>enforceMaxQueryTime</i>.</p>
+
+<p>Note that the query engine attempts to abort any running evaluation of a subquery when the maximum execution time has reached.</p>
+
+<p>If a query timeout occurs, a <i>QueryInterruptedException</i> is thrown.</p>
+
+
 </div>
 </body>
 </html>

@@ -19,6 +19,14 @@ public class ConfigurableSailRepository extends SailRepository implements Reposi
 	int failAfter = -1; // fail after x operations, -1 means inactive
 	boolean writable = true;
 	
+	/**
+	 * A runnable that can be used to simulate latency
+	 */
+	Runnable latencySimulator = null;
+
+	/**
+	 * Counter for operations, only active if {@link #failAfter} is set
+	 */
 	AtomicInteger operationsCount = new AtomicInteger(0);
 
 	public ConfigurableSailRepository(Sail sail, boolean writable) {
@@ -57,5 +65,10 @@ public class ConfigurableSailRepository extends SailRepository implements Reposi
 		} catch (SailException e) {
 			throw new RuntimeException(e);
 		}
-	}		
+	}
+
+	@Override
+	public void setLatencySimulator(Runnable runnable) {
+		this.latencySimulator = runnable;
+	}
 }

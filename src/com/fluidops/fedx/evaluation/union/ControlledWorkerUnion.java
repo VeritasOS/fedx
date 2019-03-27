@@ -18,7 +18,6 @@ package com.fluidops.fedx.evaluation.union;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
-import com.fluidops.fedx.Config;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
 import com.fluidops.fedx.structures.QueryInfo;
 
@@ -54,12 +53,7 @@ public class ControlledWorkerUnion<T> extends WorkerUnionBase<T> {
 		scheduler.scheduleAll(tasks, this);
 		
 		// wait until all tasks are executed
-		int maxTimeoutSeconds = Config.getConfig().getEnforceMaxQueryTime();
-		if (maxTimeoutSeconds <= 0)
-		{
-			maxTimeoutSeconds = 100;
-		}
-		phaser.awaitAdvanceInterruptibly(phaser.arrive(), maxTimeoutSeconds, TimeUnit.SECONDS); // TODO configurable
+		phaser.awaitAdvanceInterruptibly(phaser.arrive(), queryInfo.getMaxRemainingTimeMS(), TimeUnit.MILLISECONDS);
 	}
 
 	@Override

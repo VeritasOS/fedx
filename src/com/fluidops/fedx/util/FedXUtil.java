@@ -19,6 +19,9 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.repository.sail.SailQuery;
+
+import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
 
 /**
  * General utility functions
@@ -47,6 +50,7 @@ public class FedXUtil
 	{
 		return valueFactory().createLiteral(literal);
 	}
+
 	/**
 	 * 
 	 * @return a {@link SimpleValueFactory} instance
@@ -54,5 +58,16 @@ public class FedXUtil
 	public static ValueFactory valueFactory()
 	{
 		return SimpleValueFactory.getInstance();
+	}
+
+	/**
+	 * Apply query bindings to transfer information from the query into the
+	 * evaluation routine, e.g. the query execution time.
+	 * 
+	 * @param query
+	 */
+	public static void applyQueryBindings(SailQuery query) {
+		query.setBinding(FedXSailRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME,
+				FedXUtil.valueFactory().createLiteral(query.getMaxExecutionTime()));
 	}
 }

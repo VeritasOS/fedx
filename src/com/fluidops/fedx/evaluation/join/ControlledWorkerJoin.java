@@ -77,7 +77,7 @@ public class ControlledWorkerJoin extends JoinExecutorBase<BindingSet> {
 		log.debug("JoinStats: left iter of join #" + this.joinId + " had " + totalBindings + " results.");
 		
 		// wait until all tasks are executed
-		phaser.awaitAdvanceInterruptibly(phaser.arrive(), 30, TimeUnit.SECONDS);
+		phaser.awaitAdvanceInterruptibly(phaser.arrive(), queryInfo.getMaxRemainingTimeMS(), TimeUnit.MILLISECONDS);
 
 	}
 

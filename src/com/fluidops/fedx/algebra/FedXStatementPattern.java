@@ -20,15 +20,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 
 import com.fluidops.fedx.structures.QueryInfo;
-import com.fluidops.fedx.structures.QueryType;
-import com.fluidops.fedx.util.QueryAlgebraUtil;
 
 /**
  * Base class providing all common functionality for FedX StatementPatterns
@@ -54,10 +51,6 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 		this.id = NodeFactory.getNextId();
 		this.queryInfo=queryInfo;
 		initFreeVars();
-	}
-	
-	protected FedXStatementPattern(Statement st) {
-		this(QueryAlgebraUtil.toStatementPattern(st), new QueryInfo("getStatements", QueryType.GET_STATEMENTS));
 	}
 	
 	@Override

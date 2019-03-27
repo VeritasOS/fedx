@@ -15,11 +15,9 @@
  */
 package com.fluidops.fedx.sail;
 
-import org.eclipse.rdf4j.query.BooleanQuery;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.Update;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailBooleanQuery;
@@ -30,6 +28,9 @@ import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailTupleQuery;
 import org.eclipse.rdf4j.sail.SailConnection;
 
+import com.fluidops.fedx.structures.FedXBooleanQuery;
+import com.fluidops.fedx.structures.FedXGraphQuery;
+import com.fluidops.fedx.structures.FedXTupleQuery;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
 
@@ -52,6 +53,7 @@ public class FedXSailRepositoryConnection extends SailRepositoryConnection
 	 */
 	public static final String BINDING_ORIGINAL_QUERY = "__originalQuery";
 	public static final String BINDING_ORIGINAL_QUERY_TYPE = "__originalQueryType";
+	public static final String BINDING_ORIGINAL_MAX_EXECUTION_TIME = "__originalQueryMaxExecutionTime";
 	
 	protected FedXSailRepositoryConnection(SailRepository repository,
 			SailConnection sailConnection) {
@@ -63,31 +65,36 @@ public class FedXSailRepositoryConnection extends SailRepositoryConnection
 			String baseURI) throws MalformedQueryException
 	{
 		SailQuery q = super.prepareQuery(ql, queryString, baseURI);
-		if (q instanceof TupleQuery)
+		if (q instanceof SailTupleQuery) {
 			insertOriginalQueryString(q, queryString, QueryType.SELECT);
-		else if (q instanceof GraphQuery)
+			q = new FedXTupleQuery((SailTupleQuery) q);
+		}
+		else if (q instanceof GraphQuery) {
 			insertOriginalQueryString(q, queryString, QueryType.CONSTRUCT);
-		else if (q instanceof BooleanQuery)
+			q = new FedXGraphQuery((SailGraphQuery) q);
+		} else if (q instanceof SailBooleanQuery) {
 			insertOriginalQueryString(q, queryString, QueryType.ASK);
+			q = new FedXBooleanQuery((SailBooleanQuery) q);
+		}
 		return q;
 	}
 
 	@Override
-	public SailTupleQuery prepareTupleQuery(QueryLanguage ql,
+	public FedXTupleQuery prepareTupleQuery(QueryLanguage ql,
 			String queryString, String baseURI) throws MalformedQueryException
 	{
 		SailTupleQuery q = super.prepareTupleQuery(ql, queryString, baseURI);
 		insertOriginalQueryString(q, queryString, QueryType.SELECT);
-		return q;
+		return new FedXTupleQuery(q);
 	}
 
 	@Override
-	public SailGraphQuery prepareGraphQuery(QueryLanguage ql,
+	public FedXGraphQuery prepareGraphQuery(QueryLanguage ql,
 			String queryString, String baseURI) throws MalformedQueryException
 	{
 		SailGraphQuery q = super.prepareGraphQuery(ql, queryString, baseURI);
 		insertOriginalQueryString(q, queryString, QueryType.CONSTRUCT);
-		return q;
+		return new FedXGraphQuery(q);
 	}
 
 	@Override
@@ -96,7 +103,7 @@ public class FedXSailRepositoryConnection extends SailRepositoryConnection
 	{
 		SailBooleanQuery q= super.prepareBooleanQuery(ql, queryString, baseURI);
 		insertOriginalQueryString(q, queryString, QueryType.ASK);
-		return q;
+		return new FedXBooleanQuery(q);
 	}
 
 	@Override

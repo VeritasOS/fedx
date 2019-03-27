@@ -21,4 +21,11 @@ public interface RepositorySettings {
 	public void setWritable(boolean flag);
 
 	public void resetOperationsCounter();
+
+	/**
+	 * 
+	 * @param runnable a runnable that can be used to simulate latency, e.g. by
+	 *                 letting the thread sleep
+	 */
+	public void setLatencySimulator(Runnable runnable);
 }

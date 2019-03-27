@@ -38,14 +38,14 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 	@Override
 	public void add(Statement st, Resource... contexts)
 			throws RepositoryException {
-		checkFail(true);
+		checkOperations(true);
 		super.add(st, contexts);
 	}
 
 	@Override
 	public void add(Iterable<? extends Statement> arg0,
 			Resource... arg1) throws RepositoryException {
-		checkFail(true);
+		checkOperations(true);
 		super.add(arg0, arg1);
 	}
 
@@ -53,28 +53,28 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 	@Override
 	public void add(Resource subject, org.eclipse.rdf4j.model.URI predicate, Value object,
 			Resource... contexts) throws RepositoryException {
-		checkFail(true);
+		checkOperations(true);
 		super.add(subject, predicate, object, contexts);
 	}
 	
 	@Override
 	public boolean hasStatement(Resource subj, IRI pred, Value obj, boolean includeInferred, Resource... contexts)
 			throws RepositoryException {
-		checkFail(false);
+		checkOperations(false);
 		return super.hasStatement(subj, pred, obj, includeInferred, contexts);
 	}
 
 	@Override
 	public RepositoryResult<Statement> getStatements(Resource subj, IRI pred, Value obj, boolean includeInferred,
 			Resource... contexts) throws RepositoryException {
-		checkFail(false);
+		checkOperations(false);
 		return super.getStatements(subj, pred, obj, includeInferred, contexts);
 	}
 
 	@Override
 	public void add(Resource subject, IRI predicate, Value object, Resource... contexts)
 			throws RepositoryException {
-		checkFail(true);
+		checkOperations(true);
 		super.add(subject, predicate, object, contexts);
 	}
 
@@ -83,7 +83,7 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 			String queryString, String baseURI)
 			throws MalformedQueryException
 	{
-		checkFail(false);
+		checkOperations(false);
 		return super.prepareBooleanQuery(ql, queryString, baseURI);
 	}
 
@@ -92,7 +92,7 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 			String queryString, String baseURI)
 			throws MalformedQueryException
 	{
-		checkFail(false);
+		checkOperations(false);
 		return super.prepareGraphQuery(ql, queryString, baseURI);
 	}
 
@@ -100,7 +100,7 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 	public SailQuery prepareQuery(QueryLanguage ql, String queryString,
 			String baseURI) throws MalformedQueryException
 	{
-		checkFail(false);
+		checkOperations(false);
 		return super.prepareQuery(ql, queryString, baseURI);
 	}
 
@@ -109,7 +109,7 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 			String queryString, String baseURI)
 			throws MalformedQueryException
 	{
-		checkFail(false);
+		checkOperations(false);
 		return super.prepareTupleQuery(ql, queryString, baseURI);
 	}
 
@@ -118,10 +118,21 @@ public class ConfigurableSailRepositoryConnection extends SailRepositoryConnecti
 			String baseURI) throws RepositoryException,
 			MalformedQueryException
 	{
-		checkFail(true);
+		checkOperations(true);
 		return super.prepareUpdate(ql, update, baseURI);
 	}
 
+
+	private void checkOperations(boolean isWrite) throws FailingRepositoryException {
+		checkFail(isWrite);
+		checkLatency();
+	}
+
+	private void checkLatency() {
+		if (rep.latencySimulator != null) {
+			rep.latencySimulator.run();
+		}
+	}
 
 	private void checkFail(boolean isWrite) throws FailingRepositoryException {
 		int _operationsCount = 0;

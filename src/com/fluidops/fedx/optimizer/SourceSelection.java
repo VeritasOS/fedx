@@ -236,7 +236,7 @@ public class SourceSelection {
 				scheduler.schedule( new ParallelCheckTask(task.e, task.t, this) );
 			
 			try	{
-				boolean completed = latch.await(30, TimeUnit.SECONDS);
+				boolean completed = latch.await(getQueryInfo().getMaxRemainingTimeMS(), TimeUnit.MILLISECONDS);
 				if (!completed) {
 					throw new OptimizationException("Source selection has run into a timeout");
 				}

@@ -23,6 +23,7 @@ import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.QueueCursor;
 import org.slf4j.Logger;
@@ -89,6 +90,7 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 		
 		try {
 			handleBindings();
+			checkTimeout();
 		} catch (Throwable t) {
 			toss(ExceptionUtil.toException(t));
 		} finally {
@@ -140,6 +142,9 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	@Override
 	public void toss(Exception e) {
 		rightQueue.toss(e);
+		if (log.isTraceEnabled()) {
+			log.debug("Tossing exception to join #" + joinId);
+		}
 	}
 	
 	
@@ -162,20 +167,39 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 			}
 		}
 
+		rightQueue.checkException();
 		return null;
 	}
 
-	
+	/**
+	 * Checks whether the query execution has run into a timeout. If so, a
+	 * {@link QueryInterruptedException} is thrown.
+	 * 
+	 * @throws QueryInterruptedException
+	 */
+	protected void checkTimeout() throws QueryInterruptedException {
+		long maxTimeLeft = queryInfo.getMaxRemainingTimeMS();
+		if (maxTimeLeft <= 0) {
+			throw new QueryInterruptedException("Query evaluation has run into a timeout");
+		}
+	}
+
 	@Override
 	public void handleClose() throws QueryEvaluationException {
-		closed = true;
 		
-		if (rightIter != null) {
-			rightIter.close();
-			rightIter = null;
-		}
 
-		leftIter.close();
+		try {
+			rightQueue.close();
+		} finally {
+
+			if (rightIter != null) {
+				rightIter.close();
+				rightIter = null;
+			}
+
+			leftIter.close();
+		}
+		closed = true;
 	}
 	
 	/**
