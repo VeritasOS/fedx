@@ -59,4 +59,9 @@ public abstract class UnionExecutorBase<T> extends ParallelExecutorBase<T> {
 	 */
 	protected abstract void union() throws Exception;
 	
+	@Override
+	protected String getExecutorType() {
+		return "Union";
+	}
+
 }

@@ -41,6 +41,14 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class ParallelServiceExecutor extends LookAheadIteration<BindingSet, QueryEvaluationException> implements ParallelExecutor<BindingSet> {
 	
+	/*
+	 * IMPLEMENTATION NOTE
+	 * 
+	 * This class explicitly does not extend ParallelServiceExecutor: here the
+	 * execution of the #run() is non blocking, i.g. blocking is done a consumption
+	 * time of the iterator
+	 */
+
 	protected static final Logger log = LoggerFactory.getLogger(ParallelServiceExecutor.class);
 	
 	protected final FedXService service;
