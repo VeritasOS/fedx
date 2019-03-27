@@ -16,23 +16,15 @@
 package com.fluidops.fedx.evaluation.join;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
-import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
-import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
-import org.eclipse.rdf4j.query.impl.QueueCursor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
-import com.fluidops.fedx.evaluation.concurrent.FedXQueueCursor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.exception.ExceptionUtil;
+import com.fluidops.fedx.evaluation.concurrent.ParallelExecutorBase;
 import com.fluidops.fedx.structures.QueryInfo;
 
 
@@ -45,62 +37,31 @@ import com.fluidops.fedx.structures.QueryInfo;
  * 
  * @author Andreas Schwarte
  */
-public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEvaluationException> implements ParallelExecutor<T> {
+public abstract class JoinExecutorBase<T> extends ParallelExecutorBase<T> {
 
-	protected static final Logger log = LoggerFactory.getLogger(JoinExecutorBase.class);
-	
-	protected static final AtomicInteger NEXT_JOIN_ID = new AtomicInteger(1);
 	
 	/* Constants */
-	protected final FederationEvalStrategy strategy;		// the evaluation strategy
 	protected final TupleExpr rightArg;						// the right argument for the join
 	protected final BindingSet bindings;					// the bindings
-	protected final int joinId;								// the join id
-	protected final QueryInfo queryInfo;
-	
+
 	/* Variables */
 	protected Set<String> joinVars; // might be unknown (i.e. null for some implementations)
-	protected volatile Thread evaluationThread;
 	protected CloseableIteration<T, QueryEvaluationException> leftIter;
-	protected CloseableIteration<T, QueryEvaluationException> rightIter;
-	protected volatile boolean closed;
-	protected boolean finished = false;
-	
-	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> rightQueue = new FedXQueueCursor<T>(1024);
 
 	
 	public JoinExecutorBase(FederationEvalStrategy strategy, CloseableIteration<T, QueryEvaluationException> leftIter, TupleExpr rightArg,
 			BindingSet bindings, QueryInfo queryInfo) throws QueryEvaluationException	{
-		this.strategy = strategy;
+		super(strategy, queryInfo);
 		this.leftIter = leftIter;
 		this.rightArg = rightArg;
 		this.bindings = bindings;
-		this.joinId = NEXT_JOIN_ID.getAndIncrement();
-		this.queryInfo = queryInfo;
 	}
 	
-
 	@Override
-	public final void run() {
-		evaluationThread = Thread.currentThread();
-		
+	protected final void performExecution() throws Exception {
 
-		if (log.isTraceEnabled())
-			log.trace("Performing join #" + joinId + ", thread: " + evaluationThread.getName());
+		handleBindings();
 		
-		try {
-			handleBindings();
-			checkTimeout();
-		} catch (Throwable t) {
-			toss(ExceptionUtil.toException(t));
-		} finally {
-			finished=true;
-			evaluationThread = null;
-			rightQueue.done();
-		}
-				
-		if (log.isTraceEnabled())
-			log.trace("Join #" + joinId + " is finished.");
 	}
 	
 	/**
@@ -117,116 +78,28 @@ public abstract class JoinExecutorBase<T> extends LookAheadIteration<T, QueryEva
 	 * and thus thread safe. In case you can guarantee sequential access, it is also
 	 * possible to directly access rightQueue
 	 * 
+	 * 
+	 * Note that the implementation must block until the entire join is executed.
 	 */
 	protected abstract void handleBindings() throws Exception;
 	
 	
 	@Override
-	public void addResult(CloseableIteration<T, QueryEvaluationException> res)  {
-		/* optimization: avoid adding empty results */
-		if (res instanceof EmptyIteration<?,?>)
-			return;
-		
-		try {
-			rightQueue.put(res);
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Error adding element to right queue", e);
-		}
-	}
-		
-	@Override
-	public void done() {
-		;	// no-op
-	}
-	
-	@Override
-	public void toss(Exception e) {
-		rightQueue.toss(e);
-		if (log.isTraceEnabled()) {
-			log.debug("Tossing exception to join #" + joinId);
-		}
-	}
-	
-	
-	@Override
-	public T getNextElement() throws QueryEvaluationException	{
-		// TODO check if we need to protect rightQueue from synchronized access
-		// wasn't done in the original implementation either
-		// if we see any weird behavior check here !!
-
-		while (rightIter != null || rightQueue.hasNext()) {
-			if (rightIter == null) {
-				rightIter = rightQueue.next();
-			}
-			if (rightIter.hasNext()) {
-				return rightIter.next();
-			}
-			else {
-				rightIter.close();
-				rightIter = null;
-			}
-		}
-
-		rightQueue.checkException();
-		return null;
-	}
-
-	/**
-	 * Checks whether the query execution has run into a timeout. If so, a
-	 * {@link QueryInterruptedException} is thrown.
-	 * 
-	 * @throws QueryInterruptedException
-	 */
-	protected void checkTimeout() throws QueryInterruptedException {
-		long maxTimeLeft = queryInfo.getMaxRemainingTimeMS();
-		if (maxTimeLeft <= 0) {
-			throw new QueryInterruptedException("Query evaluation has run into a timeout");
-		}
-	}
-
-	@Override
 	public void handleClose() throws QueryEvaluationException {
 		
 
 		try {
-			rightQueue.close();
+			super.handleClose();
 		} finally {
-
-			if (rightIter != null) {
-				rightIter.close();
-				rightIter = null;
-			}
-
 			leftIter.close();
 		}
-		closed = true;
-	}
-	
-	/**
-	 * Return true if this executor is finished or aborted
-	 * 
-	 * @return whether the join is finished
-	 */
-	public boolean isFinished() {
-		synchronized (this) {
-			return finished;
-		}
-	}
-	
-	/**
-	 * Retrieve information about this join, joinId and queryId
-	 * 
-	 * @return the ID
-	 */
-	public String getId() {
-		return "ID=(id:" + joinId + "; query:" + getQueryInfo().getQueryID() + ")";
 	}
 	
 	@Override
-	public QueryInfo getQueryInfo() {
-		return queryInfo;
+	protected String getExecutorType() {
+		return "Join";
 	}
-
+	
 	/**
 	 * @return the join variables, might be <code>null</code> if unknown in the
 	 *         concrete implementation

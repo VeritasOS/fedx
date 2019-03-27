@@ -18,6 +18,7 @@ package com.fluidops.fedx.evaluation.union;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
 import com.fluidops.fedx.structures.QueryInfo;
 
@@ -32,11 +33,9 @@ import com.fluidops.fedx.structures.QueryInfo;
 public abstract class WorkerUnionBase<T> extends UnionExecutorBase<T> {
 
 	protected List<ParallelTask<T>> tasks = new ArrayList<ParallelTask<T>>();
-	protected QueryInfo queryInfo = null;
 	
-	public WorkerUnionBase(QueryInfo queryInfo) {
-		super();
-		this.queryInfo = queryInfo;
+	public WorkerUnionBase(FederationEvalStrategy strategy, QueryInfo queryInfo) {
+		super(strategy, queryInfo);
 	}
 	
 
@@ -50,10 +49,5 @@ public abstract class WorkerUnionBase<T> extends UnionExecutorBase<T> {
 		if (task.getControl() != this)
 			throw new RuntimeException("Controlling instance of task must be the same as this ControlledWorkerUnion.");
 		tasks.add( task);
-	}
-	
-	@Override
-	public QueryInfo getQueryInfo() {
-		return queryInfo;
 	}
 }

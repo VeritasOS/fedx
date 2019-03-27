@@ -15,20 +15,11 @@
  */
 package com.fluidops.fedx.evaluation.union;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.eclipse.rdf4j.common.iteration.CloseableIteration;
-import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
-import org.eclipse.rdf4j.query.QueryEvaluationException;
-import org.eclipse.rdf4j.query.QueryInterruptedException;
-import org.eclipse.rdf4j.query.impl.QueueCursor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.fluidops.fedx.evaluation.concurrent.FedXQueueCursor;
-import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
-import com.fluidops.fedx.exception.ExceptionUtil;
+import com.fluidops.fedx.evaluation.FederationEvalStrategy;
+import com.fluidops.fedx.evaluation.concurrent.ParallelExecutorBase;
+import com.fluidops.fedx.structures.QueryInfo;
 
 
 /**
@@ -41,40 +32,18 @@ import com.fluidops.fedx.exception.ExceptionUtil;
  * @author Andreas Schwarte
  *
  */
-public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEvaluationException> implements ParallelExecutor<T> {
+public abstract class UnionExecutorBase<T> extends ParallelExecutorBase<T> {
 
-	private static final Logger log = LoggerFactory.getLogger(UnionExecutorBase.class);
-	protected static final AtomicInteger NEXT_UNION_ID = new AtomicInteger(1);
-	
-	/* Constants */
-	protected final int unionId;							// the union id
-	
-	/* Variables */
-	protected volatile boolean closed;
-	protected boolean finished = true;
-	
-	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> result = new FedXQueueCursor<T>(1024);
-	protected CloseableIteration<T, QueryEvaluationException> rightIter;
 	
 	
-	public UnionExecutorBase() {
-		this.unionId = NEXT_UNION_ID.getAndIncrement();
+	public UnionExecutorBase(FederationEvalStrategy strategy, QueryInfo queryInfo) {
+		super(strategy, queryInfo);
 	}
 	
 
 	@Override
-	public final void run() {
-
-		try {
-			union();
-			checkTimeout();
-		} catch (Throwable t) {
-			toss(ExceptionUtil.toException(t));
-		} finally {
-			finished=true;
-			result.done();
-		}
-		
+	protected final void performExecution() throws Exception {
+		union();
 	}
 	
 
@@ -90,95 +59,4 @@ public abstract class UnionExecutorBase<T> extends LookAheadIteration<T, QueryEv
 	 */
 	protected abstract void union() throws Exception;
 	
-	
-	@Override
-	public void addResult(CloseableIteration<T, QueryEvaluationException> res)  {
-		/* optimization: avoid adding empty results */
-		if (res instanceof EmptyIteration<?,?>)
-			return;
-		
-		try {
-			result.put(res);
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Error adding element to result queue", e);
-		}
-
-	}
-		
-	@Override
-	public void done() {
-		;	// no-op
-	}
-	
-	@Override
-	public void toss(Exception e) {
-		result.toss(e);
-		if (log.isTraceEnabled()) {
-			log.trace("Tossing exception to union #" + unionId + ": " + e.getMessage());
-		}
-	}
-	
-	
-	@Override
-	public T getNextElement() throws QueryEvaluationException	{
-		// TODO check if we need to protect rightQueue from synchronized access
-		// wasn't done in the original implementation either
-		// if we see any weird behavior check here !!
-
-		while (rightIter != null || result.hasNext()) {
-			if (rightIter == null) {
-				rightIter = result.next();
-			}
-			if (rightIter.hasNext()) {
-				return rightIter.next();
-			}
-			else {
-				rightIter.close();
-				rightIter = null;
-			}
-		}
-		
-		result.checkException();
-
-		return null;
-	}
-
-	/**
-	 * Checks whether the query execution has run into a timeout. If so, a
-	 * {@link QueryInterruptedException} is thrown.
-	 * 
-	 * @throws QueryInterruptedException
-	 */
-	protected void checkTimeout() throws QueryInterruptedException {
-		long maxTimeLeft = getQueryInfo().getMaxRemainingTimeMS();
-		if (maxTimeLeft <= 0) {
-			throw new QueryInterruptedException("Query evaluation has run into a timeout");
-		}
-	}
-	
-	@Override
-	public void handleClose() throws QueryEvaluationException {
-
-		try {
-			result.close();
-		} finally {
-
-			if (rightIter != null) {
-				rightIter.close();
-				rightIter = null;
-			}
-		}
-		closed = true;
-	}
-	
-	/**
-	 * Return true if this executor is finished or aborted
-	 * 
-	 * @return whether the executor is finished
-	 */
-	public boolean isFinished() {
-		synchronized (this) {
-			return finished;
-		}
-	}
 }

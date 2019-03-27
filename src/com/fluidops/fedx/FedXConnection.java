@@ -178,7 +178,8 @@ public class FedXConnection extends AbstractSailConnection
 	@Override
 	protected CloseableIteration<? extends Resource, SailException> getContextIDsInternal() throws SailException {
 		
-		final WorkerUnionBase<Resource> union = new SynchronousWorkerUnion<Resource>(
+		FederationEvalStrategy strategy = FederationManager.getInstance().getStrategy();
+		final WorkerUnionBase<Resource> union = new SynchronousWorkerUnion<Resource>(strategy,
 				new QueryInfo("getContextIDsInternal", QueryType.UNKNOWN, 0));
 		
 		for (final Endpoint e : federation.getMembers()) {

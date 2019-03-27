@@ -125,7 +125,9 @@ public class SynchronousBoundJoin extends SynchronousJoin {
 			
 		}
 		
-		log.debug("JoinStats: left iter of join #" + this.joinId + " had " + totalBindings + " results.");
+		if (log.isDebugEnabled()) {
+			log.debug("JoinStats: left iter of " + getDisplayId() + " had " + totalBindings + " results.");
+		}
 						
 	}
 }

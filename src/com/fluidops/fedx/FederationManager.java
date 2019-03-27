@@ -469,9 +469,10 @@ public class FederationManager {
 	 * @see SynchronousWorkerUnion
 	 */
 	public WorkerUnionBase<BindingSet> createWorkerUnion(QueryInfo queryInfo) {
+		FederationEvalStrategy strategy = FederationManager.getInstance().getStrategy();
 		if (type==FederationType.LOCAL)
-			return new SynchronousWorkerUnion<BindingSet>(queryInfo);
-		return new ControlledWorkerUnion<BindingSet>(unionScheduler, queryInfo);
+			return new SynchronousWorkerUnion<BindingSet>(strategy, queryInfo);
+		return new ControlledWorkerUnion<BindingSet>(strategy, unionScheduler, queryInfo);
 		
 	}
 	

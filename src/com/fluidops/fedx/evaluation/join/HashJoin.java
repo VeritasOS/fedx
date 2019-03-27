@@ -97,7 +97,9 @@ public class HashJoin extends JoinExecutorBase<BindingSet> {
 			}
 		}
 
-		log.debug("JoinStats: left iter of join #" + this.joinId + " had " + totalBindingsLeft + " results.");
+		if (log.isDebugEnabled()) {
+			log.debug("JoinStats: left iter of " + getDisplayId() + " had " + totalBindingsLeft + " results.");
+		}
 	}
 
 	/**

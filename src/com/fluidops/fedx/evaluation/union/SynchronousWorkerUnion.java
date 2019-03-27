@@ -15,6 +15,7 @@
  */
 package com.fluidops.fedx.evaluation.union;
 
+import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
 import com.fluidops.fedx.structures.QueryInfo;
 
@@ -27,13 +28,13 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public class SynchronousWorkerUnion<T> extends WorkerUnionBase<T> {
 
-	public SynchronousWorkerUnion(QueryInfo queryInfo) {
-		super(queryInfo);
+	public SynchronousWorkerUnion(FederationEvalStrategy strategy, QueryInfo queryInfo) {
+		super(strategy, queryInfo);
 	}	
 	
 	@Override
 	protected void union() throws Exception {
 		for (ParallelTask<T> task : tasks)
-			addResult( task.performTask() );				
+			addResult(task.performTask());
 	}
 }

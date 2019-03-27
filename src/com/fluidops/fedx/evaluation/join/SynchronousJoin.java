@@ -49,7 +49,8 @@ public class SynchronousJoin extends JoinExecutorBase<BindingSet> {
 			totalBindings++;
 		}
 			
-		// XXX remove output if not needed anymore
-		log.debug("JoinStats: left iter of join #" + this.joinId + " had " + totalBindings + " results.");
+		if (log.isDebugEnabled()) {
+			log.debug("JoinStats: left iter of " + getDisplayId() + " had " + totalBindings + " results.");
+		}
 	}
 }

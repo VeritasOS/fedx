@@ -18,6 +18,7 @@ package com.fluidops.fedx.evaluation.union;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
+import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
 import com.fluidops.fedx.structures.QueryInfo;
 
@@ -39,8 +40,9 @@ public class ControlledWorkerUnion<T> extends WorkerUnionBase<T> {
 	
 	protected final Phaser phaser = new Phaser(1);
 
-	public ControlledWorkerUnion(ControlledWorkerScheduler<T> scheduler, QueryInfo queryInfo) {
-		super(queryInfo);
+	public ControlledWorkerUnion(FederationEvalStrategy strategy, ControlledWorkerScheduler<T> scheduler,
+			QueryInfo queryInfo) {
+		super(strategy, queryInfo);
 		this.scheduler = scheduler;
 	}
 			

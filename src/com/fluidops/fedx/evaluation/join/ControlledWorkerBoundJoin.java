@@ -137,7 +137,9 @@ public class ControlledWorkerBoundJoin extends ControlledWorkerJoin {
 		
 		scheduler.informFinish(this);
 		
-		log.debug("JoinStats: left iter of join #" + this.joinId + " had " + totalBindings + " results.");
+		if (log.isDebugEnabled()) {
+			log.debug("JoinStats: left iter of " + getDisplayId() + " had " + totalBindings + " results.");
+		}
 				
 		phaser.awaitAdvanceInterruptibly(phaser.arrive(), queryInfo.getMaxRemainingTimeMS(), TimeUnit.MILLISECONDS);
 	}
