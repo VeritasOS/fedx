@@ -15,11 +15,13 @@
  */
 package com.fluidops.fedx;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
@@ -72,6 +74,7 @@ public class QueryManager {
 	protected final FederationManager federationManager;
 	protected final Repository repo;
 	protected final RepositoryConnection conn;
+	protected final AtomicBigInteger nextQueryID;
 	protected Set<QueryInfo> runningQueries = new ConcurrentSkipListSet<QueryInfo>();
 	protected HashMap<String, String> prefixDeclarations = new HashMap<String, String>();
 	
@@ -83,6 +86,8 @@ public class QueryManager {
 		} catch (RepositoryException e)	{
 			throw new FedXRuntimeException(e);		// should never occur
 		}
+		BigInteger lastQueryId = new BigInteger("0");
+		this.nextQueryID = new AtomicBigInteger(lastQueryId);
 	}
 	
 	public void shutdown()
@@ -292,6 +297,15 @@ public class QueryManager {
 		}		
 	}
 	
+	/**
+	 * Computes the (incremental) next query identifier. Implementation is thread
+	 * safe and synchronized.
+	 * 
+	 * @return the next query identifier
+	 */
+	public static BigInteger getNextQueryId() {
+		return getInstance().nextQueryID.incrementAndGet();
+	}
 	
 	/**
 	 * Get the prefix declarations that have to be prepended to the query.
@@ -354,4 +368,22 @@ public class QueryManager {
 	}
 	
 
+	static class AtomicBigInteger {
+
+		private final AtomicReference<BigInteger> valueHolder = new AtomicReference<>();
+
+		public AtomicBigInteger(BigInteger bigInteger) {
+			valueHolder.set(bigInteger);
+		}
+
+		public BigInteger incrementAndGet() {
+			for (;;) {
+				BigInteger current = valueHolder.get();
+				BigInteger next = current.add(BigInteger.ONE);
+				if (valueHolder.compareAndSet(current, next)) {
+					return next;
+				}
+			}
+		}
+	}
 }

@@ -15,6 +15,8 @@
  */
 package com.fluidops.fedx.util;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -31,6 +33,8 @@ import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
  */
 public class FedXUtil
 {
+
+	private static final AtomicLong count = new AtomicLong(0L);
 
 	/**
 	 * @param iri
@@ -69,5 +73,15 @@ public class FedXUtil
 	public static void applyQueryBindings(SailQuery query) {
 		query.setBinding(FedXSailRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME,
 				FedXUtil.valueFactory().createLiteral(query.getMaxExecutionTime()));
+	}
+
+	/**
+	 * Hexadecimal representation of an incremental integer.
+	 * 
+	 * @return an incremental hex UUID
+	 */
+	public static String getIncrementalUUID() {
+		long id = count.incrementAndGet();
+		return Long.toHexString(id);
 	}
 }

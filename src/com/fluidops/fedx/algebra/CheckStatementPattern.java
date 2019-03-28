@@ -50,10 +50,12 @@ public class CheckStatementPattern implements StatementTupleExpr, BoundJoinTuple
 	private static final long serialVersionUID = -4063951571744144255L;
 
 	protected final StatementTupleExpr stmt;
+	protected final String id;
 	
 	public CheckStatementPattern(StatementTupleExpr stmt) {
 		super();
 		this.stmt = stmt;
+		this.id = NodeFactory.getNextId();
 	}
 
 	public StatementPattern getStatementPattern() {
@@ -71,8 +73,8 @@ public class CheckStatementPattern implements StatementTupleExpr, BoundJoinTuple
 	}
 
 	@Override
-	public int getId() {
-		return 0;
+	public String getId() {
+		return id;
 	}
 
 	@Override

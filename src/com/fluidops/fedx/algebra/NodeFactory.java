@@ -15,7 +15,7 @@
  */
 package com.fluidops.fedx.algebra;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.fluidops.fedx.util.FedXUtil;
 
 /**
  * A factory that produces globally unique IDS which are used as node identifiers,
@@ -26,9 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NodeFactory {
 
 	
-	private static AtomicInteger nextId = new AtomicInteger(1);
-	
-	public static int getNextId() {
-		return nextId.getAndIncrement();
+	public static String getNextId() {
+		return "n" + FedXUtil.getIncrementalUUID();
 	}
 }

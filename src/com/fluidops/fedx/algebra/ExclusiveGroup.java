@@ -52,7 +52,7 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 	protected final ArrayList<StatementSource> owner;
 	protected final Set<String> freeVars = new HashSet<String>();
 	protected final List<String> localVars = new ArrayList<String>();
-	protected final int id;
+	protected final String id;
 	protected final transient QueryInfo queryInfo;
 	protected FilterValueExpr filter = null;
 	protected transient Endpoint ownedEndpoint = null;
@@ -151,7 +151,7 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 	}
 	
 	@Override
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 

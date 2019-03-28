@@ -15,6 +15,7 @@
  */
 package com.fluidops.fedx.structures;
 
+import java.math.BigInteger;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
+import com.fluidops.fedx.QueryManager;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
 import com.fluidops.fedx.util.QueryStringUtil;
 
@@ -47,7 +49,7 @@ public class QueryInfo {
 
 	protected static final AtomicInteger NEXT_QUERY_ID = new AtomicInteger(1); // static id count
 	
-	private final int queryID;
+	private final BigInteger queryID;
 	private final String query;
 	private final QueryType queryType;
 	private final long maxExecutionTimeMs;
@@ -70,7 +72,7 @@ public class QueryInfo {
 	 */
 	public QueryInfo(String query, QueryType queryType, int maxExecutionTime) {
 		super();
-		this.queryID = NEXT_QUERY_ID.getAndIncrement();
+		this.queryID = QueryManager.getNextQueryId();
 
 		this.query = query;
 		this.queryType = queryType;
@@ -85,7 +87,7 @@ public class QueryInfo {
 		this(QueryStringUtil.toString(subj, (IRI) pred, obj), QueryType.GET_STATEMENTS);
 	}
 
-	public int getQueryID() {
+	public BigInteger getQueryID() {
 		return queryID;
 	}
 
@@ -155,17 +157,15 @@ public class QueryInfo {
 	}
 
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + queryID;
+		result = prime * result + ((queryID == null) ? 0 : queryID.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -173,7 +173,10 @@ public class QueryInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		QueryInfo other = (QueryInfo) obj;
-		if (queryID != other.queryID)
+		if (queryID == null) {
+			if (other.queryID != null)
+				return false;
+		} else if (!queryID.equals(other.queryID))
 			return false;
 		return true;
 	}	

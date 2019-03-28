@@ -40,7 +40,7 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	private static final long serialVersionUID = 6588020780262348806L;
 
 	protected final List<StatementSource> statementSources = new ArrayList<StatementSource>();
-	protected final int id;
+	protected final String id;
 	protected final QueryInfo queryInfo;
 	protected final List<String> freeVars = new ArrayList<String>(3);
 	protected final List<String> localVars = new ArrayList<String>();
@@ -107,7 +107,7 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	}
 	
 	@Override
-	public int getId() {
+	public String getId() {
 		return id;
 	}	
 

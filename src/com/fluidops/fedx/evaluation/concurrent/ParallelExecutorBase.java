@@ -15,7 +15,7 @@
  */
 package com.fluidops.fedx.evaluation.concurrent;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
@@ -48,11 +48,11 @@ public abstract class ParallelExecutorBase<T> extends LookAheadIteration<T, Quer
 	
 	protected static final Logger log = LoggerFactory.getLogger(ParallelExecutorBase.class);
 
-	protected static final AtomicInteger NEXT_EXECUTOR_ID = new AtomicInteger(1);
+	protected static final AtomicLong NEXT_EXECUTOR_ID = new AtomicLong(0L);
 	
 	/* Constants */
 	protected final FederationEvalStrategy strategy;		// the evaluation strategy
-	protected final int executorId; // the join id
+	protected final long executorId; // the executor id
 	protected final QueryInfo queryInfo;
 
 	/* Variables */
@@ -64,7 +64,7 @@ public abstract class ParallelExecutorBase<T> extends LookAheadIteration<T, Quer
 
 	public ParallelExecutorBase(FederationEvalStrategy strategy, QueryInfo queryInfo) throws QueryEvaluationException {
 		this.strategy = strategy;
-		this.executorId = NEXT_EXECUTOR_ID.getAndIncrement();
+		this.executorId = NEXT_EXECUTOR_ID.incrementAndGet();
 		this.queryInfo = queryInfo;
 	}
 

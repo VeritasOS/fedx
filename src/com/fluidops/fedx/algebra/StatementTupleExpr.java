@@ -38,7 +38,7 @@ public interface StatementTupleExpr extends TupleExpr, QueryRef {
 	 * @return
 	 * 		the id of this expr
 	 */
-	public int getId();
+	public String getId();
 	
 	/**
 	 * @return
