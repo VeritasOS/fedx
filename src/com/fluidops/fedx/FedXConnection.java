@@ -33,6 +33,7 @@ import org.eclipse.rdf4j.query.Operation;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
+import org.eclipse.rdf4j.query.impl.MapBindingSet;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
@@ -131,8 +132,19 @@ public class FedXConnection extends AbstractSailConnection
 		}
 		
 		try {
-			// TODO make sure to apply any external bindings
-			CloseableIteration<? extends BindingSet, QueryEvaluationException> res = strategy.evaluate(query, EmptyBindingSet.getInstance());
+			// make sure to apply any external bindings
+			BindingSet queryBindings = EmptyBindingSet.getInstance();
+			if (bindings.size() > FedXSailRepositoryConnection.FEDX_BINDINGS.size()) {
+				MapBindingSet actualQueryBindings = new MapBindingSet();
+				bindings.forEach(binding -> {
+					if (!FedXSailRepositoryConnection.FEDX_BINDINGS.contains(binding.getName())) {
+						actualQueryBindings.addBinding(binding);
+					}
+				});
+				queryBindings = actualQueryBindings;
+			}
+			CloseableIteration<? extends BindingSet, QueryEvaluationException> res = strategy.evaluate(query,
+					queryBindings);
 			res = new StopRemainingExecutionsOnCloseIteration(res, queryInfo);
 			return res;
 		} catch (QueryEvaluationException e) {

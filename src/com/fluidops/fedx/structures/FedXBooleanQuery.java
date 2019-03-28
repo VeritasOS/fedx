@@ -23,6 +23,7 @@ import org.eclipse.rdf4j.query.parser.ParsedBooleanQuery;
 import org.eclipse.rdf4j.repository.sail.SailBooleanQuery;
 
 import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
+import com.fluidops.fedx.util.FedXUtil;
 
 /**
  * Abstraction of a {@link SailBooleanQuery} which takes care for tracking the
@@ -46,6 +47,7 @@ public class FedXBooleanQuery extends SailBooleanQuery {
 
 	@Override
 	public boolean evaluate() throws QueryEvaluationException {
+		FedXUtil.applyQueryBindings(this);
 		return delegate.evaluate();
 	}
 

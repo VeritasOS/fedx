@@ -15,6 +15,9 @@
  */
 package com.fluidops.fedx.sail;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -33,6 +36,7 @@ import com.fluidops.fedx.structures.FedXGraphQuery;
 import com.fluidops.fedx.structures.FedXTupleQuery;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
+import com.google.common.collect.Sets;
 
 /**
  * A special {@link SailRepositoryConnection} which adds the original query
@@ -55,6 +59,16 @@ public class FedXSailRepositoryConnection extends SailRepositoryConnection
 	public static final String BINDING_ORIGINAL_QUERY_TYPE = "__originalQueryType";
 	public static final String BINDING_ORIGINAL_MAX_EXECUTION_TIME = "__originalQueryMaxExecutionTime";
 	
+	/**
+	 * The number of bindings in the external binding set that are added by FedX.
+	 * 
+	 * @see #BINDING_ORIGINAL_QUERY
+	 * @see #BINDING_ORIGINAL_QUERY_TYPE
+	 * @see #BINDING_ORIGINAL_MAX_EXECUTION_TIME
+	 */
+	public static final Set<String> FEDX_BINDINGS = Collections.unmodifiableSet(
+			Sets.newHashSet(BINDING_ORIGINAL_QUERY, BINDING_ORIGINAL_QUERY_TYPE, BINDING_ORIGINAL_MAX_EXECUTION_TIME));
+
 	protected FedXSailRepositoryConnection(SailRepository repository,
 			SailConnection sailConnection) {
 		super(repository, sailConnection);
