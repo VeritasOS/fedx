@@ -55,7 +55,7 @@ public class QueryInfo {
 	private final long maxExecutionTimeMs;
 	private final long start;
 	
-	protected boolean aborted = false;
+	protected boolean done = false;
 
 	protected Set<ParallelTask<?>> scheduledSubtasks = ConcurrentHashMap.newKeySet();
 
@@ -121,25 +121,40 @@ public class QueryInfo {
 	 * Register a new scheduled task for this query.
 	 * 
 	 * @param task
-	 * @throws QueryEvaluationException if the query has been aborted
+	 * @throws QueryEvaluationException if the query has been aborted or closed
 	 */
 	public synchronized void registerScheduledTask(ParallelTask<?> task) throws QueryEvaluationException {
-		if (aborted) {
-			throw new QueryEvaluationException("Query is aborted, cannot accept new tasks");
+		if (done) {
+			throw new QueryEvaluationException("Query is aborted or closed, cannot accept new tasks");
 		}
 		scheduledSubtasks.add(task);
 	}
 
 	/**
 	 * Mark the query as aborted and abort all scheduled (future) tasks known at
-	 * this point in time.
+	 * this point in time. Also do not accept any new scheduled tasks
 	 * 
 	 */
 	public synchronized void abort() {
-		if (aborted) {
+		if (done) {
 			return;
 		}
-		aborted = true;
+		done = true;
+
+		abortScheduledTasks();
+	}
+
+	/**
+	 * Close this query. If exists, all scheduled (future) tasks known at this point
+	 * in time are aborted. Also do not accept any new scheduled tasks
+	 * 
+	 */
+	public synchronized void close() {
+
+		if (done) {
+			return;
+		}
+		done = true;
 
 		abortScheduledTasks();
 	}

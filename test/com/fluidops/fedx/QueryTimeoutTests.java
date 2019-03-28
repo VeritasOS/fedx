@@ -83,6 +83,53 @@ public class QueryTimeoutTests extends SPARQLBaseTest {
 			}
 		});
 	}
+	
+	@Test
+	@Disabled // local test only
+	public void testLocalTimeout3() throws Exception {
+
+		assumeSparqlEndpoint();
+
+		prepareTest(Arrays.asList("/tests/medium/data1.ttl", "/tests/medium/data2.ttl", "/tests/medium/data3.ttl",
+				"/tests/medium/data4.ttl"));
+
+		fedxRule.enableDebug();
+
+		String queryString = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" + 
+				"PREFIX ns1: <http://namespace1.org/>\n" + 
+				"PREFIX ns2: <http://namespace2.org/>\n" + 
+				"\n" + 
+				"SELECT ?person ?name  WHERE {\n" + 
+				" { ?person a ns1:Person . } \n" +
+				" UNION" +
+				" { ?person a ns2:Person . ?person foaf:name ?name . }\n" + 
+				"}";
+		// make sure that latency does not affect source selection
+		QueryManager.getQueryPlan(queryString);
+
+		repoSettings(1).setLatencySimulator(latencySimulator(2000));
+		repoSettings(2).setLatencySimulator(latencySimulator(5000));
+
+		Query query = QueryManager.prepareQuery(queryString);
+
+
+		try (TupleQueryResult tq = ((TupleQuery) query).evaluate()) {
+
+			// consume results from EP1
+			for (int i = 0; i < 5; i++) {
+				if (tq.hasNext()) {
+					System.out.println(tq.next());
+				}
+			}
+			// consume result from second union (blocks)
+			System.out.println(tq.next());
+
+		}
+
+		System.out.println("Done");
+
+	}
+
 
 	protected Runnable latencySimulator(long latencyMs) {
 		return () -> {

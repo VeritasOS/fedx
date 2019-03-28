@@ -45,6 +45,7 @@ import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
 import com.fluidops.fedx.evaluation.iterator.RepositoryExceptionConvertingIteration;
+import com.fluidops.fedx.evaluation.iterator.StopRemainingExecutionsOnCloseIteration;
 import com.fluidops.fedx.evaluation.union.SynchronousWorkerUnion;
 import com.fluidops.fedx.evaluation.union.WorkerUnionBase;
 import com.fluidops.fedx.optimizer.Optimizer;
@@ -99,6 +100,7 @@ public class FedXConnection extends AbstractSailConnection
 		FederationEvalStrategy strategy = FederationManager.getInstance().getStrategy();
 
 		long start=0;
+		QueryInfo queryInfo = null;
 		if (true) {
 			if (log.isDebugEnabled()) {
 				log.debug("Optimization start");
@@ -108,7 +110,7 @@ public class FedXConnection extends AbstractSailConnection
 				String queryString = getOriginalQueryString(bindings);
 				if (queryString==null)
 					logger.warn("Query string is null. Please check your FedX setup.");
-				QueryInfo queryInfo = new QueryInfo(queryString, getOriginalQueryType(bindings),
+				queryInfo = new QueryInfo(queryString, getOriginalQueryType(bindings),
 						getOriginalMaxExecutionTime(bindings));
 				FederationManager.getMonitoringService().monitorQuery(queryInfo);
 				query = Optimizer.optimize(query, dataset, bindings, strategy, queryInfo);
@@ -130,7 +132,9 @@ public class FedXConnection extends AbstractSailConnection
 		
 		try {
 			// TODO make sure to apply any external bindings
-			return strategy.evaluate(query, EmptyBindingSet.getInstance());
+			CloseableIteration<? extends BindingSet, QueryEvaluationException> res = strategy.evaluate(query, EmptyBindingSet.getInstance());
+			res = new StopRemainingExecutionsOnCloseIteration(res, queryInfo);
+			return res;
 		} catch (QueryEvaluationException e) {
 			throw new SailException(e);
 		} 		
