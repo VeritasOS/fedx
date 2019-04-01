@@ -116,4 +116,29 @@ public class BasicTests extends SPARQLBaseTest {
 		compareTupleQueryResults(result, expected, false);
 
 	}
+
+	@Test
+	public void testQueryBinding() throws Exception {
+
+		prepareTest(Arrays.asList("/tests/medium/data1.ttl", "/tests/medium/data2.ttl", "/tests/medium/data3.ttl",
+				"/tests/medium/data4.ttl"));
+
+		fedxRule.enableDebug();
+
+		String queryString = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/>\r\n" +
+				"SELECT ?name WHERE {\r\n" + 
+				" ?person a foaf:Person .\r\n" + 
+				" ?person foaf:name ?name .\r\n" + 
+						"}";
+		TupleQuery query = QueryManager.prepareTupleQuery(queryString);
+		query.setBinding("person", vf.createIRI("http://namespace1.org/", "Person_1"));
+
+		TupleQueryResult actual = query.evaluate();
+
+		TupleQueryResult expected = tupleQueryResultBuilder(Arrays.asList("name"))
+				.add(Arrays.asList(vf.createLiteral("Person1"))).build();
+
+		compareTupleQueryResults(actual, expected, false);
+	}
 }
