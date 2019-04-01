@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.cache.MemoryCache;
 import com.fluidops.fedx.exception.FedXException;
+import com.fluidops.fedx.sail.FedXSailRepository;
 import com.fluidops.fedx.statistics.Statistics;
 import com.fluidops.fedx.statistics.StatisticsImpl;
 import com.fluidops.fedx.structures.Endpoint;
@@ -54,11 +54,11 @@ public class FedXFactory {
 	 * @param sparqlEndpoints the list of SPARQL endpoints
 	 * 
 	 * @return
-	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link SailRepository}
+	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link FedXSailRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static SailRepository initializeSparqlFederation(List<String> sparqlEndpoints) throws Exception {
+	public static FedXSailRepository initializeSparqlFederation(List<String> sparqlEndpoints) throws Exception {
 
 		List<Endpoint> endpoints = new ArrayList<Endpoint>();
 		for (String url : sparqlEndpoints) {
@@ -79,14 +79,14 @@ public class FedXFactory {
 	 * 				the location of the data source configuration
 	 * 
 	 * @return
-	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link SailRepository}
+	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link FedXSailRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static SailRepository initializeFederation(String dataConfig) throws Exception {
+	public static FedXSailRepository initializeFederation(File dataConfig) throws Exception {
 		String cacheLocation = Config.getConfig().getCacheLocation();
 		log.info("Loading federation members from dataConfig " + dataConfig + ".");
-		List<Endpoint> members  = EndpointFactory.loadFederationMembers(new File(dataConfig));
+		List<Endpoint> members = EndpointFactory.loadFederationMembers(dataConfig);
 		return initializeFederation(members, cacheLocation);
 	}
 	
@@ -106,14 +106,15 @@ public class FedXFactory {
 	 * 			additional endpoints to be added, may be null or empty
 	 *  
 	 * @return
-	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link SailRepository}
+	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link FedXSailRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static SailRepository initializeFederation(String fedxConfig, List<Endpoint> additionalEndpoints) throws FedXException {
-		if (!(new File(fedxConfig).exists()))
+	public static FedXSailRepository initializeFederation(String fedxConfig, List<Endpoint> additionalEndpoints) throws FedXException {
+		File file = new File(fedxConfig);
+		if (!(file.isFile()))
 			throw new FedXException("FedX Configuration cannot be accessed at " + fedxConfig);
-		Config.initialize(fedxConfig);
+		Config.initialize(file);
 		return initializeFederation(additionalEndpoints);
 	}
 	
@@ -128,11 +129,11 @@ public class FedXFactory {
 	 * 			additional endpoints to be added, may be null or empty
 	 *  
 	 * @return
-	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link SailRepository}
+	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link FedXSailRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static SailRepository initializeFederation(List<Endpoint> endpoints) throws FedXException {
+	public static FedXSailRepository initializeFederation(List<Endpoint> endpoints) throws FedXException {
 		
 		String dataConfig = Config.getConfig().getDataConfig();
 		String cacheLocation = Config.getConfig().getCacheLocation();
@@ -160,7 +161,7 @@ public class FedXFactory {
 	 * @param cacheLocation
 	 * @return
 	 */
-	private static SailRepository initializeFederation(List<Endpoint> members, String cacheLocation) throws FedXException {
+	private static FedXSailRepository initializeFederation(List<Endpoint> members, String cacheLocation) throws FedXException {
 
 		Cache cache = new MemoryCache(cacheLocation);
 		cache.initialize();

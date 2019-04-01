@@ -1,0 +1,18 @@
+#
+# RDF4J configuration template for a FedX Repository
+#
+# Note that locations are relative to the data directory
+# as injected by the RDF4J repository manager
+#
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rep: <http://www.openrdf.org/config/repository#>.
+@prefix fedx: <http://www.fluidops.com/config/fedx#>.
+
+[] a rep:Repository ;
+   rep:repositoryImpl [
+      rep:repositoryType "fedx:FedXRepository" ;
+      fedx:fedxConfig "{%Location of the FedX configuration file relative to the data dir|%}" ;
+      fedx:dataConfig "{%Location of the FedX data configuration file relative to the data dir|%}" ;
+   ];
+   rep:repositoryID "{%Local repository ID|unique endpoint id%}" ;
+   rdfs:label "{%Repository title|FedX federation repository title%}" .

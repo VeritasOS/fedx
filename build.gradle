@@ -27,6 +27,7 @@ group 'com.veritas.fops'
 sourceSets {
 	main {
 		java { srcDirs 'src' }
+		resources { srcDirs 'src' }
 	}
 	test {
 		java { srcDirs 'test' }
@@ -66,6 +67,7 @@ dependencies {
 	compileOnly group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '3.1.12', transitive: false
 	implementation "org.eclipse.rdf4j:rdf4j-queryresultio-sparqljson:$rdf4jVersion"
 	implementation "org.eclipse.rdf4j:rdf4j-queryresultio-sparqlxml:$rdf4jVersion"
+	runtime "org.eclipse.rdf4j:rdf4j-rio-n3:$rdf4jVersion"
 	implementation("org.eclipse.rdf4j:rdf4j-sail-nativerdf:$rdf4jVersion") {
 		exclude group: 'com.google.guava', module: 'guava' // to avoid transitive behavior
 	}

@@ -10,6 +10,6 @@ First steps and important information:
  * FedX is licensed under Apache License 2.0 (see attached license). 
 
 (c) 2011-2018 fluid Operations AG
-(c) 2018 Veritas Technologies LLC
+(c) 2018-2019 Veritas Technologies LLC
 http://www.veritas.com
-Last updated: 20.03.2019
+Last updated: 01.04.2019

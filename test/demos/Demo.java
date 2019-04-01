@@ -1,5 +1,7 @@
 package demos;
 
+import java.io.File;
+
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -14,7 +16,7 @@ public class Demo {
 
 	public static void main(String[] args) throws Exception {
 		
-		String dataConfig = "local/dataSourceConfig.ttl";
+		File dataConfig = new File("local/dataSourceConfig.ttl");
 		Config.initialize();
 		SailRepository repo = FedXFactory.initializeFederation(dataConfig);
 		

@@ -15,6 +15,7 @@
  */
 package com.fluidops.fedx;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,21 +61,42 @@ public class Config {
 	}
 	
 	/**
+	 * Initialize the configuration with default settings.
+	 */
+	public static void initialize() throws FedXException {
+		initialize((File) null);
+	}
+
+	/**
 	 * Initialize the configuration with the specified properties file.
 	 * 
-	 * @param fedxConfig
-	 * 			the optional location of the properties file. If not specified the default configuration is used.
+	 * @param fedxConfig the optional location of the properties file. If
+	 *                   <code>null</code>, the default configuration is used.
 	 * 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 */
-	public static synchronized void initialize(String... fedxConfig) throws FedXException {
+	public static void initialize(String fedxConfig) throws FedXException {
+		File file = fedxConfig != null ? new File(fedxConfig) : null;
+		initialize(file);
+	}
+
+	/**
+	 * Initialize the configuration with the specified properties file.
+	 * 
+	 * @param fedxConfig the optional location of the properties file. If
+	 *                   <code>null</code>, the default configuration is used.
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws IllegalArgumentException
+	 */
+	public static synchronized void initialize(File fedxConfig) throws FedXException {
 		if (instance!=null)
 			throw new FedXRuntimeException("Config is already initialized.");
 		instance = new Config();
-		String cfg = fedxConfig!=null && fedxConfig.length==1 ? fedxConfig[0] : null;
-		instance.init(cfg);
+		instance.init(fedxConfig);
 	}
 	
 
@@ -84,16 +106,18 @@ public class Config {
 		props = new Properties();
 	}
 	
-	private void init(String configFile) throws FedXException {
+	private void init(File configFile) throws FedXException {
 		if (configFile==null) {
-			log.warn("No configuration file specified. Using default config initialization.");
+			log.debug("No configuration file specified. Using default config initialization.");
 			return;
 		}
+
+		if (!configFile.isFile()) {
+			throw new FedXException("FedX config file does not exist: " + configFile);
+		}
 		log.info("FedX Configuration initialized from file '" + configFile + "'.");
-		try {
-			FileInputStream in = new FileInputStream(configFile);
+		try (FileInputStream in = new FileInputStream(configFile)) {
 			props.load( in );
-			in.close();
 		} catch (IOException e) {
 			throw new FedXException("Failed to initialize FedX configuration with " + configFile + ": " + e.getMessage());
 		}

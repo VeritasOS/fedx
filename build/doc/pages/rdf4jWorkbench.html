@@ -1,0 +1,128 @@
+<html>
+<head>
+	<title>FedX Documentation</title>
+</head>
+
+<body>
+<div id="content" style="width:800px">
+
+<h2>Using FedX in the RDF4J Workbench</h2>
+
+<a href="../Index.html">back</a>
+
+<p>FedX can be configured as a Repository in the RDF4J Workbench, e.g. to use 
+the inherent infrastructure for publishing the federation as a single SPARQL
+endpoint.
+</p>
+
+<h3>Steps</h3>
+
+<ul>
+	<li>Follow the documentation on <a href="http://docs.rdf4j.org/server-workbench-console/" target="_BLANK">http://docs.rdf4j.org/server-workbench-console/</a> 
+	to setup and deploy the RDF4J workbench</li>
+	<li>Start the RDF4J workbench once and make sure it is running. Then shutdown the webserver</li>
+	<li>Deploy the FedX binary (i.e. fedx-6.0.0.jar) in the <i>rdf4j-server</i> webapp (e.g. in a standard Tomcat installation to <i>&lt;TOMCAT-HOME&gt;/webapps/rdf4j-server/WEB-INF/lib/fedx-6.0.0.jar</i>)</li>
+	<li>Create a FedX repository
+		<ul>
+			<li>Locate the RDF4J application directory (Hint: see <a href="http://docs.rdf4j.org/server-workbench-console/#_application_directory_configuration" target="_BLANK">http://docs.rdf4j.org/server-workbench-console/#_application_directory_configuration</a>)</li>
+			<li>Create a FedX repository configuration by copying the required files (see "Sample Configuration") to the <i>repositories</i> directory (that exists in teh application directory)</li>
+		</ul>
+	</li>
+	<li>Restart the RDF4J workbench and check the state of the FedX federation
+	
+</ul>
+
+<p><b>Notes</b></p>
+
+<ul>
+	<li>Due to a technical limitation in the RDF4J workbench it is currently not possible to use SPARQL endpoints
+	hosted in the same RDF4J server as federation members</li>
+	<li>Logging output can be found in <i>logs/main.log</i> (in the RDF4J application directory) as well as
+	in the tomcat logs (e.g. catalina.out and catalina.log)
+</ul>
+
+
+<h3>Sample Repository configuration</h3>
+
+<p>Repositories in the RDF4J workbench are configured using <i>config.ttl</i> files in the <i>repositories</i>
+folder of the application directory.</p>
+
+<p>Each repository is represented by a folder (i.e. the data directory) and a <i>config.ttl</i> file. For FedX we
+require two additional files, the <i>fedx configuration file</i> and the <i>data configuration file</i> (representing 
+the federation members).<p>
+
+<p>
+In order to configure FedX create the configuration the samples below. If the configuration was successful, you
+can access the SPARQL endpoint at <i>http://localhost:8080/rdf4j-workbench/repositories/%myFederation%/summary</i>.
+The SPARQL endpoint is accessible at <i>http://localhost:8080/rdf4j-server/repositories/%myFederation%</i>.
+</p>
+
+<p><b>Directory structure</b><p>
+
+<pre>
+/repositories
+  + myFederation
+    - config.ttl
+    - fedxConfig.prop
+    - dataConfig.ttl
+</pre>
+
+Note that <i>myFederation</i> is the repository identifier in the RDF4J workbench.
+
+<p><b>config.ttl</b></p>
+
+<pre>
+#
+# RDF4J configuration template for a FedX Repository
+#
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rep: <http://www.openrdf.org/config/repository#>.
+@prefix fedx: <http://www.fluidops.com/config/fedx#>.
+
+[] a rep:Repository ;
+   rep:repositoryImpl [
+      rep:repositoryType "fedx:FedXRepository" ;
+      fedx:fedxConfig "fedxConfig.prop" ;
+      fedx:dataConfig "dataConfig.ttl" ;
+   ];
+   rep:repositoryID "fedx" ;
+   rdfs:label "FedX Federation" .
+</pre>
+
+<p>
+Note that locations are relative to the data directory.</p>
+
+
+<p><b>fedxConfig.prop</b></p>
+
+<p>Specifies the configuration of FedX, see the documentation on <a href="configuration.html">configuration</a> for details.</p>
+
+<pre>
+# FedX Configuration
+#
+# Have a look at the documentation to get information on
+# possible configuration settings
+
+#debugQueryPlan = true
+</pre>
+
+
+<p><b>dataConfig.ttl</b></p>
+
+<p>This file specifies the federation members, see the documentation on <a href="dataConfig.html">data configurations</a> for details.</p>
+
+<pre>
+@prefix fluid: &lt;http://fluidops.org/config#>.
+
+&lt;http://DBpedia> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://dbpedia.org/sparql";
+fluid:supportsASKQueries "false" .
+
+&lt;http://localEndpoint> fluid:store "SPARQLEndpoint";
+fluid:SPARQLEndpoint "http://localhost:8890/sparql" .
+
+</pre>
+
+</div>
+</body>
+</html>

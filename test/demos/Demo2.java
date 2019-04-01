@@ -1,5 +1,7 @@
 package demos;
 
+import java.io.File;
+
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -15,7 +17,7 @@ public class Demo2 {
 		if (System.getProperty("log4j.configuration")==null)
 			System.setProperty("log4j.configuration", "file:local/log4j.properties");
 		
-		String dataConfig = "local/LifeScience-FedX-SPARQL.ttl";
+		File dataConfig = new File("local/LifeScience-FedX-SPARQL.ttl");
 		Repository repo = FedXFactory.initializeFederation(dataConfig);
 		
 		String q = "SELECT ?Drug ?IntDrug ?IntEffect WHERE { "

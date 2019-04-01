@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +111,7 @@ public class FederationManager {
 	 * 				the statistics instance to be used
 	 * @return the initialized {@link Repository} representing the federation. Needs to be shut down by the caller
 	 */
-	public static synchronized SailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
+	public static synchronized FedXSailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
 		if (instance!=null)
 			throw new FedXRuntimeException("FederationManager already initialized.");
 		
