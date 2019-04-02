@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.util.FedXUtil;
 
 /**
  * Convenience methods for {@link Endpoint} providers
@@ -59,6 +60,7 @@ public class ProviderUtil {
 		try {
 			conn = repo.getConnection();
 			TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, "SELECT * WHERE { ?s ?p ?o } LIMIT 1");
+			FedXUtil.applyMaxQueryExecutionTime(query);
 			TupleQueryResult qRes = null;
 			try {
 				qRes = query.evaluate();

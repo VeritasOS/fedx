@@ -39,7 +39,7 @@ import com.fluidops.fedx.provider.ProviderUtil;
 
 /**
  * Configuration properties for FedX based on a properties file. Prior to using this configuration
- * {@link #initialize(String...)} must be invoked with the location of the properties file.
+ * {@link #initialize(File)} must be invoked with the location of the properties file.
  * 
  * @author Andreas Schwarte
  *

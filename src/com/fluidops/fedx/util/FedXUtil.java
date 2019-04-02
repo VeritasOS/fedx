@@ -21,8 +21,10 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.query.Operation;
 import org.eclipse.rdf4j.repository.sail.SailQuery;
 
+import com.fluidops.fedx.Config;
 import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
 
 /**
@@ -83,5 +85,22 @@ public class FedXUtil
 	public static String getIncrementalUUID() {
 		long id = count.incrementAndGet();
 		return Long.toHexString(id);
+	}
+
+	/**
+	 * Set a maximum execution time corresponding to
+	 * {@link Config#getEnforceMaxQueryTime()} to this operation.
+	 * 
+	 * Note that this is an upper bound only as FedX applies other means for
+	 * evaluation the maximum query execution time.
+	 * 
+	 * @param operation the {@link Operation}
+	 */
+	public static void applyMaxQueryExecutionTime(Operation operation) {
+		int maxExecutionTime = Config.getConfig().getEnforceMaxQueryTime();
+		if (maxExecutionTime <= 0) {
+			return;
+		}
+		operation.setMaxExecutionTime(maxExecutionTime);
 	}
 }

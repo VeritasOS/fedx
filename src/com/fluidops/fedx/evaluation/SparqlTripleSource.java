@@ -84,6 +84,7 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 			QueryEvaluationException {
 		
 		TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, preparedQuery, null);
+		applyMaxExecutionTimeUpperBound(query);
 		disableInference(query);
 		
 		CloseableIteration<BindingSet, QueryEvaluationException> res=null;
@@ -153,6 +154,7 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 			String queryString = QueryStringUtil.askQueryString(stmt, bindings);
 			BooleanQuery query = conn.prepareBooleanQuery(QueryLanguage.SPARQL, queryString, null);
 			disableInference(query);
+			applyMaxExecutionTimeUpperBound(query);
 			
 			try {
 				monitorRemoteRequest();
@@ -168,6 +170,7 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 			String queryString = QueryStringUtil.selectQueryStringLimit1(stmt, bindings);
 			TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			disableInference(query);
+			applyMaxExecutionTimeUpperBound(query);
 			
 			monitorRemoteRequest();
 			try (TupleQueryResult qRes = query.evaluate()) {
@@ -194,6 +197,7 @@ public class SparqlTripleSource extends TripleSourceBase implements TripleSource
 			String queryString = QueryStringUtil.selectQueryStringLimit1(group, bindings);
 			TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			disableInference(query);
+			applyMaxExecutionTimeUpperBound(query);
 			
 			monitorRemoteRequest();
 			try (TupleQueryResult qRes = query.evaluate()) {

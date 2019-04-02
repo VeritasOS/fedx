@@ -49,7 +49,7 @@ public class FedXFactory {
 	/**
 	 * Initialize the federation with the provided sparql endpoints. 
 	 * 
-	 * NOTE: {@link Config#initialize(String...)} needs to be invoked before.
+	 * NOTE: {@link Config#initialize(File)} needs to be invoked before.
 	 * 
 	 * @param sparqlEndpoints the list of SPARQL endpoints
 	 * 
@@ -73,7 +73,7 @@ public class FedXFactory {
 	 * Initialize the federation with a specified data source configuration file (*.ttl). Federation members are 
 	 * constructed from the data source configuration. Sample data source configuration files can be found in the documentation.
 	 * 
-	 * NOTE: {@link Config#initialize(String...)} needs to be invoked before.
+	 * NOTE: {@link Config#initialize(File)} needs to be invoked before.
 	 * 
 	 * @param dataConfig
 	 * 				the location of the data source configuration
@@ -121,9 +121,9 @@ public class FedXFactory {
 	
 	/**
 	 * Initialize the federation by providing the endpoints to add. The fedx configuration can provide information
-	 * about the dataConfig to be used which may contain the default federation  members.<p>
+	 * about the dataConfig to be used which may contain the default federation members.<p>
 	 * 
-	 * NOTE: {@link Config#initialize(String...)} needs to be invoked before.
+	 * NOTE: {@link Config#initialize(File)} needs to be invoked before.
 	 * 
 	 * @param endpoints
 	 * 			additional endpoints to be added, may be null or empty

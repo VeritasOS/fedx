@@ -24,6 +24,7 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.BooleanQuery;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.Operation;
 import org.eclipse.rdf4j.query.Query;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -40,6 +41,7 @@ import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
 import com.fluidops.fedx.monitoring.Monitoring;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryType;
+import com.fluidops.fedx.util.FedXUtil;
 import com.fluidops.fedx.util.QueryStringUtil;
 
 public abstract class TripleSourceBase implements TripleSource
@@ -66,16 +68,19 @@ public abstract class TripleSourceBase implements TripleSource
 		case SELECT:
 			monitorRemoteRequest();
 			TupleQuery tQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, preparedQuery);
+			applyMaxExecutionTimeUpperBound(tQuery);
 			disableInference(tQuery);
 			return tQuery.evaluate();
 		case CONSTRUCT:
 			monitorRemoteRequest();
 			GraphQuery gQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, preparedQuery);
+			applyMaxExecutionTimeUpperBound(gQuery);
 			disableInference(gQuery);
 			return new GraphToBindingSetConversionIteration(gQuery.evaluate());
 		case ASK:
 			monitorRemoteRequest();
 			BooleanQuery bQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedQuery);
+			applyMaxExecutionTimeUpperBound(bQuery);
 			disableInference(bQuery);
 			return booleanToBindingSetIteration(bQuery.evaluate());
 		default:
@@ -101,7 +106,10 @@ public abstract class TripleSourceBase implements TripleSource
 		
 		monitorRemoteRequest();
 		String preparedAskQuery = QueryStringUtil.askQueryString(group, bindings);
-		return conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedAskQuery).evaluate();
+		BooleanQuery query = conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedAskQuery);
+		disableInference(query);
+		applyMaxExecutionTimeUpperBound(query);
+		return query.evaluate();
 	}
 
 
@@ -130,4 +138,13 @@ public abstract class TripleSourceBase implements TripleSource
 		}
 	}
 	
+	/**
+	 * Apply an upper bound of the maximum execution time using
+	 * {@link FedXUtil#applyMaxQueryExecutionTime(Operation)}.
+	 * 
+	 * @param operation the operation
+	 */
+	protected void applyMaxExecutionTimeUpperBound(Operation operation) {
+		FedXUtil.applyMaxQueryExecutionTime(operation);
+	}
 }

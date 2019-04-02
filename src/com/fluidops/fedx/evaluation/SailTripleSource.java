@@ -73,7 +73,8 @@ public class SailTripleSource extends TripleSourceBase implements TripleSource{
 			QueryEvaluationException {
 		
 		TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, preparedQuery, null);
-		disableInference(query);		
+		disableInference(query);
+		applyMaxExecutionTimeUpperBound(query);
 		
 		// evaluate the query
 		CloseableIteration<BindingSet, QueryEvaluationException> res = query.evaluate();
