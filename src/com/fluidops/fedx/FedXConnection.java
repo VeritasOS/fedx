@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.DistinctIteration;
+import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.ExceptionConvertingIteration;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Namespace;
@@ -228,13 +229,17 @@ public class FedXConnection extends AbstractSailConnection
 
 	@Override
 	protected String getNamespaceInternal(String prefix) throws SailException {
-		throw new UnsupportedOperationException("Operation is not yet supported.");
+		// do not support this feature, but also do not throw an exception
+		// as this method is expected for the RDF4J workbench to work
+		return null;
 	}
 
 	@Override
 	protected CloseableIteration<? extends Namespace, SailException> getNamespacesInternal()
 			throws SailException {
-		throw new UnsupportedOperationException("Operation is not yet supported.");		
+		// do not support this feature, but also do not throw an exception
+		// as this method is expected for the RDF4J workbench to work
+		return new EmptyIteration<>();
 	}
 
 	@Override

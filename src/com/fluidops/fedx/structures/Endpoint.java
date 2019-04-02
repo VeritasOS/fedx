@@ -253,19 +253,12 @@ public class Endpoint  {
 	
 	/**
 	 * Returns the size of the given repository, i.e. the number of triples.
-	 * Can only be applied for types NativeStore and RemoteRepository.
 	 * 
 	 * @return the size of the endpoint
 	 * @throws RepositoryException
 	 */
 	public long size() throws RepositoryException {
-		switch (type) {
-		case NativeStore:
-		case RemoteRepository: 	
-				return getConn().size();
-		default: 			
-			throw new RepositoryException("Size() only supported for NativeStore and RemoteRepository.");
-		}
+		return getConn().size();
 	}
 	
 	/**
