@@ -1,20 +1,25 @@
-@prefix fluid: <http://fluidops.org/config#>.
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix fedx: <http://www.fluidops.com/config/fedx#>.
 
-<http://kegg> fluid:store "RemoteRepository";
-fluid:repositoryServer "http://10.212.10.29:8081/openrdf-sesame";
-fluid:repositoryName "kegg".
+<http://kegg> a sd:Service ;
+	fedx:store "RemoteRepository" ;
+	fedx:repositoryServer "http://10.212.10.29:8081/openrdf-sesame" ;
+	fedx:repositoryName "kegg" .
 
-<http://drugbank> fluid:store "RemoteRepository";
-fluid:repositoryServer "http://10.212.10.29:8081/openrdf-sesame";
-fluid:repositoryName "drugbank".
+<http://drugbank> a sd:Service ;
+	fedx:store "RemoteRepository";
+	fedx:repositoryServer "http://10.212.10.29:8081/openrdf-sesame" ;
+	fedx:repositoryName "drugbank".
 
-<http://genewiki> fluid:store "RemoteRepository";
-fluid:repositoryServer "http://10.212.10.29:8081/openrdf-sesame";
-fluid:repositoryName "chebi".
+<http://genewiki> a sd:Service ;
+	fedx:store "RemoteRepository";
+	fedx:repositoryServer "http://10.212.10.29:8081/openrdf-sesame" ;
+	fedx:repositoryName "chebi".
 
-<http://dbpedia> fluid:store "RemoteRepository";
-fluid:repositoryServer "http://10.212.10.29:8088/openrdf-sesame";
-fluid:repositoryName "dbpedia".
+<http://dbpedia> a sd:Service
+	fedx:store "RemoteRepository" ;
+	fedx:repositoryServer "http://10.212.10.29:8088/openrdf-sesame" ;
+	fedx:repositoryName "dbpedia" .
 
 
 

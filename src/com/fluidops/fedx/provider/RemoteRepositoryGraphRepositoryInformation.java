@@ -17,29 +17,31 @@ package com.fluidops.fedx.provider;
 
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import com.fluidops.fedx.structures.Endpoint.EndpointType;
-import com.fluidops.fedx.util.FedXUtil;
+import com.fluidops.fedx.util.Vocabulary;
 
 
 /**
- * Graph information for Sesame SPARQLRepository initialization.
+ * Graph information for RDF4J {@link HTTPRepository} initialization.
  * 
  * Format:
  * 
  * <code>
- * <%name%> fluid:store "RemoteRepository";
- * fluid:repositoryServer "%location%";
- * fluid:repositoryName "%name%"
+ * <%name%> fedx:store "RemoteRepository";
+ * fedx:repositoryServer "%location%";
+ * fedx:repositoryName "%name%"
  * 
- * <http://dbpedia> fluid:store "RemoteRepository";
- * fluid:repositoryServer "http://<host>/openrdf-sesame" ;
- * fluid:repositoryName "dbpedia" .
+ * <http://dbpedia> fedx:store "RemoteRepository";
+ * fedx:repositoryServer "http://<host>/openrdf-sesame" ;
+ * fedx:repositoryName "dbpedia" .
  * 
  * 
  * </code>
  * 
- * Note: the id is constructed from the name: http://dbpedia.org/ => remote_dbpedia.org
+ * Note: the id is constructed from the name: http://dbpedia.org/ =>
+ * remote_dbpedia.org
  * 
  * 
  * @author Andreas Schwarte
@@ -64,14 +66,14 @@ public class RemoteRepositoryGraphRepositoryInformation extends RepositoryInform
 		setProperty("name", repNode.stringValue());
 
 		// repositoryServer / location
-		Model repositoryServer = graph.filter(repNode, FedXUtil.iri("http://fluidops.org/config#repositoryServer"),
+		Model repositoryServer = graph.filter(repNode, Vocabulary.FEDX.REPOSITORY_SERVER,
 				null);
 		String repoLocation = repositoryServer.iterator().next().getObject().stringValue();
 		setProperty("location", repoLocation);
 		setProperty("repositoryServer", repoLocation);
 		
 		// repositoryName
-		Model repositoryName = graph.filter(repNode, FedXUtil.iri("http://fluidops.org/config#repositoryName"), null);
+		Model repositoryName = graph.filter(repNode, Vocabulary.FEDX.REPOSITORY_NAME, null);
 		String repoName = repositoryName.iterator().next().getObject().stringValue();
 		setProperty("repositoryName", repoName);
 		

@@ -46,8 +46,8 @@ and collect all conference events that are located in Germany.</p>
 
 <h3>System overview</h3>
 
-<p>FedX is built on top of Sesame and constitutes a practical federation layer as a Sesame SAIL 
-implementation. It allows to virtually integrate Linked Data sources using any Sesame SAIL mediator 
+<p>FedX is built on top of RDF4J and constitutes a practical federation layer as a RDF4J SAIL 
+implementation. It allows to virtually integrate Linked Data sources using any RDF4J SAIL mediator 
 (e.g. as SPARQL endpoint or NativeStore) and the (virtually) combined RDF graph of those sources can 
 be used or federated query processing. In contrast to the SPARQL 1.1 Federation Extensions our system 
 allows for transparent integration of data sources, meaning that sources do not have to be stated 
@@ -100,50 +100,31 @@ System.exit(0);
 
 <h3>Data Config</h3>
 
-<p>The federation members can be specified using a simple data config format.</p>
+<p>The federation members can be specified using a simple data config format in Turtle syntax.</p>
 
-<p>SPARQL Federation:</p>
-
-<pre>
-@prefix fluid: &lt;http://fluidops.org/config#>.
-
-&lt;http://DBpedia> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://dbpedia.org/sparql";
-fluid:supportsASKQueries "false" .
-
-&lt;http://SWDF> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://data.semanticweb.org/sparql".
-
-&lt;http://LinkedMDB> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://data.linkedmdb.org/sparql".
-</pre>
-
-<p>Note: if a SPARQL endpoint does not support ASK queries, 
-the endpoint can be configured to use SELECT queries instead
-using <i>fluid:supportsASKQueries "false"</i>. This is
-for instance useful for Virtuoso based endpoints like
-DBpedia. Moreover note that for convenience the public DBpedia 
-endpoint is automatically configured to use SELECT queries</p>
-
-<p>SPARQL Federation using Sesame Remote Repositories</p>
+<p>Example federation:</p>
 
 <pre>
-&lt;http://dbpedia&gt; fluid:store "RemoteRepository";
-fluid:repositoryServer "http://&lt;host&gt;/openrdf-sesame" ;
-fluid:repositoryName "&lt;repoName&gt;" .
+@prefix sd: &lt;http://www.w3.org/ns/sparql-service-description#&gt; .
+@prefix fedx: &lt;http://www.fluidops.com/config/fedx#&gt; .
+
+&lt;http://DBpedia> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "http://dbpedia.org/sparql";
+	fedx:supportsASKQueries false .
+
+&lt;http://dbpedia&gt; a sd:service ;
+	fedx:store "RemoteRepository";
+	fedx:repositoryServer "http://&lt;host&gt;/openrdf-sesame" ;
+	fedx:repositoryName "&lt;repoName&gt;" .
+	
+	
+&lt;http://NYTimes> a sd:Service ;
+	fedx:store "NativeStore" ;
+	fedx:repositoryLocation "repositories\\native-storage.nytimes" .
 </pre>
 
-<p>Local Federation (NativeStore):</p>
-
-<pre>
-@prefix fluid: &lt;http://fluidops.org/config#>.
-
-&lt;http://DBpedia> fluid:store "NativeStore";
-fluid:RepositoryLocation "repositories\\native-storage.dbpedia36".
-
-&lt;http://NYTimes> fluid:store "NativeStore";
-fluid:RepositoryLocation "repositories\\native-storage.nytimes".
-</pre>
+See <a href="pages/dataConfig.html">data config</a> for full details.
 
 
 <h3>FedX CLI</h3>

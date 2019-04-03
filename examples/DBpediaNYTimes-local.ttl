@@ -1,9 +1,12 @@
-@prefix fluid: <http://fluidops.org/config#>.
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix fedx: <http://www.fluidops.com/config/fedx#>.
 
-<http://DBpedia> fluid:store "NativeStore";
-fluid:RepositoryLocation "repositories\\native-storage.dbpedia36".
+<http://DBpedia> a sd:Service ;
+	fedx:store "NativeStore" ;
+	fedx:repositoryLocation "repositories\\native-storage.dbpedia36".
 
-<http://NYTimes> fluid:store "NativeStore";
-fluid:RepositoryLocation "repositories\\native-storage.nytimes".
+<http://NYTimes> a sd:Service ;
+	fedx:store "NativeStore" ;
+	fedx:repositoryLocation "repositories\\native-storage.nytimes" .
 
 

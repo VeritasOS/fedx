@@ -22,7 +22,7 @@ import org.eclipse.rdf4j.model.Resource;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.structures.Endpoint.EndpointType;
-import com.fluidops.fedx.util.FedXUtil;
+import com.fluidops.fedx.util.Vocabulary;
 
 
 /**
@@ -30,18 +30,18 @@ import com.fluidops.fedx.util.FedXUtil;
  * 
  * Format:<p>
  * 
- * <code>
- * <%name%> fluid:store "NativeStore";
- * fluid:RepositoryLocation "%location%".
+ * <pre>
+ * <%name%> fedx:store "NativeStore";
+ * fedx:RepositoryLocation "%location%".
  * 
  * relative path (to {@link Config#getBaseDir()})
- * <http://DBpedia> fluid:store "NativeStore";
- * fluid:RepositoryLocation "data\\repositories\\native-storage.dbpedia".
+ * <http://DBpedia> fedx:store "NativeStore";
+ * fedx:repositoryLocation "data\\repositories\\native-storage.dbpedia".
  *  
  * absolute Path
- * <http://DBpedia> fluid:store "NativeStore";
- * fluid:RepositoryLocation "D:\\data\\repositories\\native-storage.dbpedia".
- * </code>
+ * <http://DBpedia> fedx:store "NativeStore";
+ * fedx:repositoryLocation "D:\\data\\repositories\\native-storage.dbpedia".
+ * </pre>
  * 
  * Note: the id is constructed from the location: repositories\\native-storage.dbpedia => native-storage.dbpedia
  * 
@@ -62,7 +62,7 @@ public class NativeGraphRepositoryInformation extends RepositoryInformation {
 		setProperty("name", repNode.stringValue());
 				
 		// location
-		Model location = graph.filter(repNode, FedXUtil.iri("http://fluidops.org/config#RepositoryLocation"), null);
+		Model location = graph.filter(repNode, Vocabulary.FEDX.REPOSITORY_LOCATION, null);
 		String repoLocation = location.iterator().next().getObject().stringValue();
 		setProperty("location", repoLocation);
 		

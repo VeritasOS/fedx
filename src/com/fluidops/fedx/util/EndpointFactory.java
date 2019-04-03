@@ -213,14 +213,14 @@ public class EndpointFactory {
 		RDFParser parser = Rio.createParser(RDFFormat.N3);
 		RDFHandler handler = new DefaultRDFHandler(graph);
 		parser.setRDFHandler(handler);
-		try {
-			parser.parse(new FileReader(dataConfig), "http://fluidops.org/config#");
+		try (FileReader fr = new FileReader(dataConfig)) {
+			parser.parse(fr, Vocabulary.FEDX.NAMESPACE);
 		} catch (Exception e) {
 			throw new FedXException("Unable to parse dataconfig " + dataConfig + ":" + e.getMessage());
 		} 
 		
-		List<Endpoint> res = new ArrayList<Endpoint>();
-		for (Statement st : graph.filter(null, FedXUtil.iri("http://fluidops.org/config#store"), null))
+		List<Endpoint> res = new ArrayList<>();
+		for (Statement st : graph.filter(null, Vocabulary.FEDX.STORE, null))
 		{
 			Endpoint e = loadEndpoint(graph, st.getSubject(), st.getObject());
 			res.add(e);
@@ -234,7 +234,7 @@ public class EndpointFactory {
 		
 		EndpointProvider repProvider;
 		
-		// NativeStore => Sesame native store implementation
+		// NativeStore => RDF4J native store implementation
 		if (repType.equals(FedXUtil.literal("NativeStore")))
 		{
 			repProvider = new NativeStoreProvider();

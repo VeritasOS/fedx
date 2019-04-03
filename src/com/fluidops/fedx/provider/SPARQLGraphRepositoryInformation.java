@@ -17,35 +17,44 @@ package com.fluidops.fedx.provider;
 
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 import com.fluidops.fedx.structures.Endpoint.EndpointType;
 import com.fluidops.fedx.structures.SparqlEndpointConfiguration;
 import com.fluidops.fedx.util.FedXUtil;
+import com.fluidops.fedx.util.Vocabulary;
 
 
 /**
- * Graph information for Sesame SPARQLRepository initialization.<p>
+ * Graph information for RDF4J {@link SPARQLRepository} initialization.
+ * <p>
  * 
- * Format:<p>
+ * Format:
+ * <p>
  * 
  * <pre>
- * <%name%> fluid:store "SPARQLEndpoint";
- * fluid:SPARQLEndpoint "%location%"
+ * &#64;prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+ * &#64;prefix fedx: <http://www.fluidops.com/config/fedx#>.
  * 
- * <http://DBpedia> fluid:store "SPARQLEndpoint";
- * fluid:SPARQLEndpoint "http://dbpedia.org/sparql".
+ * <%name%> a sd:Service ;
+ *  	fedx:store "SPARQLEndpoint";
+ *  	sd:endpoint "%location%"
  * 
- * <http://NYtimes> fluid:store "SPARQLEndpoint";
- * fluid:SPARQLEndpoint "http://api.talis.com/stores/nytimes/services/sparql".
+ * <http://DBpedia> a sd:Service ;
+ *  	fedx:store "SPARQLEndpoint";
+ *  	sd:endpoint "http://dbpedia.org/sparql".
  * </pre>
  * 
- * Note: the id is constructed from the name: http://dbpedia.org/ => sparql_dbpedia.org<p>
+ * Note: the id is constructed from the name: http://dbpedia.org/ =>
+ * sparql_dbpedia.org
+ * <p>
  * 
  * 
- * The following properties can be used to define additional endpoint settings.<p>
+ * The following properties can be used to define additional endpoint settings.
+ * <p>
  * 
  * <pre>
- * http://fluidops.org/config#supportsASKQueries => "true"|"false" (default: true)
+ * fedx:supportsASKQueries => "true"|"false" (default: true)
  * </pre>
  * 
  * 
@@ -66,7 +75,7 @@ public class SPARQLGraphRepositoryInformation extends RepositoryInformation {
 		setProperty("name", repNode.stringValue());
 				
 		// location		
-		Model location = graph.filter(repNode, FedXUtil.iri("http://fluidops.org/config#SPARQLEndpoint"), null);
+		Model location = graph.filter(repNode, Vocabulary.SD.ENDPOINT, null);
 		String repoLocation = location.iterator().next().getObject().stringValue();;
 		setProperty("location", repoLocation);
 		
@@ -79,8 +88,9 @@ public class SPARQLGraphRepositoryInformation extends RepositoryInformation {
 		if (hasAdditionalSettings(graph, repNode)) {
 			SparqlEndpointConfiguration c = new SparqlEndpointConfiguration();
 			
-			if (graph.contains(repNode, FedXUtil.iri("http://fluidops.org/config#supportsASKQueries"),
-					FedXUtil.literal("false")))
+			if (graph.contains(repNode, Vocabulary.FEDX.SUPPORTS_ASK_QUERIES, FedXUtil.literal("false"))
+					|| graph.contains(repNode, Vocabulary.FEDX.SUPPORTS_ASK_QUERIES,
+							FedXUtil.valueFactory().createLiteral(false)))
 				c.setSupportsASKQueries(false);
 			
 			setEndpointConfiguration(c);
@@ -88,6 +98,6 @@ public class SPARQLGraphRepositoryInformation extends RepositoryInformation {
 	}
 	
 	protected boolean hasAdditionalSettings(Model graph, Resource repNode) {
-		return graph.contains(repNode, FedXUtil.iri("http://fluidops.org/config#supportsASKQueries"), null);
+		return graph.contains(repNode, Vocabulary.FEDX.SUPPORTS_ASK_QUERIES, null);
 	}
 }

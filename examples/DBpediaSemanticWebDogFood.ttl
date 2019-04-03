@@ -1,9 +1,12 @@
-@prefix fluid: <http://fluidops.org/config#>.
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix fedx: <http://www.fluidops.com/config/fedx#>.
 
-<http://DBpedia> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://dbpedia.org/sparql";
-fluid:supportsASKQueries "false" .
+<http://DBpedia> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "http://dbpedia.org/sparql" ;
+	fedx:supportsASKQueries false .
 
-<http://SWDF> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://data.semanticweb.org/sparql".
+<http://SWDF> a sd:Service ;
+	fedx:store "SPARQLEndpoint" ;
+	sd:endpoint "http://data.semanticweb.org/sparql".
 

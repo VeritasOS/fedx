@@ -18,44 +18,55 @@ members are specified in a turtle syntax.</p>
 <h3>Example 1: SPARQL Federation:</h3>
 
 <pre>
-@prefix fluid: &lt;http://fluidops.org/config#>.
+@prefix sd: &lt;http://www.w3.org/ns/sparql-service-description#&gt; .
+@prefix fedx: &lt;http://www.fluidops.com/config/fedx#&gt; .
 
-&lt;http://DBpedia> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://dbpedia.org/sparql";
-fluid:supportsASKQueries "false" .
+&lt;http://DBpedia> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "http://dbpedia.org/sparql";
+	fedx:supportsASKQueries false .
 
-&lt;http://SWDF> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://data.semanticweb.org/sparql".
+&lt;http://SWDF> a sd:Service ;
+	fedx:store "SPARQLEndpoint" ;
+	sd:endpoint "http://data.semanticweb.org/sparql".
 
-&lt;http://LinkedMDB> fluid:store "SPARQLEndpoint";
-fluid:SPARQLEndpoint "http://data.linkedmdb.org/sparql".
+&lt;http://LinkedMDB> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "http://data.linkedmdb.org/sparql".
 </pre>
 
 <p>Note: if a SPARQL endpoint does not support ASK queries, 
 the endpoint can be configured to use SELECT queries instead
-using <i>fluid:supportsASKQueries "false"</i>. This is
+using <i>fedx:supportsASKQueries false</i>. This is
 for instance useful for Virtuoso based endpoints like
 DBpedia. Moreover note that for convenience the public DBpedia 
 endpoint is automatically configured to use SELECT queries</p>
 
-<h3>Example 2: SPARQL Federation with Sesame remote repositories</h3>
+<h3>Example 2: SPARQL Federation with RDF4J remote repositories</h3>
 
 <pre>
-&lt;http://dbpedia&gt; fluid:store "RemoteRepository";
-fluid:repositoryServer "http://&lt;host&gt;/openrdf-sesame" ;
-fluid:repositoryName "&lt;repoName&gt;" .
+@prefix sd: &lt;http://www.w3.org/ns/sparql-service-description#&gt; .
+@prefix fedx: &lt;http://www.fluidops.com/config/fedx#&gt; .
+
+&lt;http://dbpedia&gt; a sd:Service ;
+	fedx:store "RemoteRepository";
+	fedx:repositoryServer "http://&lt;host&gt;/rdf4j-server" ;
+	fedx:repositoryName "&lt;repoName&gt;" .
 </pre>
 
 <h3>Example 3: Local Federation (NativeStore):</h3>
 
 <pre>
-@prefix fluid: &lt;http://fluidops.org/config#>.
+@prefix sd: &lt;http://www.w3.org/ns/sparql-service-description#&gt; .
+@prefix fedx: &lt;http://www.fluidops.com/config/fedx#&gt; .
 
-&lt;http://DBpedia> fluid:store "NativeStore";
-fluid:RepositoryLocation "repositories\\native-storage.dbpedia36".
+&lt;http://DBpedia&gt; a sd:Service ;
+	fedx:store "NativeStore";
+	fedx:repositoryLocation "repositories\\native-storage.dbpedia36".
 
-&lt;http://NYTimes> fluid:store "NativeStore";
-fluid:RepositoryLocation "repositories\\native-storage.nytimes".
+&lt;http://NYTimes&gt; a sd:Service ;
+	fedx:store "NativeStore";
+	fedx:repositoryLocation "repositories\\native-storage.nytimes".
 </pre>
 
 Note that also hybrid combinations are possible.

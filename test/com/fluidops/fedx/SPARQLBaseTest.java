@@ -57,7 +57,7 @@ public abstract class SPARQLBaseTest extends FedXBaseTest {
 	/**
 	 * the server, e.g. SparqlEmbeddedServer or NativeStoreServer
 	 */
-	private static Server server;
+	protected static Server server;
 	
 	
 	
