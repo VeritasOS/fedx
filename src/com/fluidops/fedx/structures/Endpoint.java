@@ -28,19 +28,29 @@ import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.TripleSourceFactory;
 import com.fluidops.fedx.exception.FedXRuntimeException;
+import com.fluidops.fedx.provider.RepositoryInformation;
 
 
 /**
- * Structure to maintain endpoint information, e.g. type, location, etc. For initialization the
- * underlying repository must be set using {@link #setRepo(Repository)}.<p>
+ * <p>
+ * Structure to maintain endpoint information, e.g. type, location. The
+ * {@link Repository} to use can be obtained by calling {@link #getRepo()}.
+ * <p>
  * 
- * All endpoints need to be added to the {@link EndpointManager}, moreover endpoints can be 
- * looked up using their id and their connection.<p>
+ * <p>
+ * All endpoints need to be added to the {@link EndpointManager}, moreover
+ * endpoints can be looked up using their id and their connection.
+ * </p>
  * 
- * An endpoint uses a Singleton for the repository connection. If by chance this connection is broken,
- * e.g. due to a SocketException, a call to {@link #repairConnection()} reinitializes the connection.<p>
+ * <p>
+ * An endpoint uses a Singleton for the repository connection. If by chance this
+ * connection is broken, e.g. due to a SocketException, a call to
+ * {@link #repairConnection()} reinitializes the connection.
+ * </p>
  * 
+ * <p>
  * Note: Interaction with endpoints should be done via the EndpointManager
+ * </p>
  * 
  * @author Andreas Schwarte
  * @see EndpointManager
@@ -95,50 +105,32 @@ public class Endpoint  {
 		}
 	}
 	
-	protected String id = null;										// the identifier
-	protected String name = null;									// the name
-	protected String endpoint = null;								// the endpoint, e.g. for SPARQL the URL
-	protected EndpointType type = null;									// the type, e.g. SPARQL, NativeRepo
+	protected final RepositoryInformation repoInfo; // the repository information
+	protected final String endpoint; // the endpoint, e.g. for SPARQL the URL
 	protected EndpointClassification endpointClassification;		// the endpoint classification
-	protected boolean writable = false;								// can this endpoint be used for write operations
+	protected boolean writable = false; // can this endpoint be used for write operation
 		
-	protected Repository repo;
+
 	protected RepositoryConnection conn  = null;	// a Singleton RepositoryConnection for the given endpoint
 	protected boolean initialized = false;			// true, iff the contained repository is initialized
 	protected TripleSource tripleSource;			// the triple source, initialized when repository is set
 	protected EndpointConfiguration endpointConfiguration;	// additional endpoint type specific configuration
 
-	/**
-	 * Construct a new endpoint.
-	 * 
-	 * @param id
-	 * 			the globally unique identifier, e.g. SPARQL_dbpedia351
-	 * @param name
-	 * 			the name of this endpoint
-	 * @param endpoint
-	 * 			the endpoint, e.g. for SPARQL the URL
-	 * @param type
-	 * 			the type, e.g. SPARQL, NativeStore
-	 */
-	public Endpoint(String id, String name, String endpoint, EndpointType type, EndpointClassification endpointClassification) {
+
+	public Endpoint(RepositoryInformation repoInfo, String endpoint,
+			EndpointClassification endpointClassification) {
 		super();
-		this.id = id;
-		this.name = name;
+		this.repoInfo = repoInfo;
 		this.endpoint = endpoint;
-		this.type = type;
 		this.endpointClassification = endpointClassification;
 	}
 	
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		return repoInfo.getName();
 	}
 
 	public Repository getRepo() {
-		return repo;
+		throw new IllegalStateException("Endpoint does not provide a repository");
 	}
 
 	public TripleSource getTripleSource() {
@@ -157,17 +149,6 @@ public class Endpoint  {
 		return endpointClassification==EndpointClassification.Local;
 	}
 	
-	/**
-	 * Set the underlying initialized repository.
-	 * 
-	 * @param repo
-	 * 			the repository
-	 * 
-	 * @throws RepositoryException
-	 */
-	public void setRepo(Repository repo) throws RepositoryException {
-		this.repo = repo;
-	}	
 		
 	/**
 	 * @return the writable
@@ -210,7 +191,7 @@ public class Endpoint  {
 	 */
 	public RepositoryConnection getConn() {
 		if (!initialized)
-			throw new FedXRuntimeException("Repository for endpoint " + id + " not initialized");
+			throw new FedXRuntimeException("Repository for endpoint " + getId() + " not initialized");
 		return conn;
 	}
 
@@ -219,12 +200,9 @@ public class Endpoint  {
 	 *  	the identifier
 	 */
 	public String getId() {
-		return id;
+		return repoInfo.getId();
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	/**
 	 * Get the endpoint location, e.g. for SPARQL endpoints the url
@@ -235,17 +213,10 @@ public class Endpoint  {
 		return endpoint;
 	}
 
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
-	}
-
 	public EndpointType getType() {
-		return type;
+		return repoInfo.getType();
 	}
 	
-	public void setType(EndpointType type) {
-		this.type = type;
-	}
 
 	public boolean isInitialized() {
 		return initialized;
@@ -267,11 +238,10 @@ public class Endpoint  {
 	 * @throws RepositoryException
 	 */
 	public void initialize() throws RepositoryException {
-		if (repo==null)
-			throw new FedXRuntimeException("Repository for endpoint " + id + " not yet specified");
 		if (isInitialized())
-			return;		
-		tripleSource = TripleSourceFactory.tripleSourceFor(this, type);
+			return;
+		Repository repo = getRepo();
+		tripleSource = TripleSourceFactory.tripleSourceFor(this, getType());
 		conn = repo.getConnection();
 		initialized = true;
 	}
@@ -287,19 +257,19 @@ public class Endpoint  {
 	 */
 	public RepositoryConnection repairConnection() throws RepositoryException {
 		if (!initialized)
-			throw new FedXRuntimeException("Repository for endpoint " + id + " not initialized");
+			throw new FedXRuntimeException("Repository for endpoint " + getId() + " not initialized");
 
-		log.debug("Repairing connection for endpoint " + id );
+		log.debug("Repairing connection for endpoint " + getId());
 		
 		if (conn!=null) {
 			try {
 				conn.close();
 			} catch (RepositoryException e) { 
-				log.warn("Connection of endpoint " + id + " could not be closed: " + e.getMessage());
+				log.warn("Connection of endpoint " + getId() + " could not be closed: " + e.getMessage());
 			}
 		}
-		conn = repo.getConnection();
-		log.info("Connection for endpoint " + id + " successfully repaired.");
+		conn = getRepo().getConnection();
+		log.info("Connection for endpoint " + getId() + " successfully repaired.");
 		return conn;
 	}
 
@@ -309,13 +279,10 @@ public class Endpoint  {
 	 * @throws RepositoryException
 	 */
 	public void shutDown() throws RepositoryException {
-		if (repo==null)
-			throw new RepositoryException("Repository for endpoint " + id + " not yet specified");
 		if (!isInitialized())
 			return;
 		conn.close();
 		conn = null;
-		repo.shutDown();
 		initialized = false;
 	}
 	
@@ -323,8 +290,8 @@ public class Endpoint  {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+		result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
 		return result;
 	}
 
@@ -337,22 +304,22 @@ public class Endpoint  {
 		if (getClass() != obj.getClass())
 			return false;
 		Endpoint other = (Endpoint) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (getId() == null) {
+			if (other.getId() != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!getId().equals(other.getId()))
 			return false;
-		if (type == null) {
-			if (other.type != null)
+		if (getType() == null) {
+			if (other.getType() != null)
 				return false;
-		} else if (!type.equals(other.type))
+		} else if (!getType().equals(other.getType()))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Endpoint [id=" + id + ", name=" + name + ", type=" + type + "]";
+		return "Endpoint [id=" + getId() + ", name=" + getName() + ", type=" + getType() + "]";
 	}		
 	
 	

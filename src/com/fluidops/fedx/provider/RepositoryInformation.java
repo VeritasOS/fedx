@@ -75,4 +75,8 @@ public class RepositoryInformation {
 	public void setProperty(String key, String value) {
 		props.setProperty(key, value);
 	}
+
+	public void setType(EndpointType type) {
+		this.type = type;
+	}
 }

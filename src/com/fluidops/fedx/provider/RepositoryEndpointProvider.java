@@ -18,6 +18,8 @@ package com.fluidops.fedx.provider;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
+import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
+import com.fluidops.fedx.endpoint.RepositoryEndpoint;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
@@ -25,32 +27,55 @@ import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
 /**
  * Returns an {@link Endpoint} for an already configured {@link Repository}.
  * 
+ * <p>
+ * If the repository is already initialized, it is assumed that the lifecycle is
+ * managed externally (see {@link RepositoryEndpoint}. Otherwise, FedX will make
+ * sure to take care for the lifecycle of the repository, i.e. initialize and
+ * shutdown (see {@link ManagedRepositoryEndpoint}).
+ * </p>
+ * 
  * @author Andreas Schwarte
- *
+ * @see RepositoryEndpoint
+ * @see ManagedRepositoryEndpoint
  */
-public class RepositoryProvider implements EndpointProvider {
+public class RepositoryEndpointProvider implements EndpointProvider {
 
 	protected final Repository repository;
 
-	public RepositoryProvider(Repository repository) {
+	public RepositoryEndpointProvider(Repository repository) {
 		super();
 		this.repository = repository;
 	}
 
 	@Override
-	public Endpoint loadEndpoint(RepositoryInformation repoInfo) throws FedXException {
+	public Endpoint loadEndpoint(RepositoryInformation repoInfo)
+			throws FedXException {
 
 		try {
-			if (!repository.isInitialized()) {
-				repository.initialize();
+			boolean didInitialize = false;
+			try {
+				if (!repository.isInitialized()) {
+					repository.initialize();
+					didInitialize = true;
+				}
+
+				ProviderUtil.checkConnectionIfConfigured(repository);
+			} finally {
+				if (didInitialize) {
+					repository.shutDown();
+				}
 			}
 
-			ProviderUtil.checkConnectionIfConfigured(repository);
+			Endpoint res;
 
-			Endpoint res = new Endpoint(repoInfo.getId(), repoInfo.getName(), repoInfo.getLocation(),
-					repoInfo.getType(), EndpointClassification.Remote);
+			if (repository.isInitialized()) {
+				res = new RepositoryEndpoint(repoInfo, repoInfo.getLocation(), EndpointClassification.Remote,
+						repository);
+			} else {
+				res = new ManagedRepositoryEndpoint(repoInfo, repoInfo.getLocation(), EndpointClassification.Remote,
+					repository);
+			}
 			res.setEndpointConfiguration(repoInfo.getEndpointConfiguration());
-			res.setRepo(repository);
 
 			return res;
 		} catch (RepositoryException e) {
@@ -58,5 +83,4 @@ public class RepositoryProvider implements EndpointProvider {
 					e);
 		}
 	}
-
 }

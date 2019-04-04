@@ -111,7 +111,7 @@ public class FederationManager {
 	 * 				the statistics instance to be used
 	 * @return the initialized {@link Repository} representing the federation. Needs to be shut down by the caller
 	 */
-	public static synchronized FedXSailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
+	static synchronized FedXSailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
 		if (instance!=null)
 			throw new FedXRuntimeException("FederationManager already initialized.");
 		

@@ -51,7 +51,7 @@ public class Config {
 	private static Config instance = null;
 	
 	public static Config getConfig() {
-		if (instance==null)
+		if (!isInitialized())
 			throw new FedXRuntimeException("Config not initialized. Call Config.initialize() first.");
 		return instance;
 	}
@@ -93,12 +93,15 @@ public class Config {
 	 * @throws IllegalArgumentException
 	 */
 	public static synchronized void initialize(File fedxConfig) throws FedXException {
-		if (instance!=null)
+		if (isInitialized())
 			throw new FedXRuntimeException("Config is already initialized.");
 		instance = new Config();
 		instance.init(fedxConfig);
 	}
 	
+	static synchronized boolean isInitialized() {
+		return instance != null;
+	}
 
 	
 	private Properties props;

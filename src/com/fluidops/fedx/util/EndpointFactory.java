@@ -45,8 +45,8 @@ import com.fluidops.fedx.provider.NativeGraphRepositoryInformation;
 import com.fluidops.fedx.provider.NativeStoreProvider;
 import com.fluidops.fedx.provider.RemoteRepositoryGraphRepositoryInformation;
 import com.fluidops.fedx.provider.RemoteRepositoryProvider;
+import com.fluidops.fedx.provider.RepositoryEndpointProvider;
 import com.fluidops.fedx.provider.RepositoryInformation;
-import com.fluidops.fedx.provider.RepositoryProvider;
 import com.fluidops.fedx.provider.SPARQLGraphRepositoryInformation;
 import com.fluidops.fedx.provider.SPARQLProvider;
 import com.fluidops.fedx.structures.Endpoint;
@@ -116,17 +116,24 @@ public class EndpointFactory {
 	
 	/**
 	 * Load an {@link Endpoint} for a given (configured) Repository.
-	 * 
+	 * <p>
 	 * Note that {@link EndpointType} is set to {@link EndpointType#Other}
+	 * </p>
 	 * 
-	 * @param id                     the identifier, e.g. "myRepository"
-	 * @param repository             the constructed repository (not initialized)
+	 * <p>
+	 * If the repository is already initialized, it is assumed that the lifecycle is
+	 * managed externally. Otherwise, FedX will make sure to take care for the
+	 * lifecycle of the repository, i.e. initialize and shutdown.
+	 * </p>
+	 * 
+	 * @param id         the identifier, e.g. "myRepository"
+	 * @param repository the constructed repository
 	 * @return the initialized endpoint
 	 * @throws FedXException
 	 */
 	public static Endpoint loadEndpoint(String id, Repository repository)
 			throws FedXException {
-		EndpointProvider repProvider = new RepositoryProvider(repository);
+		EndpointProvider repProvider = new RepositoryEndpointProvider(repository);
 		String name = "http://" + id;
 		String location = "http://unknown";
 		try {

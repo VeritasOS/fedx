@@ -127,9 +127,7 @@ public class CLI {
 		
 		// parse the arguments and construct config
 		parse(args);
-		
-						
-		
+
 		if (Config.getConfig().getDataConfig()!=null) {
 			// currently there is no duplicate detection, so the following is a hint for the user
 			// can cause problems if members are explicitly specified (-s,-l,-d) and via the fedx configuration
@@ -149,40 +147,38 @@ public class CLI {
 		
 		if (queries.size()==0)
 			error("No queries specified", true);
+
+		// initialize default prefix declarations (if the user did not specify anything)
+		if (Config.getConfig().getPrefixDeclarations() == null) {
+			initDefaultPrefixDeclarations();
+		}
+		
 		
 		// setup the federation
 		try {
 			repo = FedXFactory.initializeFederation(endpoints);
+
+			int count = 1;
+			for (String queryString : queries) {
+
+				try {
+					if (planOnly) {
+						System.out.println(QueryManager.getQueryPlan(queryString));
+					} else {
+						System.out.println("Running Query " + count);
+						runQuery(queryString, count);
+					}
+				} catch (Exception e) {
+					error("Query " + count + " could not be evaluated: \n" + e.getMessage(), false);
+				}
+				count++;
+			}
 		} catch (FedXException e) {
 			error("Problem occured while setting up the federation: " + e.getMessage(), false);
+		} finally {
+			repo.shutDown();
 		}
-		
-		// initialize default prefix declarations (if the user did not specify anything)
-		if (Config.getConfig().getPrefixDeclarations()==null) {
-			initDefaultPrefixDeclarations();
-		}
-		
-		int count=1;
-		for (String queryString : queries) {
-			
-			try {
-				if (planOnly) {
-					System.out.println(QueryManager.getQueryPlan(queryString));
-				} else {
-					System.out.println("Running Query " + count);
-					runQuery(queryString, count);
-				}
-			} catch (Exception e) {
-				error("Query " + count + " could not be evaluated: \n" + e.getMessage(), false);
-			}
-			count++;
-		}
-		
-		try {
-			FederationManager.getInstance().shutDown();
-		} catch (FedXException e) {
-			System.out.println("WARN: Federation could not be shut down: " + e.getMessage());
-		}
+
 		System.out.println("Done.");
 		System.exit(0);
  	}

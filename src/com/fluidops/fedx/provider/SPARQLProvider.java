@@ -21,6 +21,7 @@ import org.eclipse.rdf4j.http.client.SharedHttpClientSessionManager;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
+import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
@@ -29,18 +30,21 @@ import com.fluidops.fedx.structures.SparqlEndpointConfiguration;
 
 
 /**
- * Provider for an Endpoint that uses a Sesame {@link SPARQLRepository} as underlying
- * repository. All SPARQL endpoints are considered Remote.<p>
+ * Provider for an Endpoint that uses a RDF4j {@link SPARQLRepository} as
+ * underlying repository. All SPARQL endpoints are considered Remote.
+ * <p>
  * 
- * This {@link SPARQLProvider} implements special hard-coded endpoint configuration
- * for the DBpedia endpoint: the support for ASK queries is always set to false.
+ * This {@link SPARQLProvider} implements special hard-coded endpoint
+ * configuration for the DBpedia endpoint: the support for ASK queries is always
+ * set to false.
  * 
  * @author Andreas Schwarte
  */
 public class SPARQLProvider implements EndpointProvider {
 
 	@Override
-	public Endpoint loadEndpoint(RepositoryInformation repoInfo) throws FedXException {
+	public Endpoint loadEndpoint(RepositoryInformation repoInfo)
+			throws FedXException {
 
 		try {
 			SPARQLRepository repo = new SPARQLRepository(repoInfo.getLocation());
@@ -48,18 +52,20 @@ public class SPARQLProvider implements EndpointProvider {
 					.setMaxConnPerRoute(20);
 			((SharedHttpClientSessionManager) repo.getHttpClientSessionManager())
 					.setHttpClientBuilder(httpClientBuilder);
-			repo.initialize();
-			
-			ProviderUtil.checkConnectionIfConfigured(repo);
-			
+			try {
+				repo.initialize();
+				ProviderUtil.checkConnectionIfConfigured(repo);
+			} finally {
+				repo.shutDown();
+			}
+
 			String location = repoInfo.getLocation();
 			EndpointClassification epc = EndpointClassification.Remote;
 			
-			Endpoint res = new Endpoint(repoInfo.getId(), repoInfo.getName(), location, repoInfo.getType(), epc);
+			Endpoint res = new ManagedRepositoryEndpoint(repoInfo, location, epc, repo);
 			EndpointConfiguration ep = manipulateEndpointConfiguration(location, repoInfo.getEndpointConfiguration());
 			res.setEndpointConfiguration(ep);
-			res.setRepo(repo);
-			
+
 			return res;
 		} catch (RepositoryException e) {
 			throw new FedXException("Repository " + repoInfo.getId() + " could not be initialized: " + e.getMessage(), e);

@@ -1,6 +1,7 @@
 package com.fluidops.fedx.server;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
 import org.junit.rules.TemporaryFolder;
 
+import com.fluidops.fedx.provider.RepositoryInformation;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
@@ -48,7 +50,12 @@ public class NativeStoreServer extends TemporaryFolder implements Server {
 	public Endpoint loadEndpoint(int i) throws Exception {
 		Endpoint e = EndpointFactory.loadEndpoint("endpoint" + i, repositories.get(i - 1));
 		e.setEndpointClassification(EndpointClassification.Local);
-		e.setType(EndpointType.NativeStore);
+
+		Field repoInfoField = Endpoint.class.getDeclaredField("repoInfo");
+		repoInfoField.setAccessible(true);
+
+		RepositoryInformation repoInfo = (RepositoryInformation) repoInfoField.get(e);
+		repoInfo.setType(EndpointType.NativeStore);
 		return e;
 	}
 

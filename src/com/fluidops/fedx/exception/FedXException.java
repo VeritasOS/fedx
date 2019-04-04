@@ -22,7 +22,7 @@ package com.fluidops.fedx.exception;
  * @author Andreas Schwarte
  *
  */
-public class FedXException extends Exception {
+public class FedXException extends RuntimeException {
 
 	private static final long serialVersionUID = -3973697449786957158L;
 

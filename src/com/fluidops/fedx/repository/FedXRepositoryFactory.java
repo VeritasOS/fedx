@@ -116,6 +116,7 @@ public class FedXRepositoryFactory implements RepositoryFactory {
 
 				FedXSailRepository fedxRepo;
 				try {
+					// TODO support using the RDF4J repository manager as RepositoryResolver
 					fedxRepo = FedXFactory.initializeFederation(dataConfigFile);
 				} catch (Exception e) {
 					throw new RepositoryException(e);

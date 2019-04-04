@@ -6,6 +6,7 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 
+import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.QueryManager;
 import com.fluidops.fedx.structures.Endpoint;
@@ -17,7 +18,8 @@ public class Demo6 {
 		
 		// the fedx config implicitly defines a dataConfig
 		String fedxConfig = "examples/fedxConfig-withPrefixDecl.prop";
-		Repository repo = FedXFactory.initializeFederation(fedxConfig, Collections.<Endpoint>emptyList());
+		Config.initialize(fedxConfig);
+		Repository repo = FedXFactory.initializeFederation(Collections.<Endpoint>emptyList());
 		
 		String q = "SELECT ?President ?Party WHERE {\n"
 			+ "?President rdf:type dbpedia:President .\n"

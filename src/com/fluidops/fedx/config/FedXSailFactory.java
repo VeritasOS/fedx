@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.sail.config.SailConfigException;
 import org.eclipse.rdf4j.sail.config.SailFactory;
 import org.eclipse.rdf4j.sail.config.SailImplConfig;
 
+import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.exception.FedXException;
@@ -62,12 +63,12 @@ public class FedXSailFactory implements SailFactory {
 		
 		FedXSailConfig fedXSailConfig = (FedXSailConfig)config;
 		String fedxConfig = fedXSailConfig.getFedxConfig();
-		
-		if (fedxConfig==null)
-			throw new SailConfigException("FedX Sail Configuration must not be null");
+
 		
 		try	{
-			FedXFactory.initializeFederation(fedxConfig, Collections.<Endpoint>emptyList());
+			Config.initialize(fedxConfig);
+
+			FedXFactory.initializeFederation(Collections.<Endpoint>emptyList());
 		} catch (FedXException e) {
 			throw new SailConfigException(e);
 		}

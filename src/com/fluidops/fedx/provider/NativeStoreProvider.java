@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
 
+import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.structures.Endpoint;
@@ -30,7 +31,7 @@ import com.fluidops.fedx.util.FileUtil;
 
 
 /**
- * Provider for an Endpoint that uses a Sesame {@link NativeStore} as underlying
+ * Provider for an Endpoint that uses a RDF4J {@link NativeStore} as underlying
  * repository. For optimization purposes the NativeStore is wrapped within a
  * {@link NativeStoreExt} to allow for evaluation of prepared queries without
  * prior optimization. Note that NativeStores are always classified as 'Local'.
@@ -51,13 +52,19 @@ public class NativeStoreProvider implements EndpointProvider {
 		try {
 			NativeStore ns = new NativeStoreExt(store);
 			SailRepository repo = new SailRepository(ns);
-			repo.initialize();
 			
+			try {
+				repo.initialize();
+
+				ProviderUtil.checkConnectionIfConfigured(repo);
+			} finally {
+				repo.shutDown();
+			}
+
 			ProviderUtil.checkConnectionIfConfigured(repo);
-			
-			Endpoint res = new Endpoint(repoInfo.getId(), repoInfo.getName(), repoInfo.getLocation(), repoInfo.getType(), EndpointClassification.Local);
+
+			Endpoint res = new ManagedRepositoryEndpoint(repoInfo, repoInfo.getLocation(), EndpointClassification.Local, repo);
 			res.setEndpointConfiguration(repoInfo.getEndpointConfiguration());
-			res.setRepo(repo);
 			
 			return res;
 		} catch (RepositoryException e) {
