@@ -41,7 +41,7 @@ public class ResolvableEndpoint extends EndpointBase {
 	}
 
 	@Override
-	public Repository getRepo() {
+	public Repository getRepository() {
 		if (repositoryResolver == null) {
 			throw new IllegalStateException("Repository resolver not defined.");
 		}

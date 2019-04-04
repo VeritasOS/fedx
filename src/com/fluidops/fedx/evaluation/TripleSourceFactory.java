@@ -15,8 +15,8 @@
  */
 package com.fluidops.fedx.evaluation;
 
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointType;
 
 public class TripleSourceFactory
 {

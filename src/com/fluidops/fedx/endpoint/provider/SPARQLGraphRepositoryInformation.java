@@ -19,8 +19,8 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
-import com.fluidops.fedx.structures.SparqlEndpointConfiguration;
+import com.fluidops.fedx.endpoint.EndpointType;
+import com.fluidops.fedx.endpoint.SparqlEndpointConfiguration;
 import com.fluidops.fedx.util.FedXUtil;
 import com.fluidops.fedx.util.Vocabulary;
 

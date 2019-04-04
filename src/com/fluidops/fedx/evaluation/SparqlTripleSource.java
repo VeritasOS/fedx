@@ -41,13 +41,13 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.FilterValueExpr;
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.SparqlEndpointConfiguration;
 import com.fluidops.fedx.evaluation.iterator.ConsumingIteration;
 import com.fluidops.fedx.evaluation.iterator.FilteringInsertBindingsIteration;
 import com.fluidops.fedx.evaluation.iterator.FilteringIteration;
 import com.fluidops.fedx.evaluation.iterator.InsertBindingsIteration;
 import com.fluidops.fedx.exception.ExceptionUtil;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.SparqlEndpointConfiguration;
 import com.fluidops.fedx.util.QueryStringUtil;
 
 

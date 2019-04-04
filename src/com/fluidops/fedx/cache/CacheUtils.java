@@ -26,9 +26,9 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementSource.StatementSourceType;
 import com.fluidops.fedx.cache.Cache.StatementSourceAssurance;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.exception.OptimizationException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.SubQuery;
 
 public class CacheUtils {
@@ -49,7 +49,7 @@ public class CacheUtils {
 	{
 		try {
 			TripleSource t = endpoint.getTripleSource();
-			RepositoryConnection conn = endpoint.getConn(); 
+			RepositoryConnection conn = endpoint.getConnection(); 
 
 			boolean hasResults = t.hasStatements(conn, subj, pred, obj);
 			

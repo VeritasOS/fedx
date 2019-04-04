@@ -30,9 +30,9 @@ import com.fluidops.fedx.algebra.FedXService;
 import com.fluidops.fedx.algebra.NJoin;
 import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementSource.StatementSourceType;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.exception.OptimizationException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 
 /**

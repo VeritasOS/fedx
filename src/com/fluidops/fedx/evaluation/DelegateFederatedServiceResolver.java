@@ -23,7 +23,7 @@ import org.eclipse.rdf4j.repository.sparql.federation.RepositoryFederatedService
 import org.eclipse.rdf4j.repository.sparql.federation.SPARQLServiceResolver;
 
 import com.fluidops.fedx.EndpointManager;
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 
 /**
  * A {@link FederatedServiceResolver} which redirects SERVICE requests to
@@ -63,7 +63,7 @@ public class DelegateFederatedServiceResolver extends AbstractFederatedServiceRe
 	protected FederatedService createService(String serviceUrl) throws QueryEvaluationException {
 		Endpoint ep = getFedXEndpoint(serviceUrl);
 		if (ep != null) {
-			return new RepositoryFederatedService(ep.getRepo(), false);
+			return new RepositoryFederatedService(ep.getRepository(), false);
 		}
 		return delegate.getService(serviceUrl);
 	}

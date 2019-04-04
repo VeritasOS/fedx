@@ -22,8 +22,9 @@ import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.model.Statement;
 
 import com.fluidops.fedx.cache.Cache.StatementSourceAssurance;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.EntryUpdateException;
-import com.fluidops.fedx.structures.Endpoint;
+
 
 /**
  * Interface for a CacheEntry

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.EndpointManager;
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 
 /**
  * Convenience functions to handle exceptions.

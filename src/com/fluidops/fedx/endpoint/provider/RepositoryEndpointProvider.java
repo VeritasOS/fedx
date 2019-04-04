@@ -18,11 +18,12 @@ package com.fluidops.fedx.endpoint.provider;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointBase;
+import com.fluidops.fedx.endpoint.EndpointClassification;
 import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
 import com.fluidops.fedx.endpoint.RepositoryEndpoint;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
 
 /**
  * Returns an {@link Endpoint} for an already configured {@link Repository}.
@@ -66,7 +67,7 @@ public class RepositoryEndpointProvider implements EndpointProvider {
 				}
 			}
 
-			Endpoint res;
+			EndpointBase res;
 
 			if (repository.isInitialized()) {
 				res = new RepositoryEndpoint(repoInfo, repoInfo.getLocation(), EndpointClassification.Remote,

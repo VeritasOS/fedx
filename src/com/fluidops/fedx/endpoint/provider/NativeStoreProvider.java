@@ -22,11 +22,11 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
 
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointClassification;
 import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
 import com.fluidops.fedx.util.FileUtil;
 
 
@@ -63,7 +63,8 @@ public class NativeStoreProvider implements EndpointProvider {
 
 			ProviderUtil.checkConnectionIfConfigured(repo);
 
-			Endpoint res = new ManagedRepositoryEndpoint(repoInfo, repoInfo.getLocation(), EndpointClassification.Local, repo);
+			ManagedRepositoryEndpoint res = new ManagedRepositoryEndpoint(repoInfo, repoInfo.getLocation(),
+					EndpointClassification.Local, repo);
 			res.setEndpointConfiguration(repoInfo.getEndpointConfiguration());
 			
 			return res;

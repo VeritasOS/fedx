@@ -9,12 +9,13 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
 import org.junit.rules.TemporaryFolder;
 
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointBase;
+import com.fluidops.fedx.endpoint.EndpointClassification;
 import com.fluidops.fedx.endpoint.EndpointFactory;
+import com.fluidops.fedx.endpoint.EndpointType;
 import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
 
 public class NativeStoreServer extends TemporaryFolder implements Server {
 
@@ -48,10 +49,10 @@ public class NativeStoreServer extends TemporaryFolder implements Server {
 
 	@Override
 	public Endpoint loadEndpoint(int i) throws Exception {
-		Endpoint e = EndpointFactory.loadEndpoint("endpoint" + i, repositories.get(i - 1));
+		EndpointBase e = (EndpointBase) EndpointFactory.loadEndpoint("endpoint" + i, repositories.get(i - 1));
 		e.setEndpointClassification(EndpointClassification.Local);
 
-		Field repoInfoField = Endpoint.class.getDeclaredField("repoInfo");
+		Field repoInfoField = EndpointBase.class.getDeclaredField("repoInfo");
 		repoInfoField.setAccessible(true);
 
 		RepositoryInformation repoInfo = (RepositoryInformation) repoInfoField.get(e);

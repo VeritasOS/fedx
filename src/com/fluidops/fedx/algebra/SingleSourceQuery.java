@@ -21,7 +21,7 @@ import org.eclipse.rdf4j.query.algebra.AbstractQueryModelNode;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 
 

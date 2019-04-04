@@ -10,7 +10,7 @@ import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.QueryManager;
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 
 public class Demo7 {
 

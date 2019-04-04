@@ -12,8 +12,8 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
-import com.fluidops.fedx.structures.Endpoint;
 
 public class FedXRule implements BeforeEachCallback, AfterEachCallback {
 

@@ -27,10 +27,10 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.EndpointManager;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
 import com.fluidops.fedx.exception.IllegalQueryException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.util.QueryStringUtil;
 
@@ -61,7 +61,7 @@ public class ExclusiveStatement extends FedXStatementPattern {
 		try {
 			
 			Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(getOwner().getEndpointID());
-			RepositoryConnection ownedConnection = ownedEndpoint.getConn();
+			RepositoryConnection ownedConnection = ownedEndpoint.getConnection();
 			TripleSource t = ownedEndpoint.getTripleSource();
 			
 			/*

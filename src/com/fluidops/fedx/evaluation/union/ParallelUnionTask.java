@@ -23,10 +23,10 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.QueryStringUtil;
 
 /**
@@ -62,6 +62,7 @@ public class ParallelUnionTask extends ParallelTaskBase<BindingSet> {
 		return unionControl;
 	}
 	
+	@Override
 	public String toString() {
 		Endpoint e = EndpointManager.getEndpointManager().getEndpoint(conn);
 		return this.getClass().getSimpleName() + " @" + e.getId() + ": " + QueryStringUtil.toString(stmt);

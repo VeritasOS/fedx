@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 
 public class ServiceTests extends SPARQLBaseTest
 {

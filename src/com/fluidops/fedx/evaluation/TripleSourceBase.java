@@ -36,10 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.iterator.GraphToBindingSetConversionIteration;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
 import com.fluidops.fedx.monitoring.Monitoring;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
 import com.fluidops.fedx.util.QueryStringUtil;

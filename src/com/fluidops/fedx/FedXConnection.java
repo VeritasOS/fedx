@@ -43,6 +43,7 @@ import org.eclipse.rdf4j.sail.helpers.AbstractSailConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTask;
@@ -52,7 +53,6 @@ import com.fluidops.fedx.evaluation.union.SynchronousWorkerUnion;
 import com.fluidops.fedx.evaluation.union.WorkerUnionBase;
 import com.fluidops.fedx.optimizer.Optimizer;
 import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
@@ -203,7 +203,7 @@ public class FedXConnection extends AbstractSailConnection
 			union.addTask( new ParallelTask<Resource>() {
 				@Override
 				public CloseableIteration<Resource, QueryEvaluationException> performTask()	throws Exception {
-					return new RepositoryExceptionConvertingIteration<Resource>(e.getConn().getContextIDs());
+					return new RepositoryExceptionConvertingIteration<Resource>(e.getConnection().getContextIDs());
 				}				
 				@Override
 				public ParallelExecutor<Resource> getControl() {

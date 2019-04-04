@@ -43,11 +43,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.iterator.FilteringInsertBindingsIteration;
 import com.fluidops.fedx.evaluation.iterator.FilteringIteration;
 import com.fluidops.fedx.evaluation.iterator.InsertBindingsIteration;
 import com.fluidops.fedx.evaluation.iterator.StatementConversionIteration;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.QueryAlgebraUtil;
 
 

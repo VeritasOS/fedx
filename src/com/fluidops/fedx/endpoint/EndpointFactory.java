@@ -49,8 +49,6 @@ import com.fluidops.fedx.endpoint.provider.SPARQLGraphRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.SPARQLProvider;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
 import com.fluidops.fedx.util.FedXUtil;
 import com.fluidops.fedx.util.Vocabulary;
 
@@ -75,7 +73,7 @@ public class EndpointFactory {
 	 * 			the URL of the SPARQL endpoint, e.g. http://dbpedia.org/sparql
 	 * 
 	 * @return
-	 * 		an initialized {@link Endpoint} containing the repository
+	 * 		an initialized {@link EndpointBase} containing the repository
 	 * 
 	 * @throws Exception
 	 */
@@ -94,7 +92,7 @@ public class EndpointFactory {
 	 * 			the URL of the SPARQL endpoint, e.g. http://dbpedia.org/sparql
 	 * 
 	 * @return
-	 * 		an initialized {@link Endpoint} containing the repository
+	 * 		an initialized {@link EndpointBase} containing the repository
 	 * 
 	 * @throws FedXException
 	 */
@@ -117,7 +115,7 @@ public class EndpointFactory {
 	}
 	
 	/**
-	 * Load an {@link Endpoint} for a given (configured) Repository.
+	 * Load an {@link EndpointBase} for a given (configured) Repository.
 	 * <p>
 	 * Note that {@link EndpointType} is set to {@link EndpointType#Other}
 	 * </p>

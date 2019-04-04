@@ -28,13 +28,13 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.FederationManager;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
 import com.fluidops.fedx.evaluation.union.ParallelPreparedUnionTask;
 import com.fluidops.fedx.evaluation.union.ParallelUnionTask;
 import com.fluidops.fedx.evaluation.union.WorkerUnionBase;
 import com.fluidops.fedx.exception.IllegalQueryException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.util.QueryStringUtil;
 
@@ -74,7 +74,7 @@ public class StatementSourcePattern extends FedXStatementPattern {
 			for (StatementSource source : statementSources) {
 				
 				Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-				RepositoryConnection conn = ownedEndpoint.getConn();
+				RepositoryConnection conn = ownedEndpoint.getConnection();
 				TripleSource t = ownedEndpoint.getTripleSource();
 				
 				/*
@@ -123,7 +123,7 @@ public class StatementSourcePattern extends FedXStatementPattern {
 		// XXX do this in parallel for the number of endpoints ?
 		for (StatementSource source : statementSources) {
 			Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-			RepositoryConnection ownedConnection = ownedEndpoint.getConn();
+			RepositoryConnection ownedConnection = ownedEndpoint.getConnection();
 			TripleSource t = ownedEndpoint.getTripleSource();
 			if (t.hasStatements(this, ownedConnection, bindings))
 				return new SingleBindingSetIteration(bindings);

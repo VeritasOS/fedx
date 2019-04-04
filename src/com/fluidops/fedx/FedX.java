@@ -30,9 +30,9 @@ import org.eclipse.rdf4j.sail.SailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.FedXUtil;
 import com.fluidops.fedx.write.ReadOnlyWriteStrategy;
 import com.fluidops.fedx.write.RepositoryWriteStrategy;
@@ -100,7 +100,7 @@ public class FedX implements Sail {
 	public WriteStrategy getWriteStrategy() {
 		for (Endpoint e : members) {
 			if (e.isWritable()) {
-				return new RepositoryWriteStrategy(e.getRepo());
+				return new RepositoryWriteStrategy(e.getRepository());
 			}
 		}
 		return ReadOnlyWriteStrategy.INSTANCE;

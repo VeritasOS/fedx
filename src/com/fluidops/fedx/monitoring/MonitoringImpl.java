@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
 import com.fluidops.fedx.Config;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 
 
@@ -44,7 +44,7 @@ public class MonitoringImpl implements MonitoringService {
 	/**
 	 * Map endpoints to their request information
 	 */
-	private final Map<Endpoint, MonitoringInformation> requestMap = new ConcurrentHashMap<Endpoint, MonitoringInformation>();
+	private final Map<Endpoint, MonitoringInformation> requestMap = new ConcurrentHashMap<>();
 	private final QueryLog queryLog;
 	
 	MonitoringImpl() {

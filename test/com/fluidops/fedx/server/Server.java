@@ -1,7 +1,8 @@
 package com.fluidops.fedx.server;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
-import com.fluidops.fedx.structures.Endpoint;
+
 
 /**
  * Interface for the server:

@@ -33,8 +33,8 @@ import com.fluidops.fedx.FedX;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.algebra.SingleSourceQuery;
 import com.fluidops.fedx.cache.Cache;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.FedXDataset;
 import com.fluidops.fedx.structures.QueryInfo;
 

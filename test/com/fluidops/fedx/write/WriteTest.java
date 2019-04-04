@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.SPARQLBaseTest;
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointBase;
 
 public class WriteTest extends SPARQLBaseTest {
 
@@ -41,7 +42,7 @@ public class WriteTest extends SPARQLBaseTest {
 		prepareTest(Arrays.asList("/tests/basic/data_emptyStore.ttl", "/tests/basic/data_emptyStore.ttl"));
 
 		Iterator<Endpoint> iter = EndpointManager.getEndpointManager().getAvailableEndpoints().iterator();
-		Endpoint ep1 = iter.next();
+		EndpointBase ep1 = (EndpointBase) iter.next();
 		ep1.setWritable(true);
 		Endpoint ep2 = iter.next();
 		
@@ -57,14 +58,14 @@ public class WriteTest extends SPARQLBaseTest {
 		conn.close();
 		
 		// check that the statement is actually written to endpoint 1
-		RepositoryConnection ep1Conn = ep1.getConn();
+		RepositoryConnection ep1Conn = ep1.getConnection();
 		stmts = Iterations.asList(ep1Conn.getStatements(null, null, null, true));
 		Assertions.assertEquals(1, stmts.size());
 		Assertions.assertEquals(st, stmts.get(0));
 		ep1Conn.close();
 		
 		// check that endpoint 2 is empty
-		RepositoryConnection ep2Conn = ep2.getConn();
+		RepositoryConnection ep2Conn = ep2.getConnection();
 		stmts = Iterations.asList(ep2Conn.getStatements(null, null, null, true));
 		Assertions.assertEquals(0, stmts.size());
 		ep1Conn.close();
@@ -92,7 +93,7 @@ public class WriteTest extends SPARQLBaseTest {
 		prepareTest(Arrays.asList("/tests/basic/data_emptyStore.ttl", "/tests/basic/data_emptyStore.ttl"));
 
 		Iterator<Endpoint> iter = EndpointManager.getEndpointManager().getAvailableEndpoints().iterator();
-		Endpoint ep1 = iter.next();
+		EndpointBase ep1 = (EndpointBase) iter.next();
 		ep1.setWritable(true);
 		
 		RepositoryConnection conn = fedxRule.getRepository().getConnection();
@@ -111,12 +112,12 @@ public class WriteTest extends SPARQLBaseTest {
 		prepareTest(Arrays.asList("/tests/basic/data_emptyStore.ttl", "/tests/basic/data_emptyStore.ttl"));
 
 		Iterator<Endpoint> iter = EndpointManager.getEndpointManager().getAvailableEndpoints().iterator();
-		Endpoint ep1 = iter.next();
+		EndpointBase ep1 = (EndpointBase) iter.next();
 		ep1.setWritable(true);
 		
 		Statement st = simpleStatement();
 		
-		RepositoryConnection ep1Conn = ep1.getRepo().getConnection();		
+		RepositoryConnection ep1Conn = ep1.getRepository().getConnection();		
 		ep1Conn.add(st);	
 		ep1Conn.close();
 		

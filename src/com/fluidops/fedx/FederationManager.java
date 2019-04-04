@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.Cache;
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointClassification;
+import com.fluidops.fedx.endpoint.EndpointType;
 import com.fluidops.fedx.evaluation.DelegateFederatedServiceResolver;
 import com.fluidops.fedx.evaluation.EvaluationStrategyFactory;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
@@ -51,9 +54,6 @@ import com.fluidops.fedx.monitoring.MonitoringFactory;
 import com.fluidops.fedx.monitoring.MonitoringUtil;
 import com.fluidops.fedx.sail.FedXSailRepository;
 import com.fluidops.fedx.statistics.Statistics;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.util.Version;
 

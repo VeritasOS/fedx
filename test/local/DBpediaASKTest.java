@@ -22,8 +22,8 @@ import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.ExclusiveStatement;
 import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementSource.StatementSourceType;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
@@ -73,7 +73,7 @@ public class DBpediaASKTest extends FedXBaseTest {
 		
 		ExclusiveGroup group = new ExclusiveGroup(ownedNodes, owner, qInfo);
 		
-		Assertions.assertTrue(ep.getTripleSource().hasStatements(group, ep.getConn(), EmptyBindingSet.getInstance()));
+		Assertions.assertTrue(ep.getTripleSource().hasStatements(group, ep.getConnection(), EmptyBindingSet.getInstance()));
 		
 		ep.shutDown();
 	}

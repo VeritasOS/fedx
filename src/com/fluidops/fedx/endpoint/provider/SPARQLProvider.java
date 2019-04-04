@@ -21,12 +21,12 @@ import org.eclipse.rdf4j.http.client.SharedHttpClientSessionManager;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointClassification;
+import com.fluidops.fedx.endpoint.EndpointConfiguration;
 import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
+import com.fluidops.fedx.endpoint.SparqlEndpointConfiguration;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
-import com.fluidops.fedx.structures.EndpointConfiguration;
-import com.fluidops.fedx.structures.SparqlEndpointConfiguration;
 
 
 /**
@@ -62,7 +62,7 @@ public class SPARQLProvider implements EndpointProvider {
 			String location = repoInfo.getLocation();
 			EndpointClassification epc = EndpointClassification.Remote;
 			
-			Endpoint res = new ManagedRepositoryEndpoint(repoInfo, location, epc, repo);
+			ManagedRepositoryEndpoint res = new ManagedRepositoryEndpoint(repoInfo, location, epc, repo);
 			EndpointConfiguration ep = manipulateEndpointConfiguration(location, repoInfo.getEndpointConfiguration());
 			res.setEndpointConfiguration(ep);
 

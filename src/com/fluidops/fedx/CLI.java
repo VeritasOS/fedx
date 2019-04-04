@@ -36,10 +36,10 @@ import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.repository.Repository;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.util.QueryStringUtil;
 import com.fluidops.fedx.util.Version;
 

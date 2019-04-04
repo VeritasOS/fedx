@@ -43,7 +43,7 @@ public class RepositoryEndpoint extends EndpointBase {
 	}
 
 	@Override
-	public Repository getRepo() {
+	public Repository getRepository() {
 		return repository;
 	}
 }

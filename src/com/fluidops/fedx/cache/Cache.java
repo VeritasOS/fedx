@@ -20,10 +20,10 @@ import java.util.List;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.model.Statement;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.EntryAlreadyExistsException;
 import com.fluidops.fedx.exception.EntryUpdateException;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.SubQuery;
 
 /**

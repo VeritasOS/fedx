@@ -45,13 +45,13 @@ import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.cache.Cache.StatementSourceAssurance;
 import com.fluidops.fedx.cache.CacheEntry;
 import com.fluidops.fedx.cache.CacheUtils;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.OptimizationException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.structures.SubQuery;
 import com.fluidops.fedx.util.QueryStringUtil;
@@ -329,7 +329,7 @@ public class SourceSelection {
 		public CloseableIteration<BindingSet, QueryEvaluationException> performTask() throws Exception {
 			try {
 				TripleSource t = endpoint.getTripleSource();
-				RepositoryConnection conn = endpoint.getConn(); 
+				RepositoryConnection conn = endpoint.getConnection(); 
 
 				boolean hasResults = t.hasStatements(stmt, conn, EmptyBindingSet.getInstance());
 

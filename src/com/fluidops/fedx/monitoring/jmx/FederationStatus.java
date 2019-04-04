@@ -21,8 +21,9 @@ import java.util.List;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.fluidops.fedx.FederationManager;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
-import com.fluidops.fedx.structures.Endpoint;
+
 
 public class FederationStatus implements FederationStatusMBean {
 

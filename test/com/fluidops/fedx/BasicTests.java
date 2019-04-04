@@ -10,7 +10,7 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.junit.jupiter.api.Test;
 
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.structures.FedXDataset;
 
 public class BasicTests extends SPARQLBaseTest {

@@ -15,12 +15,12 @@
  */
 package com.fluidops.fedx.endpoint.provider;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
 
 
 /**
- * Generic interface to create endpoints from a repository information.
+ * Generic interface to create {@link Endpoint}s from a repository information.
  * 
  * @author Andreas Schwarte
  *

@@ -27,11 +27,11 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.repository.RepositorySettings;
 import com.fluidops.fedx.server.NativeStoreServer;
 import com.fluidops.fedx.server.SPARQLEmbeddedServer;
 import com.fluidops.fedx.server.Server;
-import com.fluidops.fedx.structures.Endpoint;
 
 
 

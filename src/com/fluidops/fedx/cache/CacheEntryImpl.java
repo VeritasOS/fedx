@@ -24,8 +24,9 @@ import org.eclipse.rdf4j.model.Statement;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.cache.Cache.StatementSourceAssurance;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.EntryUpdateException;
-import com.fluidops.fedx.structures.Endpoint;
+
 
 /**
  * Implementation for Cache Entry

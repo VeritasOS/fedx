@@ -20,10 +20,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.eclipse.rdf4j.http.client.SharedHttpClientSessionManager;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
+import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.endpoint.EndpointClassification;
 import com.fluidops.fedx.endpoint.ManagedRepositoryEndpoint;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
 
 
 /**
@@ -61,7 +61,7 @@ public class RemoteRepositoryProvider implements EndpointProvider {
 			String location = repositoryServer + "/" + repositoryName;
 			EndpointClassification epc = EndpointClassification.Remote;
 			
-			Endpoint res = new ManagedRepositoryEndpoint(repoInfo, location, epc, repo);
+			ManagedRepositoryEndpoint res = new ManagedRepositoryEndpoint(repoInfo, location, epc, repo);
 			res.setEndpointConfiguration(repoInfo.getEndpointConfiguration());
 
 			return res;

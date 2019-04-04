@@ -66,6 +66,7 @@ import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementTupleExpr;
 import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.cache.CacheUtils;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
 import com.fluidops.fedx.evaluation.concurrent.ParallelServiceExecutor;
 import com.fluidops.fedx.evaluation.join.ControlledWorkerBoundJoin;
@@ -81,7 +82,6 @@ import com.fluidops.fedx.evaluation.union.SynchronousWorkerUnion;
 import com.fluidops.fedx.evaluation.union.WorkerUnionBase;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.statistics.Statistics;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.util.FedXUtil;
 
@@ -220,7 +220,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		
 		if (sources.size()==1) {
 			Endpoint e = EndpointManager.getEndpointManager().getEndpoint(sources.get(0).getEndpointID());
-			return e.getTripleSource().getStatements(e.getConn(), subj, pred, obj, contexts);
+			return e.getTripleSource().getStatements(e.getConnection(), subj, pred, obj, contexts);
 		}
 		
 		// TODO why not collect in parallel?
@@ -228,7 +228,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		
 		for (StatementSource source : sources) {
 			Endpoint e = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-			ParallelGetStatementsTask task = new ParallelGetStatementsTask(union, e.getTripleSource(), e.getConn(), subj, pred, obj, contexts);
+			ParallelGetStatementsTask task = new ParallelGetStatementsTask(union, e.getTripleSource(), e.getConnection(), subj, pred, obj, contexts);
 			union.addTask(task);
 		}
 		
@@ -254,7 +254,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		try
 		{
 			Endpoint source = query.getSource();		
-			return source.getTripleSource().getStatements(query.getQueryString(), source.getConn(), query.getQueryInfo().getQueryType());
+			return source.getTripleSource().getStatements(query.getQueryString(), source.getConnection(), query.getQueryInfo().getQueryType());
 		} catch (RepositoryException e) {
 			throw new QueryEvaluationException(e);
 		} catch (MalformedQueryException e)	{
@@ -438,7 +438,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 			
 			if (statementSources.size()==1) {				
 				Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(statementSources.get(0).getEndpointID());
-				RepositoryConnection conn = ownedEndpoint.getConn();
+				RepositoryConnection conn = ownedEndpoint.getConnection();
 				com.fluidops.fedx.evaluation.TripleSource t = ownedEndpoint.getTripleSource();
 				result = t.getStatements(preparedQuery, conn, EmptyBindingSet.getInstance(), null);
 			} 
@@ -448,7 +448,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 				
 				for (StatementSource source : statementSources) {					
 					Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-					RepositoryConnection conn = ownedEndpoint.getConn();
+					RepositoryConnection conn = ownedEndpoint.getConnection();
 					com.fluidops.fedx.evaluation.TripleSource t = ownedEndpoint.getTripleSource();
 					union.addTask(new ParallelPreparedUnionTask(union, preparedQuery, t, conn, EmptyBindingSet.getInstance(), null));
 				}
@@ -474,7 +474,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 			
 			if (statementSources.size()==1) {				
 				Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(statementSources.get(0).getEndpointID());
-				RepositoryConnection conn = ownedEndpoint.getConn();
+				RepositoryConnection conn = ownedEndpoint.getConnection();
 				com.fluidops.fedx.evaluation.TripleSource t = ownedEndpoint.getTripleSource();
 				result = t.getStatements(preparedQuery, conn, EmptyBindingSet.getInstance(), null);
 			} 
@@ -484,7 +484,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 				
 				for (StatementSource source : statementSources) {					
 					Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-					RepositoryConnection conn = ownedEndpoint.getConn();
+					RepositoryConnection conn = ownedEndpoint.getConnection();
 					com.fluidops.fedx.evaluation.TripleSource t = ownedEndpoint.getTripleSource();
 					union.addTask(new ParallelPreparedAlgebraUnionTask(union, preparedQuery, t, conn, EmptyBindingSet.getInstance(), null));					
 				}

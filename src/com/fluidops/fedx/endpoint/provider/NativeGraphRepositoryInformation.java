@@ -19,16 +19,19 @@ import java.io.File;
 
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 
 import com.fluidops.fedx.Config;
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
+import com.fluidops.fedx.endpoint.EndpointType;
 import com.fluidops.fedx.util.Vocabulary;
 
 
 /**
- * Graph information for Sesame NativeStore initialization.<p>
+ * Graph information for RDF4J {@link NativeStore} initialization.
+ * <p>
  * 
- * Format:<p>
+ * Format:
+ * <p>
  * 
  * <pre>
  * <%name%> fedx:store "NativeStore";
@@ -43,7 +46,8 @@ import com.fluidops.fedx.util.Vocabulary;
  * fedx:repositoryLocation "D:\\data\\repositories\\native-storage.dbpedia".
  * </pre>
  * 
- * Note: the id is constructed from the location: repositories\\native-storage.dbpedia => native-storage.dbpedia
+ * Note: the id is constructed from the location:
+ * repositories\\native-storage.dbpedia => native-storage.dbpedia
  * 
  * 
  * @author Andreas Schwarte

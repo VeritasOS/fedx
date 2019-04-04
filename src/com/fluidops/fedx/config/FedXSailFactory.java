@@ -25,8 +25,8 @@ import org.eclipse.rdf4j.sail.config.SailImplConfig;
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.FederationManager;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.structures.Endpoint;
 
 /**
  * A {@link SailFactory} that initializes FedX Sails based on 

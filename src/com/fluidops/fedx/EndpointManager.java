@@ -29,10 +29,10 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.structures.Endpoint;
 
 
 /**
@@ -127,7 +127,7 @@ public class EndpointManager {
 	 */
 	public void addEndpoint(Endpoint e) {
 		endpoints.put(e.getId(), e);
-		connToEndpoint.put(e.getConn(), e);
+		connToEndpoint.put(e.getConnection(), e);
 	}
 	
 	/**
@@ -171,7 +171,7 @@ public class EndpointManager {
 			try {
 				inRepair = true;
 				for (Endpoint e : endpoints.values()) {
-					connToEndpoint.remove(e.getConn());
+					connToEndpoint.remove(e.getConnection());
 					RepositoryConnection newConn = e.repairConnection();
 					connToEndpoint.put(newConn, e);
 				}
@@ -200,7 +200,7 @@ public class EndpointManager {
 		if (!endpoints.containsKey(e.getId()))
 			throw new NoSuchElementException("No endpoint avalaible for id " + e.getId());
 		endpoints.remove(e.getId());
-		connToEndpoint.remove(e.getConn());
+		connToEndpoint.remove(e.getConnection());
 	}
 	
 	

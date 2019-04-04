@@ -17,8 +17,8 @@ package com.fluidops.fedx.endpoint.provider;
 
 import java.util.Properties;
 
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
-import com.fluidops.fedx.structures.EndpointConfiguration;
+import com.fluidops.fedx.endpoint.EndpointConfiguration;
+import com.fluidops.fedx.endpoint.EndpointType;
 
 public class RepositoryInformation {
 

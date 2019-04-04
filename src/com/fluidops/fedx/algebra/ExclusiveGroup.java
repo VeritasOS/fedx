@@ -33,7 +33,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.FederationManager;
-import com.fluidops.fedx.structures.Endpoint;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 
 
@@ -173,7 +173,7 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 		
 		try {
 			// use the particular evaluation strategy for evaluation
-			return FederationManager.getInstance().getStrategy().evaluateExclusiveGroup(this, ownedEndpoint.getConn(), ownedEndpoint.getTripleSource(), bindings);
+			return FederationManager.getInstance().getStrategy().evaluateExclusiveGroup(this, ownedEndpoint.getConnection(), ownedEndpoint.getTripleSource(), bindings);
 		} catch (RepositoryException e) {
 			throw new QueryEvaluationException(e);
 		} catch (MalformedQueryException e) {

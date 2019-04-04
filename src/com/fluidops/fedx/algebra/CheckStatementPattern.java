@@ -31,9 +31,9 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.EndpointManager;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 
 
@@ -149,7 +149,7 @@ public class CheckStatementPattern implements StatementTupleExpr, BoundJoinTuple
 			// return true if at least one endpoint has a result for this binding set
 			for (StatementSource source : stmt.getStatementSources()) {
 				Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-				RepositoryConnection ownedConnection = ownedEndpoint.getConn();
+				RepositoryConnection ownedConnection = ownedEndpoint.getConnection();
 				TripleSource t = ownedEndpoint.getTripleSource();
 				if (t.hasStatements(st, ownedConnection, bindings))
 					return new SingleBindingSetIteration(bindings);

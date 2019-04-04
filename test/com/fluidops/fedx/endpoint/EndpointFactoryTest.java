@@ -12,10 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.SPARQLBaseTest;
-import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.server.SPARQLEmbeddedServer;
-import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.structures.Endpoint.EndpointType;
 
 public class EndpointFactoryTest extends SPARQLBaseTest {
 
@@ -28,7 +25,7 @@ public class EndpointFactoryTest extends SPARQLBaseTest {
 		prepareTest(Arrays.asList("/tests/basic/data01endpoint1.ttl", "/tests/basic/data01endpoint2.ttl"));
 
 		String endpointUrl = ((SPARQLEmbeddedServer) server).getRepositoryUrl("endpoint1");
-		Endpoint e = EndpointFactory.loadSPARQLEndpoint(endpointUrl);
+		EndpointBase e = (EndpointBase) EndpointFactory.loadSPARQLEndpoint(endpointUrl);
 		
 		Assertions.assertEquals("http://localhost_18080", e.getName());
 		Assertions.assertEquals("sparql_localhost:18080_repositories_endpoint1", e.getId());

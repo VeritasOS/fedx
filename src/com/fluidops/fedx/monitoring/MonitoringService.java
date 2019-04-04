@@ -17,8 +17,9 @@ package com.fluidops.fedx.monitoring;
 
 import java.util.List;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.monitoring.MonitoringImpl.MonitoringInformation;
-import com.fluidops.fedx.structures.Endpoint;
+
 
 public interface MonitoringService extends Monitoring
 {

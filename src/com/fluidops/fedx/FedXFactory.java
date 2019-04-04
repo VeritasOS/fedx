@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.Cache;
 import com.fluidops.fedx.cache.MemoryCache;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.endpoint.ResolvableEndpoint;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.sail.FedXSailRepository;
 import com.fluidops.fedx.statistics.Statistics;
 import com.fluidops.fedx.statistics.StatisticsImpl;
-import com.fluidops.fedx.structures.Endpoint;
 
 /**
  * FedX initialization factory methods for convenience: methods initialize the

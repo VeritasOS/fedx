@@ -32,11 +32,11 @@ import org.eclipse.rdf4j.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.exception.EntryAlreadyExistsException;
 import com.fluidops.fedx.exception.EntryUpdateException;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.SubQuery;
 
 
