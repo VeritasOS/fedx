@@ -25,10 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.EndpointManager;
+import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.TripleSourceFactory;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.provider.RepositoryInformation;
 
 
 /**

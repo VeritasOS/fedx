@@ -17,7 +17,7 @@ package com.fluidops.fedx.endpoint;
 
 import org.eclipse.rdf4j.repository.Repository;
 
-import com.fluidops.fedx.provider.RepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 
 /**
  * A specialized {@link Endpoint} that has a reference to a configured

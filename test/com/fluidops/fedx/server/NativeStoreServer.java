@@ -9,12 +9,12 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
 import org.junit.rules.TemporaryFolder;
 
-import com.fluidops.fedx.provider.RepositoryInformation;
+import com.fluidops.fedx.endpoint.EndpointFactory;
+import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.Endpoint.EndpointClassification;
 import com.fluidops.fedx.structures.Endpoint.EndpointType;
-import com.fluidops.fedx.util.EndpointFactory;
 
 public class NativeStoreServer extends TemporaryFolder implements Server {
 

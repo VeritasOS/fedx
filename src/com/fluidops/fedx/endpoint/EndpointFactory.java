@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fluidops.fedx.util;
+package com.fluidops.fedx.endpoint;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,19 +38,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
+import com.fluidops.fedx.endpoint.provider.EndpointProvider;
+import com.fluidops.fedx.endpoint.provider.NativeGraphRepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.NativeStoreProvider;
+import com.fluidops.fedx.endpoint.provider.RemoteRepositoryGraphRepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.RemoteRepositoryProvider;
+import com.fluidops.fedx.endpoint.provider.RepositoryEndpointProvider;
+import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.SPARQLGraphRepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.SPARQLProvider;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.provider.EndpointProvider;
-import com.fluidops.fedx.provider.NativeGraphRepositoryInformation;
-import com.fluidops.fedx.provider.NativeStoreProvider;
-import com.fluidops.fedx.provider.RemoteRepositoryGraphRepositoryInformation;
-import com.fluidops.fedx.provider.RemoteRepositoryProvider;
-import com.fluidops.fedx.provider.RepositoryEndpointProvider;
-import com.fluidops.fedx.provider.RepositoryInformation;
-import com.fluidops.fedx.provider.SPARQLGraphRepositoryInformation;
-import com.fluidops.fedx.provider.SPARQLProvider;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.Endpoint.EndpointType;
+import com.fluidops.fedx.util.FedXUtil;
+import com.fluidops.fedx.util.Vocabulary;
 
 
 

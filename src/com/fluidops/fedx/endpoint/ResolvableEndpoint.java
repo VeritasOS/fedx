@@ -18,8 +18,8 @@ package com.fluidops.fedx.endpoint;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryResolver;
 
+import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.exception.FedXRuntimeException;
-import com.fluidops.fedx.provider.RepositoryInformation;
 
 /**
  * A specialized {@link Endpoint} that allows to resolve the repository using a

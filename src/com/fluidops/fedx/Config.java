@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.MemoryCache;
+import com.fluidops.fedx.endpoint.provider.ProviderUtil;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.SailFederationEvalStrategy;
 import com.fluidops.fedx.evaluation.SparqlFederationEvalStrategy;
@@ -34,7 +35,6 @@ import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.monitoring.QueryLog;
 import com.fluidops.fedx.monitoring.QueryPlanLog;
-import com.fluidops.fedx.provider.ProviderUtil;
 
 
 /**

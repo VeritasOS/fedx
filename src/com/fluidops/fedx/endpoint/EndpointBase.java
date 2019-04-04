@@ -15,7 +15,7 @@
  */
 package com.fluidops.fedx.endpoint;
 
-import com.fluidops.fedx.provider.RepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 
 public abstract class EndpointBase extends com.fluidops.fedx.structures.Endpoint implements Endpoint {
 

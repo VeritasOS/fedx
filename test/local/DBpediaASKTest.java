@@ -22,10 +22,10 @@ import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.algebra.ExclusiveStatement;
 import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementSource.StatementSourceType;
+import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.structures.QueryType;
-import com.fluidops.fedx.util.EndpointFactory;
 import com.fluidops.fedx.util.FedXUtil;
 
 public class DBpediaASKTest extends FedXBaseTest {

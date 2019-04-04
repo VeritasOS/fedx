@@ -13,10 +13,10 @@ import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
 
+import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
 import com.fluidops.fedx.repository.ConfigurableSailRepositoryFactory;
 import com.fluidops.fedx.structures.Endpoint;
-import com.fluidops.fedx.util.EndpointFactory;
 
 
 /**

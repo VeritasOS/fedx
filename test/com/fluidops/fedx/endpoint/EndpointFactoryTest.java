@@ -1,4 +1,4 @@
-package com.fluidops.fedx.util;
+package com.fluidops.fedx.endpoint;
 
 import java.io.File;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fluidops.fedx.SPARQLBaseTest;
+import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.server.SPARQLEmbeddedServer;
 import com.fluidops.fedx.structures.Endpoint;
 import com.fluidops.fedx.structures.Endpoint.EndpointType;
