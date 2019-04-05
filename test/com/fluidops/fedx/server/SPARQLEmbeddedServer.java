@@ -5,18 +5,20 @@ import java.util.List;
 
 import org.eclipse.rdf4j.http.protocol.Protocol;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResolver;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
-import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
+import org.junit.rules.TemporaryFolder;
 
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
 import com.fluidops.fedx.repository.ConfigurableSailRepositoryFactory;
+import com.fluidops.fedx.repository.FedXRepositoryResolverBean;
 
 
 /**
@@ -32,11 +34,20 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	// flag to indicate whether a remote repository or SPARQL repository endpoint shall be used
 	private final boolean useRemoteRepositoryEndpoint;
 	
+
 	/**
-	 * The {@link RepositoryManager}, only filled at runtime of the server. See
-	 * {@link RepositoryManagerBean}
+	 * The {@link RepositoryResolver} supplied at runtime by
+	 * {@link FedXRepositoryResolverBean}
 	 */
-	static RepositoryManager repositoryManager;
+	private RepositoryResolver repositoryResolver;
+
+	// use Junit temporary folder (but not as Rule!)
+	TemporaryFolder tempFolder = new TemporaryFolder();
+
+	/**
+	 * The data directory populated at runtime
+	 */
+	private File dataDir;
 
 	/**
 	 * @param repositoryIds
@@ -67,11 +78,14 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	public void start()
 		throws Exception
 	{
-		File dataDir = new File("./temp/datadir");
-		dataDir.mkdirs();
-		System.setProperty("info.aduna.platform.appdata.basedir", dataDir.getAbsolutePath());
+		tempFolder.create();
+
+		dataDir = tempFolder.newFolder("datadir");
+		System.setProperty("org.eclipse.rdf4j.appdata.basedir", dataDir.getAbsolutePath());
 
 		super.start();
+
+		repositoryResolver = FedXRepositoryResolverBean.getRepositoryResolver();
 
 		createTestRepositories();
 	}
@@ -93,18 +107,9 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 
 		super.stop();
 		
-		delete(new File("./temp/datadir"));
+		tempFolder.delete();
 	}
 	
-	protected void delete(File file) throws Exception {
-		if (file.isDirectory()) {
-			for (File f : file.listFiles()) {
-				delete(f);
-			}
-		}
-		if (!file.delete())
-			throw new Exception("Could not delete file: " + file.getAbsolutePath());
-	}
 
 	/**
 	 * @throws RepositoryException
@@ -170,6 +175,14 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	@Override
 	public ConfigurableSailRepository getRepository(int i) {
 		String repositoryId = repositoryIds.get(i - 1);
-		return (ConfigurableSailRepository) repositoryManager.getRepository(repositoryId);
+		return (ConfigurableSailRepository) repositoryResolver.getRepository(repositoryId);
+	}
+
+	public File getDataDir() {
+		return dataDir;
+	}
+
+	public RepositoryResolver getRepositoryResolver() {
+		return repositoryResolver;
 	}
 }

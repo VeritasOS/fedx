@@ -31,11 +31,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			<bean factory-bean="commonAppConfig" factory-method="getDataDir" />
 		</constructor-arg>
 	</bean>
-
-	<bean id="fedxRepositoryManager"
-		class="com.fluidops.fedx.server.RepositoryManagerBean"
+	
+	<!-- Inject the local repository manager as RepositoryResolver into FedX -->
+	<bean id="fedxRepositoryResolver"
+		class="com.fluidops.fedx.repository.FedXRepositoryResolverBean"
 		scope="singleton" init-method="init" destroy-method="destroy">
-		<property name="repositoryManager" ref="rdf4jRepositoryManager" />
+		<property name="repositoryResolver" ref="rdf4jRepositoryManager" />
 	</bean>
 	
 	<!-- INTERCEPTORS -->

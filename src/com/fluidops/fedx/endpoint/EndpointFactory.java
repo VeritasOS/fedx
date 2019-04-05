@@ -29,6 +29,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryResolver;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
@@ -38,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
+import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.endpoint.provider.EndpointProvider;
 import com.fluidops.fedx.endpoint.provider.NativeGraphRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.NativeStoreProvider;
@@ -45,6 +47,8 @@ import com.fluidops.fedx.endpoint.provider.RemoteRepositoryGraphRepositoryInform
 import com.fluidops.fedx.endpoint.provider.RemoteRepositoryProvider;
 import com.fluidops.fedx.endpoint.provider.RepositoryEndpointProvider;
 import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.ResolvableRepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.ResolvableRepositoryProvider;
 import com.fluidops.fedx.endpoint.provider.SPARQLGraphRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.SPARQLProvider;
 import com.fluidops.fedx.exception.FedXException;
@@ -114,6 +118,30 @@ public class EndpointFactory {
 	
 	}
 	
+	/**
+	 * Load a {@link ResolvableEndpoint}
+	 * 
+	 * <p>
+	 * The federation must be initialized with a {@link RepositoryResolver} ( see
+	 * {@link FedXFactory#withRepositoryResolver(RepositoryResolver)}) and this
+	 * resolver must offer a Repository with the id provided by
+	 * {@link Endpoint#getId()}
+	 * </p>
+	 * 
+	 * <p>
+	 * Note that the name is set to "http://" + repositoryId
+	 * </p>
+	 * 
+	 * @param repositoryId the repository identifier
+	 * @return the configured {@link Endpoint}
+	 * @see ResolvableRepositoryProvider
+	 * @see ResolvableRepositoryInformation
+	 */
+	public static Endpoint loadResolvableRepository(String repositoryId) {
+		EndpointProvider repProvider = new ResolvableRepositoryProvider();
+		return repProvider.loadEndpoint(new ResolvableRepositoryInformation(repositoryId));
+	}
+
 	/**
 	 * Load an {@link EndpointBase} for a given (configured) Repository.
 	 * <p>
@@ -262,6 +290,12 @@ public class EndpointFactory {
 			return repProvider.loadEndpoint( new RemoteRepositoryGraphRepositoryInformation(graph, repNode) );
 		} 
 		
+		// Resolvable Repository
+		else if (repType.equals(FedXUtil.literal("ResolvableRepository"))) {
+			repProvider = new ResolvableRepositoryProvider();
+			return repProvider.loadEndpoint(new ResolvableRepositoryInformation(graph, repNode));
+		}
+
 		// other generic type
 		else if (repType.equals(FedXUtil.literal("Other")))
 		{

@@ -162,6 +162,11 @@ public class FedXFactory {
 		return this;
 	}
 
+	public FedXFactory withResolvableEndpoint(String repositoryId) {
+		members.add(EndpointFactory.loadResolvableRepository(repositoryId));
+		return this;
+	}
+
 	public FedXFactory withConfigFile(File configFile) {
 		if (Config.isInitialized()) {
 			throw new IllegalStateException("FedX config is already initialized.");

@@ -19,6 +19,7 @@ import java.io.File;
 
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResolver;
 import org.eclipse.rdf4j.repository.base.RepositoryWrapper;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigException;
 import org.eclipse.rdf4j.repository.config.RepositoryFactory;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
+import com.fluidops.fedx.endpoint.ResolvableEndpoint;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.sail.FedXSailRepository;
 
@@ -35,8 +37,16 @@ import com.fluidops.fedx.sail.FedXSailRepository;
  * A {@link RepositoryFactory} to use FedX in the RDF4J workbench. See
  * {@link FedXRepositoryConfig} for the configuration.
  * 
+ * <p>
+ * Note that this initialization obtains a {@link RepositoryResolver} from
+ * {@link FedXRepositoryResolverBean} (if any). This is used for the
+ * initialization of all {@link ResolvableEndpoint}s via
+ * {@link FedXFactory#withRepositoryResolver(RepositoryResolver)}.
+ * </p>
+ * 
  * @author Andreas Schwarte
  * @see FedXRepositoryConfig
+ * @see FedXRepositoryResolverBean
  *
  */
 public class FedXRepositoryFactory implements RepositoryFactory {
@@ -85,7 +95,20 @@ public class FedXRepositoryFactory implements RepositoryFactory {
 			}
 
 			@Override
+			public boolean isInitialized() {
+				if (getDelegate() == null) {
+					return false;
+				}
+				return super.isInitialized();
+			}
+
+			@Override
 			public void initialize() throws RepositoryException {
+
+				if (getDelegate() != null) {
+					super.initialize();
+					return;
+				}
 
 				File baseDir = getDataDir();
 				if (baseDir == null) {
@@ -116,8 +139,10 @@ public class FedXRepositoryFactory implements RepositoryFactory {
 
 				FedXSailRepository fedxRepo;
 				try {
-					// TODO support using the RDF4J repository manager as RepositoryResolver
-					fedxRepo = FedXFactory.initializeFederation(dataConfigFile);
+					// apply a repository resolver (if any) from FedXRepositoryResolverBean
+					fedxRepo = FedXFactory.newFederation()
+							.withRepositoryResolver(FedXRepositoryResolverBean.getRepositoryResolver())
+							.withMembers(dataConfigFile).create();
 				} catch (Exception e) {
 					throw new RepositoryException(e);
 				}
@@ -127,6 +152,9 @@ public class FedXRepositoryFactory implements RepositoryFactory {
 
 			@Override
 			public void shutDown() throws RepositoryException {
+				if (!isInitialized()) {
+					return;
+				}
 				super.shutDown();
 				setDelegate(null);
 			}
