@@ -69,6 +69,24 @@ endpoint is automatically configured to use SELECT queries</p>
 	fedx:repositoryLocation "repositories\\native-storage.nytimes".
 </pre>
 
+
+<h3>Example 4: Federation with resolvable endpoints:</h3>
+
+FedX supports to use resolvable endpoints as federation members. These resolvable repositories
+are not managed by FedX, but are resolved using a provided <i>RepositoryResolver</i>. An example
+use case is to reference a repository managed by the rdf4j-server (see <a href="rdf4jWorkbench.html">here</a> 
+for details). Alternatively, any custom resolver can be provided to FedX during the initialization using
+the <i>FedXFactory</i>.
+
+<pre>
+@prefix sd: &lt;http://www.w3.org/ns/sparql-service-description#&gt; .
+@prefix fedx: &lt;http://www.fluidops.com/config/fedx#&gt; .
+
+&lt;http://myNtiveStore&gt; a sd:Service ;
+	fedx:store "ResolvableRepository" ;
+	fedx:repositoryName "myNativeStore" .
+</pre>
+
 Note that also hybrid combinations are possible.
 
 </div>

@@ -15,6 +15,7 @@ See upgrade notes for details.
    - properly handle globally configured max execution time
    - support setting execution time per query
  * support use of FedX in RDF4J workbench (incl. documentation)
+ * support to use resolvable endpoints
  * upgrade 3rd party components
    (RDF4J, Apache Commons, Jackson, Guava)
  * revising of logging infrastructure
