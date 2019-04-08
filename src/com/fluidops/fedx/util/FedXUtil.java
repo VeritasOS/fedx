@@ -25,7 +25,7 @@ import org.eclipse.rdf4j.query.Operation;
 import org.eclipse.rdf4j.repository.sail.SailQuery;
 
 import com.fluidops.fedx.Config;
-import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
+import com.fluidops.fedx.repository.FedXRepositoryConnection;
 
 /**
  * General utility functions
@@ -73,7 +73,7 @@ public class FedXUtil
 	 * @param query
 	 */
 	public static void applyQueryBindings(SailQuery query) {
-		query.setBinding(FedXSailRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME,
+		query.setBinding(FedXRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME,
 				FedXUtil.valueFactory().createLiteral(query.getMaxExecutionTime()));
 	}
 

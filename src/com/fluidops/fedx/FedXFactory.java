@@ -30,7 +30,7 @@ import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
 import com.fluidops.fedx.endpoint.ResolvableEndpoint;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.sail.FedXSailRepository;
+import com.fluidops.fedx.repository.FedXRepository;
 import com.fluidops.fedx.statistics.Statistics;
 import com.fluidops.fedx.statistics.StatisticsImpl;
 
@@ -61,11 +61,11 @@ public class FedXFactory {
 	 * @param sparqlEndpoints the list of SPARQL endpoints
 	 * 
 	 * @return
-	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link FedXSailRepository}
+	 * 			the initialized FedX federation {@link Sail} wrapped in a {@link FedXRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static FedXSailRepository initializeSparqlFederation(
+	public static FedXRepository initializeSparqlFederation(
 			List<String> sparqlEndpoints) throws Exception {
 
 		return newFederation().withSparqlEndpoints(sparqlEndpoints).create();
@@ -84,11 +84,11 @@ public class FedXFactory {
 	 * @param dataConfig         the location of the data source configuration
 	 * 
 	 * @return the initialized FedX federation {@link Sail} wrapped in a
-	 *         {@link FedXSailRepository}
+	 *         {@link FedXRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static FedXSailRepository initializeFederation(File dataConfig)
+	public static FedXRepository initializeFederation(File dataConfig)
 			throws Exception {
 		return newFederation().withMembers(dataConfig).create();
 	}
@@ -106,11 +106,11 @@ public class FedXFactory {
 	 *                           empty
 	 * 
 	 * @return the initialized FedX federation {@link Sail} wrapped in a
-	 *         {@link FedXSailRepository}
+	 *         {@link FedXRepository}
 	 * 
 	 * @throws Exception
 	 */
-	public static FedXSailRepository initializeFederation(
+	public static FedXRepository initializeFederation(
 			List<Endpoint> endpoints) throws FedXException {
 		
 		return newFederation().withMembers(endpoints).create();
@@ -178,9 +178,9 @@ public class FedXFactory {
 	/**
 	 * Create the federation using the provided configuration
 	 * 
-	 * @return the configured {@link FedXSailRepository}
+	 * @return the configured {@link FedXRepository}
 	 */
-	public FedXSailRepository create() {
+	public FedXRepository create() {
 
 		if (!Config.isInitialized()) {
 			if (fedxConfig != null) {

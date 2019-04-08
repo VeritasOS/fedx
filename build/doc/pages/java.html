@@ -16,14 +16,14 @@ following, we present various Java code snippets that illustrate how FedX can be
 
 <p>Basically, FedX can be used and accessed using the SAIL architecture (see 
 <a href="http://docs.rdf4j.org/sail/" target="_blank">RDF4J SAIL documentation</a> for details.). 
-The (initialized) SailRepository can be obtained from any FedXFactory initialization method, the SAIL optionally can be
+The (initialized) Repository can be obtained from any FedXFactory initialization method, the SAIL optionally can be
 obtained via the FederationManager. Besides using the Repository interface for creating queries, 
 we also provide a <i>QueryManager</i> class to conveniently create queries. The advantage of the <i>QueryManager</i> over 
 using the <i>SailRepositoryConnection</i> to create queries, is that preconfigured PREFIX declarations are added automatically
 to the query, i.e. the user can use common prefixes (such as rdf, foaf, etc.) without the need to specify them in the prologue
 of the query. See <a href="prefixDeclarations.html">PREFIX Declarations</a> for a detailed documentation</p>
 
-<h3>Example 1: Using a simple SPARQL Federation as a SailRepository</h3>
+<h3>Example 1: Using a simple SPARQL Federation as a Repository</h3>
 
 <p>In the following example, we configure a federation with the publicly available DBpedia and SemanticWebDogFood SPARQL endpoints. Note that
 in the beginning the configuration is initialized with the default properties. Please refer to <a href="configuration.html">Configuring FedX</a>
@@ -31,7 +31,7 @@ for details.</p>
 
 <pre>
 Config.initialize();
-SailRepository repo = FedXFactory.initializeSparqlFederation(Arrays.asList(
+Repository repo = FedXFactory.initializeSparqlFederation(Arrays.asList(
 		"http://dbpedia.org/sparql",
 		"http://data.semanticweb.org/sparql"));
 
@@ -66,8 +66,8 @@ Repository repo = FedXFactory.initializeSparqlFederation(Arrays.asList(
 		"http://dbpedia.org/sparql",
 		"http://data.semanticweb.org/sparql"));
 
-String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
-		+ "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
+String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
+		+ "PREFIX dbpedia-owl: &lt;http://dbpedia.org/ontology/&gt;\n"
 		+ "SELECT ?President ?Party WHERE {\n"
 		+ "?President rdf:type dbpedia-owl:President .\n"
 		+ "?President dbpedia-owl:party ?Party . }";
@@ -98,8 +98,8 @@ String dataConfig = "local/dataSourceConfig.ttl";
 Config.initialize();
 Repository repo = FedXFactory.initializeFederation(dataConfig);
 
-String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
-	+ "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
+String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
+	+ "PREFIX dbpedia-owl: &lt;http://dbpedia.org/ontology/&gt;\n"
 	+ "SELECT ?President ?Party WHERE {\n"
 	+ "?President rdf:type dbpedia-owl:President .\n"
 	+ "?President dbpedia-owl:party ?Party . }";

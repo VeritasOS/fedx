@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fluidops.fedx.sail;
+package com.fluidops.fedx.repository;
 
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
@@ -22,22 +22,22 @@ import org.eclipse.rdf4j.sail.SailException;
 
 /**
  * A special {@link SailRepository} which performs the actions as
- * defined in {@link FedXSailRepositoryConnection}.
+ * defined in {@link FedXRepositoryConnection}.
  * 
  * @author as
  */
-public class FedXSailRepository extends SailRepository
+public class FedXRepository extends SailRepository
 {
 
-	public FedXSailRepository(Sail sail)
+	public FedXRepository(Sail sail)
 	{
 		super(sail);
 	}
 
 	@Override
-	public FedXSailRepositoryConnection getConnection() throws RepositoryException {
+	public FedXRepositoryConnection getConnection() throws RepositoryException {
 		try {
-			return new FedXSailRepositoryConnection(this, this.getSail().getConnection());
+			return new FedXRepositoryConnection(this, this.getSail().getConnection());
 		}
 		catch (SailException e) {
 			throw new RepositoryException(e);

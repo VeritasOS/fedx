@@ -6,7 +6,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResolver;
 import org.junit.jupiter.api.Test;
 
-import com.fluidops.fedx.sail.FedXSailRepository;
+import com.fluidops.fedx.repository.FedXRepository;
 import com.fluidops.fedx.server.SPARQLEmbeddedServer;
 
 public class FedXFactoryTest extends SPARQLServerBaseTest {
@@ -23,7 +23,7 @@ public class FedXFactoryTest extends SPARQLServerBaseTest {
 		
 		RepositoryResolver repositoryResolver = ((SPARQLEmbeddedServer) server).getRepositoryResolver();
 		
-		FedXSailRepository repo = FedXFactory.newFederation().withRepositoryResolver(repositoryResolver)
+		FedXRepository repo = FedXFactory.newFederation().withRepositoryResolver(repositoryResolver)
 					.withResolvableEndpoint("endpoint1")
 					.withResolvableEndpoint("endpoint2")
 				.create();
@@ -48,7 +48,7 @@ public class FedXFactoryTest extends SPARQLServerBaseTest {
 		
 		File dataConfig = toFile("/tests/dataconfig/resolvableRepositories.ttl");
 		
-		FedXSailRepository repo = FedXFactory.newFederation().withRepositoryResolver(repositoryResolver)
+		FedXRepository repo = FedXFactory.newFederation().withRepositoryResolver(repositoryResolver)
 					.withMembers(dataConfig)
 				.create();
 		

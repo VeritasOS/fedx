@@ -25,12 +25,12 @@ import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
 import org.eclipse.rdf4j.query.parser.ParsedTupleQuery;
 import org.eclipse.rdf4j.repository.sail.SailTupleQuery;
 
-import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
+import com.fluidops.fedx.repository.FedXRepositoryConnection;
 import com.fluidops.fedx.util.FedXUtil;
 
 /**
  * Abstraction of a {@link SailTupleQuery} which takes care for tracking the
- * {@link FedXSailRepositoryConnection#BINDING_ORIGINAL_MAX_EXECUTION_TIME}
+ * {@link FedXRepositoryConnection#BINDING_ORIGINAL_MAX_EXECUTION_TIME}
  * during evaluation.
  * 
  * All methods are delegated to the actual {@link SailTupleQuery}.

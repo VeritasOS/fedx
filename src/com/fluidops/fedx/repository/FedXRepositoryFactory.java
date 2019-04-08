@@ -31,7 +31,6 @@ import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
 import com.fluidops.fedx.endpoint.ResolvableEndpoint;
 import com.fluidops.fedx.exception.FedXException;
-import com.fluidops.fedx.sail.FedXSailRepository;
 
 /**
  * A {@link RepositoryFactory} to use FedX in the RDF4J workbench. See
@@ -137,7 +136,7 @@ public class FedXRepositoryFactory implements RepositoryFactory {
 							"No data config provided, neither explicitly nor via fedx configuration");
 				}
 
-				FedXSailRepository fedxRepo;
+				FedXRepository fedxRepo;
 				try {
 					// apply a repository resolver (if any) from FedXRepositoryResolverBean
 					fedxRepo = FedXFactory.newFederation()

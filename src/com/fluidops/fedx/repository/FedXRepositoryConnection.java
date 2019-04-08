@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fluidops.fedx.sail;
+package com.fluidops.fedx.repository;
 
 import java.util.Collections;
 import java.util.Set;
@@ -47,7 +47,7 @@ import com.google.common.collect.Sets;
  * @author Andreas Schwarte
  *
  */
-public class FedXSailRepositoryConnection extends SailRepositoryConnection
+public class FedXRepositoryConnection extends SailRepositoryConnection
 {
 
 	/**
@@ -69,7 +69,7 @@ public class FedXSailRepositoryConnection extends SailRepositoryConnection
 	public static final Set<String> FEDX_BINDINGS = Collections.unmodifiableSet(
 			Sets.newHashSet(BINDING_ORIGINAL_QUERY, BINDING_ORIGINAL_QUERY_TYPE, BINDING_ORIGINAL_MAX_EXECUTION_TIME));
 
-	protected FedXSailRepositoryConnection(SailRepository repository,
+	protected FedXRepositoryConnection(SailRepository repository,
 			SailConnection sailConnection) {
 		super(repository, sailConnection);
 	}

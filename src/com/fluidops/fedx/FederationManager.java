@@ -52,7 +52,7 @@ import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.monitoring.Monitoring;
 import com.fluidops.fedx.monitoring.MonitoringFactory;
 import com.fluidops.fedx.monitoring.MonitoringUtil;
-import com.fluidops.fedx.sail.FedXSailRepository;
+import com.fluidops.fedx.repository.FedXRepository;
 import com.fluidops.fedx.statistics.Statistics;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.util.Version;
@@ -111,7 +111,7 @@ public class FederationManager {
 	 * 				the statistics instance to be used
 	 * @return the initialized {@link Repository} representing the federation. Needs to be shut down by the caller
 	 */
-	static synchronized FedXSailRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
+	static synchronized FedXRepository initialize(List<Endpoint> members, Cache cache, Statistics statistics) {
 		if (instance!=null)
 			throw new FedXRuntimeException("FederationManager already initialized.");
 		
@@ -125,7 +125,7 @@ public class FederationManager {
 		ExecutorService ex = Executors.newCachedThreadPool(new NamingThreadFactory("FedX Executor"));
 		FedX federation = new FedX(members);
 
-		FedXSailRepository repo = new FedXSailRepository(federation);
+		FedXRepository repo = new FedXRepository(federation);
 		
 		instance = new FederationManager(federation, cache, statistics, ex, repo);
 		instance.updateStrategy();

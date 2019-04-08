@@ -52,7 +52,7 @@ import com.fluidops.fedx.evaluation.iterator.StopRemainingExecutionsOnCloseItera
 import com.fluidops.fedx.evaluation.union.SynchronousWorkerUnion;
 import com.fluidops.fedx.evaluation.union.WorkerUnionBase;
 import com.fluidops.fedx.optimizer.Optimizer;
-import com.fluidops.fedx.sail.FedXSailRepositoryConnection;
+import com.fluidops.fedx.repository.FedXRepositoryConnection;
 import com.fluidops.fedx.structures.QueryInfo;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
@@ -135,10 +135,10 @@ public class FedXConnection extends AbstractSailConnection
 		try {
 			// make sure to apply any external bindings
 			BindingSet queryBindings = EmptyBindingSet.getInstance();
-			if (bindings.size() > FedXSailRepositoryConnection.FEDX_BINDINGS.size()) {
+			if (bindings.size() > FedXRepositoryConnection.FEDX_BINDINGS.size()) {
 				MapBindingSet actualQueryBindings = new MapBindingSet();
 				bindings.forEach(binding -> {
-					if (!FedXSailRepositoryConnection.FEDX_BINDINGS.contains(binding.getName())) {
+					if (!FedXRepositoryConnection.FEDX_BINDINGS.contains(binding.getName())) {
 						actualQueryBindings.addBinding(binding);
 					}
 				});
@@ -358,7 +358,7 @@ public class FedXConnection extends AbstractSailConnection
 	private static String getOriginalQueryString(BindingSet b) {
 		if (b==null)
 			return null;
-		Value q = b.getValue(FedXSailRepositoryConnection.BINDING_ORIGINAL_QUERY);
+		Value q = b.getValue(FedXRepositoryConnection.BINDING_ORIGINAL_QUERY);
 		if (q!=null)
 			return q.stringValue();
 		return null;
@@ -367,7 +367,7 @@ public class FedXConnection extends AbstractSailConnection
 	private static QueryType getOriginalQueryType(BindingSet b) {
 		if (b==null)
 			return null;
-		Value q = b.getValue(FedXSailRepositoryConnection.BINDING_ORIGINAL_QUERY_TYPE);
+		Value q = b.getValue(FedXRepositoryConnection.BINDING_ORIGINAL_QUERY_TYPE);
 		if (q!=null)
 			return QueryType.valueOf(q.stringValue());
 		return null;
@@ -383,7 +383,7 @@ public class FedXConnection extends AbstractSailConnection
 	private static int getOriginalMaxExecutionTime(BindingSet b) {
 		if (b == null)
 			return 0;
-		Value q = b.getValue(FedXSailRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME);
+		Value q = b.getValue(FedXRepositoryConnection.BINDING_ORIGINAL_MAX_EXECUTION_TIME);
 		if (q != null)
 			return Integer.parseInt(q.stringValue());
 		return 0;
