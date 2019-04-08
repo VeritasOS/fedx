@@ -165,7 +165,7 @@ dependencies {
 
 javadoc {
 	
-	def title = 'fluidOps FedX Documentation'
+	def title = 'FedX API Documentation'
 	
 	source = sourceSets.main.allJava
 	classpath = sourceSets.main.compileClasspath
@@ -186,7 +186,7 @@ javadoc {
 		
 	options.docTitle = "<h1>$title</h1>"
 	options.header = "<img src=\"images/fluidops.png\" />"
-	options.bottom = "<i>Copyright &#169; 2018 Veritas Technologies LLC. All Rights Reserved.</i>"
+	options.bottom = "<i>Copyright &#169; 2018-2019 Veritas Technologies LLC. All Rights Reserved.</i>"
 }
 
 // fail on JavaDoc errors
@@ -302,19 +302,8 @@ task deploy(type: Copy, dependsOn: ["jar"] ) {
 		from 'examples'
 	}
 	
-	into("doc") {
-		from 'build/doc'
-		include '**/*.html'
-		exclude 'images'
-	}
-	
 	into("doc/javadoc") {
 		from javadoc
-	}
-	
-	into("doc/javadoc") {
-		from 'build/doc'
-		include 'images/*'
 	}
 	
 	into(".") {

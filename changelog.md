@@ -24,6 +24,7 @@ See upgrade notes for details.
    - migrate (optional) logging backend to log4j 2
    - redefine logging behavior for CLI
  * Improved overall robustness and fault tolerance
+ * Documentation migrated to https://github.com/VeritasOS/fedx/wiki
  * Technical Improvements
    - use Gradle 5 Build Environment
    - migrate unit tests to junit 5

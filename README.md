@@ -12,12 +12,12 @@ techniques and is thus a highly scalable solution for practical federated query 
 * Efficient query processing in federated environments
 * On-demand federation setup at query time
 * Fast and effective query execution due to new optimization techniques for federated setups
-* Practical applicability & easy integration as a RDF4J SAIL
+* Practical applicability & easy integration as a [http://rdf4j.org/](RDF4J) SAIL
 * Comprehensive CLI for federated query processing from the command line
 
 ## Documentation
 
-See *build/doc/FedX_Documentation.html* for detailed information
+Refer to the [wiki](https://github.com/VeritasOS/fedx/wiki) for the latest documentation
 
 ## Development
 
@@ -26,8 +26,8 @@ See *build/doc/FedX_Documentation.html* for detailed information
 The FedX repository uses Gradle as a build system:
 
 ```
-./gradlew build
-./gradlew eclipse
+./gradlew clean build
+./gradlew cleanEclipse eclipse
 ./gradlew tests
 ./gradlew testNativeStore testSparqlRepository testRemoteRepository
 ```
