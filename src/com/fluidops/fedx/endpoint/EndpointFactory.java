@@ -35,22 +35,22 @@ import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.Config;
 import com.fluidops.fedx.FedXFactory;
-import com.fluidops.fedx.endpoint.provider.EndpointProvider;
-import com.fluidops.fedx.endpoint.provider.NativeGraphRepositoryInformation;
+import com.fluidops.fedx.endpoint.provider.NativeRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.NativeStoreProvider;
-import com.fluidops.fedx.endpoint.provider.RemoteRepositoryGraphRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.RemoteRepositoryProvider;
+import com.fluidops.fedx.endpoint.provider.RemoteRepositoryRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.RepositoryEndpointProvider;
 import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.ResolvableRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.ResolvableRepositoryProvider;
-import com.fluidops.fedx.endpoint.provider.SPARQLGraphRepositoryInformation;
 import com.fluidops.fedx.endpoint.provider.SPARQLProvider;
+import com.fluidops.fedx.endpoint.provider.SPARQLRepositoryInformation;
 import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.util.FedXUtil;
@@ -83,9 +83,8 @@ public class EndpointFactory {
 	 */
 	public static Endpoint loadSPARQLEndpoint(String name, String endpoint) throws FedXException {
 		
-		EndpointProvider repProvider = new SPARQLProvider();
-		String id = "sparql_" + endpoint.replace("http://", "").replace("/", "_");
-		return repProvider.loadEndpoint( new RepositoryInformation(id, name, endpoint, EndpointType.SparqlEndpoint));		
+		SPARQLProvider repProvider = new SPARQLProvider();
+		return repProvider.loadEndpoint(new SPARQLRepositoryInformation(name, endpoint));
 	}
 	
 	
@@ -113,8 +112,8 @@ public class EndpointFactory {
 	
 	
 	public static Endpoint loadRemoteRepository(String repositoryServer, String repositoryName) throws FedXException {
-		EndpointProvider repProvider = new RemoteRepositoryProvider();
-		return repProvider.loadEndpoint( new RemoteRepositoryGraphRepositoryInformation(repositoryServer, repositoryName));		
+		RemoteRepositoryProvider repProvider = new RemoteRepositoryProvider();
+		return repProvider.loadEndpoint(new RemoteRepositoryRepositoryInformation(repositoryServer, repositoryName));
 	
 	}
 	
@@ -138,7 +137,7 @@ public class EndpointFactory {
 	 * @see ResolvableRepositoryInformation
 	 */
 	public static Endpoint loadResolvableRepository(String repositoryId) {
-		EndpointProvider repProvider = new ResolvableRepositoryProvider();
+		ResolvableRepositoryProvider repProvider = new ResolvableRepositoryProvider();
 		return repProvider.loadEndpoint(new ResolvableRepositoryInformation(repositoryId));
 	}
 
@@ -161,7 +160,7 @@ public class EndpointFactory {
 	 */
 	public static Endpoint loadEndpoint(String id, Repository repository)
 			throws FedXException {
-		EndpointProvider repProvider = new RepositoryEndpointProvider(repository);
+		RepositoryEndpointProvider repProvider = new RepositoryEndpointProvider(repository);
 		String name = "http://" + id;
 		String location = "http://unknown";
 		try {
@@ -176,46 +175,41 @@ public class EndpointFactory {
 	/**
 	 * Construct a NativeStore endpoint using the provided information.
 	 * 
-	 * @param name
-	 * 			a descriptive name, e.g. http://dbpedia
-	 * @param location
-	 * 			the location of the data store, either absolute or relative to {@link Config#getBaseDir()}
+	 * <p>
+	 * If the repository location denotes an absolute path, the native store
+	 * directory must already exist. If a relative path is used, the repository is
+	 * created on the fly (if necessary).
+	 * </p>
 	 * 
-	 * @return
-	 * 		an initialized endpoint containing the repository
+	 * @param name     a descriptive name, e.g. http://dbpedia
+	 * @param location the location of the data store, either absolute or relative
+	 *                 in a "repositories" subfolder of {@link Config#getBaseDir()}
+	 * 
+	 * @return an initialized endpoint containing the repository
 	 * 
 	 * @throws Exception
 	 */
 	public static Endpoint loadNativeEndpoint(String name, String location) throws FedXException {
 		
-		EndpointProvider repProvider = new NativeStoreProvider();
-		String id = new File(location).getName();
-		return repProvider.loadEndpoint( new RepositoryInformation(id, name, location, EndpointType.NativeStore) );
-	}
-	
-	/**
-	 * Load NativeStore from location relative to baseDir
-	 * 
-	 * @param name
-	 * @param location
-	 * @param baseDir
-	 * @return the endpoint
-	 * @throws Exception
-	 */
-	public static Endpoint loadNativeEndpoint(String name, String location, File baseDir) throws FedXException {
-		return loadNativeEndpoint(name, baseDir.getAbsolutePath() + "/" + location);
+		NativeStoreProvider repProvider = new NativeStoreProvider();
+		return repProvider.loadEndpoint(new NativeRepositoryInformation(name, location));
 	}
 	
 	
 	/**
-	 * Construct a NativeStore endpoint using the provided information and the file location as name.
-	 * Note: "http://" is prepended to use standard names
+	 * Construct a {@link NativeStore} endpoint using the provided information and
+	 * the file location as name.
 	 * 
-	 * @param location
-	 * 			the location of the data store
+	 * <p>
+	 * If the repository location denotes an absolute path, the native store
+	 * directory must already exist. If a relative path is used, the repository is
+	 * created on the fly (if necessary).
+	 * </p>
 	 * 
-	 * @return
-	 * 		an initialized endpoint containing the repository
+	 * @param location the location of the data store, either absolute or relative
+	 *                 in a "repositories" subfolder of {@link Config#getBaseDir()}
+	 * 
+	 * @return an initialized endpoint containing the repository
 	 * 
 	 * @throws Exception
 	 */
@@ -226,15 +220,15 @@ public class EndpointFactory {
 	
 	
 	/**
-	 * Utility function to load federation members from a data configuration file. A data configuration 
-	 * file provides information about federation members in form of ntriples. Currently the types
-	 * NativeStore and SPARQLEndpoint are supported. For details please refer to the documentation
-	 * in {@link NativeGraphRepositoryInformation} and {@link SPARQLGraphRepositoryInformation}.
+	 * Utility function to load federation members from a data configuration file. A
+	 * data configuration file provides information about federation members in form
+	 * of ntriples. Currently the types NativeStore and SPARQLEndpoint are
+	 * supported. For details please refer to the documentation in
+	 * {@link NativeRepositoryInformation} and {@link SPARQLRepositoryInformation}.
 	 * 
 	 * @param dataConfig
 	 * 
-	 * @return
-	 * 			a list of initialized endpoints, i.e. the federation members
+	 * @return a list of initialized endpoints, i.e. the federation members
 	 * 
 	 * @throws IOException
 	 * @throws Exception
@@ -265,34 +259,33 @@ public class EndpointFactory {
 	}
 	
 	
-	public static Endpoint loadEndpoint(Model graph, Resource repNode, Value repType) throws FedXException {
+	private static Endpoint loadEndpoint(Model graph, Resource repNode, Value repType) throws FedXException {
 		
-		EndpointProvider repProvider;
 		
 		// NativeStore => RDF4J native store implementation
 		if (repType.equals(FedXUtil.literal("NativeStore")))
 		{
-			repProvider = new NativeStoreProvider();
-			return repProvider.loadEndpoint( new NativeGraphRepositoryInformation(graph, repNode) );
+			NativeStoreProvider repProvider = new NativeStoreProvider();
+			return repProvider.loadEndpoint(new NativeRepositoryInformation(graph, repNode));
 		} 
 		
 		// SPARQL Repository => SPARQLRepository 
 		else if (repType.equals(FedXUtil.literal("SPARQLEndpoint")))
 		{
-			repProvider =  new SPARQLProvider();	 
-			return repProvider.loadEndpoint( new SPARQLGraphRepositoryInformation(graph, repNode) );
+			SPARQLProvider repProvider = new SPARQLProvider();
+			return repProvider.loadEndpoint(new SPARQLRepositoryInformation(graph, repNode));
 		} 
 		
 		// Remote Repository
 		else if (repType.equals(FedXUtil.literal("RemoteRepository")))
 		{
-			repProvider =  new RemoteRepositoryProvider();	 
-			return repProvider.loadEndpoint( new RemoteRepositoryGraphRepositoryInformation(graph, repNode) );
+			RemoteRepositoryProvider repProvider = new RemoteRepositoryProvider();
+			return repProvider.loadEndpoint(new RemoteRepositoryRepositoryInformation(graph, repNode));
 		} 
 		
 		// Resolvable Repository
 		else if (repType.equals(FedXUtil.literal("ResolvableRepository"))) {
-			repProvider = new ResolvableRepositoryProvider();
+			ResolvableRepositoryProvider repProvider = new ResolvableRepositoryProvider();
 			return repProvider.loadEndpoint(new ResolvableRepositoryInformation(graph, repNode));
 		}
 

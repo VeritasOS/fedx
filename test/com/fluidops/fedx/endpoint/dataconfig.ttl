@@ -12,5 +12,5 @@
 
 <http://dbpedia.native> a sd:Service ;
 	fedx:store "NativeStore" ;
-	fedx:repositoryLocation "target/tmp/repositories/dbmodel" .
+	fedx:repositoryLocation "dbmodel" .
 

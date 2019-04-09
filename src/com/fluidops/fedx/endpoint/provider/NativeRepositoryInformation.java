@@ -28,36 +28,47 @@ import com.fluidops.fedx.util.Vocabulary;
 
 /**
  * Graph information for RDF4J {@link NativeStore} initialization.
- * <p>
  * 
- * Format:
  * <p>
+ * Format:
+ * </p>
  * 
  * <pre>
- * <%name%> fedx:store "NativeStore";
- * fedx:RepositoryLocation "%location%".
+ * <%name%> a sd:Service ;
+ *  	fedx:store "NativeStore" ;
+ *  	fedx:RepositoryLocation "%location%".
  * 
  * relative path (to {@link Config#getBaseDir()})
- * <http://DBpedia> fedx:store "NativeStore";
- * fedx:repositoryLocation "data\\repositories\\native-storage.dbpedia".
+ * 
+ * <http://DBpedia> a sd:Service ;
+ *  	fedx:store "NativeStore" ;
+ *  	fedx:repositoryLocation "data\\repositories\\native-storage.dbpedia".
  *  
  * absolute Path
- * <http://DBpedia> fedx:store "NativeStore";
- * fedx:repositoryLocation "D:\\data\\repositories\\native-storage.dbpedia".
+ * 
+ * <http://DBpedia> a sd:Service ;
+ *  	fedx:store "NativeStore" ;
+ *  	fedx:repositoryLocation "D:\\data\\repositories\\native-storage.dbpedia".
  * </pre>
  * 
+ * <p>
  * Note: the id is constructed from the location:
  * repositories\\native-storage.dbpedia => native-storage.dbpedia
+ * </p>
  * 
  * 
  * @author Andreas Schwarte
  *
  */
-public class NativeGraphRepositoryInformation extends RepositoryInformation {
+public class NativeRepositoryInformation extends RepositoryInformation {
 
-	public NativeGraphRepositoryInformation(Model graph, Resource repNode) {
+	public NativeRepositoryInformation(Model graph, Resource repNode) {
 		super(EndpointType.NativeStore);
 		initialize(graph, repNode);
+	}
+
+	public NativeRepositoryInformation(String name, String location) {
+		super(new File(location).getName(), name, location, EndpointType.NativeStore);
 	}
 
 	protected void initialize(Model graph, Resource repNode) {

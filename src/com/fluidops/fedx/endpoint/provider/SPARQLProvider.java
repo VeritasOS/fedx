@@ -40,10 +40,10 @@ import com.fluidops.fedx.exception.FedXException;
  * 
  * @author Andreas Schwarte
  */
-public class SPARQLProvider implements EndpointProvider {
+public class SPARQLProvider implements EndpointProvider<SPARQLRepositoryInformation> {
 
 	@Override
-	public Endpoint loadEndpoint(RepositoryInformation repoInfo)
+	public Endpoint loadEndpoint(SPARQLRepositoryInformation repoInfo)
 			throws FedXException {
 
 		try {

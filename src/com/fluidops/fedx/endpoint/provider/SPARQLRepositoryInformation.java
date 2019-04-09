@@ -26,11 +26,10 @@ import com.fluidops.fedx.util.Vocabulary;
 
 
 /**
- * Graph information for RDF4J {@link SPARQLRepository} initialization.
+ * Class holding information for RDF4J {@link SPARQLRepository} initialization.
  * <p>
- * 
  * Format:
- * <p>
+ * </p>
  * 
  * <pre>
  * &#64;prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
@@ -61,10 +60,14 @@ import com.fluidops.fedx.util.Vocabulary;
  * @author Andreas Schwarte
  *
  */
-public class SPARQLGraphRepositoryInformation extends RepositoryInformation {
+public class SPARQLRepositoryInformation extends RepositoryInformation {
 
 
-	public SPARQLGraphRepositoryInformation(Model graph, Resource repNode) {
+	public SPARQLRepositoryInformation(String name, String endpoint) {
+		super(endpointToID(endpoint), name, endpoint, EndpointType.SparqlEndpoint);
+	}
+
+	public SPARQLRepositoryInformation(Model graph, Resource repNode) {
 		super(EndpointType.SparqlEndpoint);
 		initialize(graph, repNode);
 	}
@@ -99,5 +102,16 @@ public class SPARQLGraphRepositoryInformation extends RepositoryInformation {
 	
 	protected boolean hasAdditionalSettings(Model graph, Resource repNode) {
 		return graph.contains(repNode, Vocabulary.FEDX.SUPPORTS_ASK_QUERIES, null);
+	}
+
+	/**
+	 * Derive an identifier from the endpoint
+	 * 
+	 * @param endpoint
+	 * @return the identifier
+	 */
+	static String endpointToID(String endpoint) {
+
+		return "sparql_" + endpoint.replace("http://", "").replace("/", "_");
 	}
 }

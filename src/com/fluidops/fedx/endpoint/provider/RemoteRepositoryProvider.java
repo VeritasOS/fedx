@@ -32,10 +32,10 @@ import com.fluidops.fedx.exception.FedXException;
  * 
  * @author Andreas Schwarte
  */
-public class RemoteRepositoryProvider implements EndpointProvider {
+public class RemoteRepositoryProvider implements EndpointProvider<RemoteRepositoryRepositoryInformation> {
 
 	@Override
-	public Endpoint loadEndpoint(RepositoryInformation repoInfo)
+	public Endpoint loadEndpoint(RemoteRepositoryRepositoryInformation repoInfo)
 			throws FedXException {
 
 		String repositoryServer = repoInfo.get("repositoryServer");

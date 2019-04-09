@@ -25,8 +25,8 @@ import com.fluidops.fedx.exception.FedXException;
  * @author Andreas Schwarte
  *
  */
-public interface EndpointProvider {
+public interface EndpointProvider<T extends RepositoryInformation> {
 	
-	public Endpoint loadEndpoint(RepositoryInformation repoInfo) throws FedXException;
+	public Endpoint loadEndpoint(T repoInfo) throws FedXException;
 	
 }

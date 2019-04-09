@@ -59,4 +59,29 @@ public class FileUtil {
 		return f;
 	}
 	
+	/**
+	 * Returns a File relative to the configured {@link Config#getBaseDir()}.
+	 * 
+	 * @param relPath
+	 * @return the file
+	 */
+	public static File fileInBaseDir(String relPath) {
+		return new File(Config.getConfig().getBaseDir(), relPath);
+	}
+
+	/**
+	 * Uses {@link File#mkdirs()} to create the directory (if necessary)
+	 * 
+	 * @param dir
+	 * @throws IllegalStateException if the directories cannot be created
+	 */
+	public static void mkdirs(File dir) {
+		if (dir.isDirectory()) {
+			return;
+		}
+		if (!dir.mkdirs()) {
+			throw new IllegalStateException("Failed to create directories at " + dir);
+		}
+	}
+
 }

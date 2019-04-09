@@ -4,9 +4,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -50,7 +47,7 @@ public class EndpointFactoryTest extends SPARQLBaseTest {
 	public void testDataConfig() throws Exception {
 
 		fedxRule.setConfig("validateRepositoryConnections", "false");
-		createTemporaryNativeStore();
+		fedxRule.setConfig("baseDir", "target/tmp/fedxTest");
 
 		File dataConfig = new File(EndpointFactoryTest.class.getResource("dataconfig.ttl").toURI());
 
@@ -73,18 +70,11 @@ public class EndpointFactoryTest extends SPARQLBaseTest {
 		Endpoint nativeStore = endpoints.get(2);
 		Assertions.assertEquals("http://dbpedia.native", nativeStore.getName());
 		Assertions.assertEquals("dbmodel", nativeStore.getId());
-		Assertions.assertEquals("target/tmp/repositories/dbmodel", nativeStore.getEndpoint());
+		Assertions.assertEquals("dbmodel", nativeStore.getEndpoint());
+		Assertions.assertEquals(new File("target/tmp/fedxTest", "repositories/dbmodel"),
+				((ManagedRepositoryEndpoint) nativeStore).repository.getDataDir());
 
 	}
 
-	protected void createTemporaryNativeStore() {
-		File dbmodel = new File("target/tmp/repositories/dbmodel");
-		if (!dbmodel.isDirectory()) {
-			dbmodel.getParentFile().mkdirs();
-		}
-		Repository repo = new SailRepository(new NativeStore(dbmodel));
-		repo.initialize();
-		repo.shutDown();
-	}
 
 }

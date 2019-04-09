@@ -24,37 +24,41 @@ import com.fluidops.fedx.util.Vocabulary;
 
 
 /**
- * Graph information for RDF4J {@link HTTPRepository} initialization.
+ * Class holding information for RDF4J {@link HTTPRepository} initialization.
  * 
+ * <p>
  * Format:
+ * </p>
  * 
- * <code>
- * <%name%> fedx:store "RemoteRepository";
- * fedx:repositoryServer "%location%";
- * fedx:repositoryName "%name%"
+ * <pre>
+ * <%name%> a sd:Service ;
+ *  	fedx:store "RemoteRepository" ;
+ *  	fedx:repositoryServer "%location%" ;
+ *  	fedx:repositoryName "%name%" .
  * 
- * <http://dbpedia> fedx:store "RemoteRepository";
- * fedx:repositoryServer "http://<host>/openrdf-sesame" ;
- * fedx:repositoryName "dbpedia" .
+ * <http://dbpedia> a sd:Service ;
+ *  	fedx:store "RemoteRepository";
+ *  	fedx:repositoryServer "http://<host>/openrdf-sesame" ;
+ *  	fedx:repositoryName "dbpedia" .
+ * </pre>
  * 
- * 
- * </code>
- * 
+ * <p>
  * Note: the id is constructed from the name: http://dbpedia.org/ =>
  * remote_dbpedia.org
+ * </p>
  * 
  * 
  * @author Andreas Schwarte
  *
  */
-public class RemoteRepositoryGraphRepositoryInformation extends RepositoryInformation {
+public class RemoteRepositoryRepositoryInformation extends RepositoryInformation {
 
-	public RemoteRepositoryGraphRepositoryInformation(Model graph, Resource repNode) {
+	public RemoteRepositoryRepositoryInformation(Model graph, Resource repNode) {
 		super(EndpointType.RemoteRepository);
 		initialize(graph, repNode);
 	}
 
-	public RemoteRepositoryGraphRepositoryInformation(String repositoryServer, String repositoryName) {
+	public RemoteRepositoryRepositoryInformation(String repositoryServer, String repositoryName) {
 		super("remote_" + repositoryName, "http://"+repositoryName, repositoryServer + "/" + repositoryName, EndpointType.RemoteRepository);
 		setProperty("repositoryServer", repositoryServer);
 		setProperty("repositoryName", repositoryName);		

@@ -36,10 +36,10 @@ import com.fluidops.fedx.exception.FedXException;
  * @author Andreas Schwarte
  *
  */
-public class ResolvableRepositoryProvider implements EndpointProvider {
+public class ResolvableRepositoryProvider implements EndpointProvider<ResolvableRepositoryInformation> {
 
 	@Override
-	public Endpoint loadEndpoint(RepositoryInformation repoInfo) throws FedXException {
+	public Endpoint loadEndpoint(ResolvableRepositoryInformation repoInfo) throws FedXException {
 
 		return new ResolvableEndpoint(repoInfo, repoInfo.getLocation(), EndpointClassification.Remote);
 	}

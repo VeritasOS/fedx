@@ -137,10 +137,10 @@ public class Config {
 	/**
 	 * the base directory for any location used in fedx, e.g. for repositories
 	 * 
-	 * @return the base directory
+	 * @return the base directory (default: the current execution directory)
 	 */
 	public String getBaseDir() {
-		return props.getProperty("baseDir", "");
+		return props.getProperty("baseDir", ".");
 	}
 	
 	/**

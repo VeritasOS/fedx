@@ -39,7 +39,7 @@ import com.fluidops.fedx.exception.FedXException;
  * @see RepositoryEndpoint
  * @see ManagedRepositoryEndpoint
  */
-public class RepositoryEndpointProvider implements EndpointProvider {
+public class RepositoryEndpointProvider implements EndpointProvider<RepositoryInformation> {
 
 	protected final Repository repository;
 
