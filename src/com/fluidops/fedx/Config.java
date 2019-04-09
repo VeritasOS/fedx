@@ -35,6 +35,7 @@ import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 import com.fluidops.fedx.monitoring.QueryLog;
 import com.fluidops.fedx.monitoring.QueryPlanLog;
+import com.fluidops.fedx.util.FileUtil;
 
 
 /**
@@ -137,16 +138,18 @@ public class Config {
 	/**
 	 * the base directory for any location used in fedx, e.g. for repositories
 	 * 
-	 * @return the base directory (default: the current execution directory)
+	 * @return the base directory (default: unspecified, callers should assume the
+	 *         execution directory)
+	 * @see FileUtil
 	 */
 	public String getBaseDir() {
-		return props.getProperty("baseDir", ".");
+		return props.getProperty("baseDir");
 	}
 	
 	/**
 	 * The location of the dataConfig.
 	 * 
-	 * @return the data config location
+	 * @return the data config location (relative to {@link #getBaseDir()})
 	 */
 	public String getDataConfig() {
 		return props.getProperty("dataConfig");

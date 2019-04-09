@@ -47,6 +47,10 @@ public class FedXInRDF4JWorkbenchTest extends SPARQLServerBaseTest {
 
 		repo.shutDown();
 
+		// check that cache is persisted in the expected location
+		FederationManager.getInstance().getCache().persist();
+		Assertions.assertTrue(new File(fedXDataDir, "cache.db").isFile());
+
 		// temporary workaround: shutdown the federation repository explicitly here to
 		// avoid a long running test. This is because the federation keeps an open
 		// connection to other endpoints hosted in the same server, and the shutdown

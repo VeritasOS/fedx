@@ -54,9 +54,9 @@ public class MemoryCache implements Cache {
 	private static final Logger log = LoggerFactory.getLogger(MemoryCache.class);
 	
 	protected HashMap<SubQuery, CacheEntry> cache = new HashMap<SubQuery, CacheEntry>();
-	protected String cacheLocation;
+	protected File cacheLocation;
 	
-	public MemoryCache(String cacheLocation) {
+	public MemoryCache(File cacheLocation) {
 		if (cacheLocation==null)
 			throw new FedXRuntimeException("The provided cacheLocation must not be null.");
 		this.cacheLocation = cacheLocation;
@@ -148,11 +148,11 @@ public class MemoryCache implements Cache {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize() throws FedXException {
-		File f = new File(cacheLocation);
 		
-		if (!f.exists())
+		if (!cacheLocation.exists())
 			return;
-		try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(f)))) {
+		try (ObjectInputStream in = new ObjectInputStream(
+				new BufferedInputStream(new FileInputStream(cacheLocation)))) {
 			cache = (HashMap<SubQuery, CacheEntry>)in.readObject();
 		} catch (Exception e) {
 			throw new FedXException("Error initializing cache.", e);
@@ -170,7 +170,7 @@ public class MemoryCache implements Cache {
 		// XXX write to a temporary file first, to prevent a corrupt file
 		
 		try (ObjectOutputStream out = new ObjectOutputStream(
-				new BufferedOutputStream(new FileOutputStream(new File(cacheLocation))))) {
+				new BufferedOutputStream(new FileOutputStream(cacheLocation)))) {
 			out.writeObject(this.cache);
 		} catch (Exception e) {
 			throw new FedXException("Error persisting cache data.", e);
@@ -179,7 +179,7 @@ public class MemoryCache implements Cache {
 
 	@Override
 	public void clear() {
-		log.info("Clearing the cache.");
+		log.debug("Clearing the cache.");
 		cache = new HashMap<SubQuery, CacheEntry>();
 		
 	}

@@ -38,7 +38,7 @@ import com.fluidops.fedx.util.Vocabulary;
  *  	fedx:store "NativeStore" ;
  *  	fedx:RepositoryLocation "%location%".
  * 
- * relative path (to {@link Config#getBaseDir()})
+ * relative path (to {@link Config#getBaseDir()}) in a "repositories" subfolder
  * 
  * <http://DBpedia> a sd:Service ;
  *  	fedx:store "NativeStore" ;

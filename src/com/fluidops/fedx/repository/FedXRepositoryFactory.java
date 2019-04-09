@@ -140,6 +140,7 @@ public class FedXRepositoryFactory implements RepositoryFactory {
 				try {
 					// apply a repository resolver (if any) from FedXRepositoryResolverBean
 					fedxRepo = FedXFactory.newFederation()
+							.withFedXBaseDir(baseDir)
 							.withRepositoryResolver(FedXRepositoryResolverBean.getRepositoryResolver())
 							.withMembers(dataConfigFile).create();
 				} catch (Exception e) {

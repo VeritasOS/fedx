@@ -33,6 +33,7 @@ import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.repository.FedXRepository;
 import com.fluidops.fedx.statistics.Statistics;
 import com.fluidops.fedx.statistics.StatisticsImpl;
+import com.fluidops.fedx.util.FileUtil;
 
 /**
  * FedX initialization factory methods for convenience: methods initialize the
@@ -129,6 +130,7 @@ public class FedXFactory {
 	protected RepositoryResolver repositoryResolver;
 	protected List<Endpoint> members = new ArrayList<>();
 	protected File fedxConfig;
+	protected File fedxBaseDir;
 
 	private FedXFactory() {
 		
@@ -176,6 +178,23 @@ public class FedXFactory {
 	}
 
 	/**
+	 * Configure the FedX base directory (i.e. {@link Config#getBaseDir()}) at
+	 * federation construction time. Note that any explicitly configured value in
+	 * {@link Config#getBaseDir()} has precedence (i.e. if a value is configured,
+	 * this setting is ignored).
+	 * 
+	 * @param fedxBaseDir the existing fedx base directory
+	 * @return the {@link FedXFactory} instance
+	 */
+	public FedXFactory withFedXBaseDir(File fedxBaseDir) {
+		if (!fedxBaseDir.isDirectory()) {
+			throw new IllegalArgumentException("Base directory does not exist: " + fedxBaseDir);
+		}
+		this.fedxBaseDir = fedxBaseDir;
+		return this;
+	}
+
+	/**
 	 * Create the federation using the provided configuration
 	 * 
 	 * @return the configured {@link FedXRepository}
@@ -190,11 +209,19 @@ public class FedXFactory {
 			}
 		}
 
+		Config config = Config.getConfig();
+		if (fedxBaseDir != null) {
+			if (config.getBaseDir() != null) {
+				log.warn("Ignoring fedx base directory, already configured as " + Config.getConfig().getBaseDir()
+						+ " in fedx configuration.");
+			} else {
+				log.debug("Initializing FedX base directory to " + fedxBaseDir.getAbsolutePath());
+				config.set("baseDir", fedxBaseDir.getAbsolutePath());
+			}
+		}
+
 		// initialize defaults
-		// TODO consider making configurable via builder
-		String cacheLocation = Config.getConfig().getCacheLocation();
-		Cache cache = new MemoryCache(cacheLocation);
-		cache.initialize();
+		Cache cache = initializeCache();
 		Statistics statistics = new StatisticsImpl();
 		
 		initializeMembersFromConfig();
@@ -207,6 +234,14 @@ public class FedXFactory {
 		return FederationManager.initialize(members, cache, statistics);
 	}
 
+	protected Cache initializeCache() {
+		String location = Config.getConfig().getCacheLocation();
+		File cacheLocation = FileUtil.getFileLocation(location);
+		Cache cache = new MemoryCache(cacheLocation);
+		cache.initialize();
+		return cache;
+	}
+
 	protected void initializeMembersFromConfig() {
 
 		String dataConfig = Config.getConfig().getDataConfig();
@@ -214,8 +249,7 @@ public class FedXFactory {
 			return;
 		}
 
-		// TODO consider using base directory
-		File dataConfigFile = new File(dataConfig);
+		File dataConfigFile = FileUtil.getFileLocation(dataConfig);
 		withMembers(dataConfigFile);
 	}
 

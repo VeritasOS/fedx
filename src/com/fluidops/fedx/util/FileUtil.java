@@ -29,23 +29,15 @@ import com.fluidops.fedx.Config;
 public class FileUtil {
 
 	/**
-	 * location utility.<p>
+	 * Returns the File representing the location.
 	 * 
-	 *  if the specified path is absolute, it is returned as is, 
-	 *  otherwise a location relative to {@link Config#getBaseDir()} is returned<p>
-	 *  
-	 *  examples:<p>
-	 *  
-	 *  <code>
-	 *  /home/data/myPath -> absolute linux path
-	 *  c:\\data -> absolute windows path
-	 *  \\\\myserver\data -> absolute windows network path (see {@link File#isAbsolute()})
-	 *  data/myPath -> relative path (relative location to baseDir is returned)
-	 *  </code>
-	 *  
+	 * <p>
+	 * If the specified path is absolute, it is returned as is, otherwise a location
+	 * relative to {@link Config#getBaseDir()} is returned
+	 * </p>
+	 * 
 	 * @param path
-	 * @return
-	 * 			the file corresponding to the abstract path
+	 * @return the file corresponding to the abstract path
 	 */
 	public static File getFileLocation(String path) {
 		
@@ -55,8 +47,7 @@ public class FileUtil {
 		if (f.isAbsolute())
 			return f;
 		
-		f = new File( Config.getConfig().getBaseDir() + path);
-		return f;
+		return fileInBaseDir(path);
 	}
 	
 	/**
@@ -66,6 +57,10 @@ public class FileUtil {
 	 * @return the file
 	 */
 	public static File fileInBaseDir(String relPath) {
+		String baseDir = Config.getConfig().getBaseDir();
+		if (baseDir == null) {
+			baseDir = ".";
+		}
 		return new File(Config.getConfig().getBaseDir(), relPath);
 	}
 
