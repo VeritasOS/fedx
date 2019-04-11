@@ -22,8 +22,8 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
 import com.fluidops.fedx.evaluation.concurrent.ParallelExecutor;
 import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
@@ -37,22 +37,20 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
 public class ParallelGetStatementsTask extends ParallelTaskBase<Statement> {
 
 	protected final ParallelExecutor<Statement> unionControl;
+	protected final Endpoint endpoint;
 	protected final Resource subj;
 
 	protected final IRI pred;
 	protected final Value obj;
 	protected Resource[] contexts;
-	protected final TripleSource tripleSource;
-	protected final RepositoryConnection conn;
 		
 	public ParallelGetStatementsTask(ParallelExecutor<Statement> unionControl,
-			TripleSource tripleSource, RepositoryConnection conn,
+			Endpoint endpoint,
 			Resource subj, IRI pred, Value obj, Resource... contexts)
 	{
 		super();
-		this.unionControl = unionControl;		
-		this.tripleSource = tripleSource;
-		this.conn = conn;
+		this.unionControl = unionControl;
+		this.endpoint = endpoint;
 		this.subj = subj;
 		this.pred = pred;
 		this.obj = obj;
@@ -68,6 +66,7 @@ public class ParallelGetStatementsTask extends ParallelTaskBase<Statement> {
 	@Override
 	public CloseableIteration<Statement, QueryEvaluationException> performTask()
 			throws Exception {
-		return tripleSource.getStatements(conn, subj, pred, obj, contexts);
+		TripleSource tripleSource = endpoint.getTripleSource();
+		return tripleSource.getStatements(subj, pred, obj, contexts);
 	}
 }

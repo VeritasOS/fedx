@@ -71,36 +71,33 @@ public class FedXBaseTest {
 	protected void execute(RepositoryConnection conn, String queryFile, String expectedResultFile, boolean checkOrder) throws Exception {
 		
 		String queryString = readQueryString(queryFile);
+
+		Query query = QueryManager.prepareQuery(queryString);
 		
-		try {
-			Query query = QueryManager.prepareQuery(queryString);
+		if (query instanceof TupleQuery) {
+			try (TupleQueryResult queryResult = ((TupleQuery) query).evaluate()) {
 			
-			if (query instanceof TupleQuery) {
-				TupleQueryResult queryResult = ((TupleQuery)query).evaluate();
-				
 				TupleQueryResult expectedResult = readExpectedTupleQueryResult(expectedResultFile);
-				
+
 				compareTupleQueryResults(queryResult, expectedResult, checkOrder);
-	
-			} else if (query instanceof GraphQuery) {
-				GraphQueryResult gqr = ((GraphQuery)query).evaluate();
+			}
+
+		} else if (query instanceof GraphQuery) {
+			try (GraphQueryResult gqr = ((GraphQuery) query).evaluate()) {
 				Set<Statement> queryResult = Iterations.asSet(gqr);
-	
+
 				Set<Statement> expectedResult = readExpectedGraphQueryResult(expectedResultFile);
-	
+
 				compareGraphs(queryResult, expectedResult);
-				
-			} else if (query instanceof BooleanQuery) {
-				
-				boolean queryResult = ((BooleanQuery)query).evaluate();
-				boolean expectedResult = readExpectedBooleanQueryResult(expectedResultFile);
-				Assertions.assertEquals(expectedResult, queryResult);
 			}
-			else {
-				throw new RuntimeException("Unexpected query type: " + query.getClass());
-			}
-		} finally {
-			conn.close();
+
+		} else if (query instanceof BooleanQuery) {
+
+			boolean queryResult = ((BooleanQuery) query).evaluate();
+			boolean expectedResult = readExpectedBooleanQueryResult(expectedResultFile);
+			Assertions.assertEquals(expectedResult, queryResult);
+		} else {
+			throw new RuntimeException("Unexpected query type: " + query.getClass());
 		}
 	}
 	

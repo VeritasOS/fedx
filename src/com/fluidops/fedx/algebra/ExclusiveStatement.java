@@ -23,7 +23,6 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.EndpointManager;
@@ -61,7 +60,6 @@ public class ExclusiveStatement extends FedXStatementPattern {
 		try {
 			
 			Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(getOwner().getEndpointID());
-			RepositoryConnection ownedConnection = ownedEndpoint.getConnection();
 			TripleSource t = ownedEndpoint.getTripleSource();
 			
 			/*
@@ -80,15 +78,15 @@ public class ExclusiveStatement extends FedXStatementPattern {
 				} catch (IllegalQueryException e1) {
 					// TODO there might be an issue with filters being evaluated => investigate
 					/* all vars are bound, this must be handled as a check query, can occur in joins */
-					if (t.hasStatements(this, ownedConnection, bindings))
+					if (t.hasStatements(this, bindings))
 						return new SingleBindingSetIteration(bindings);
 					return new EmptyIteration<BindingSet, QueryEvaluationException>();
 				}
 								
-				return t.getStatements(preparedQuery, ownedConnection, bindings, (isEvaluated.get() ? null : filterExpr) );
+				return t.getStatements(preparedQuery, bindings, (isEvaluated.get() ? null : filterExpr));
 				
 			} else {
-				return t.getStatements(this, ownedConnection, bindings, filterExpr);
+				return t.getStatements(this, bindings, filterExpr);
 			}
 				
 		} catch (RepositoryException e) {

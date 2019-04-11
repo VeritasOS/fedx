@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rdf4j.http.client.SessionManagerDependent;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -201,9 +200,6 @@ public abstract class SPARQLServerBaseTest extends FedXBaseTest {
 			if (needToShutdown) {
 				rep.shutDown();
 			}
-			// TODO workaround for a bug in Sesame to avoid close HTTPClient
-			if (rep instanceof SessionManagerDependent)
-				((SessionManagerDependent) rep).setHttpClientSessionManager(null);
 		}
 		log.debug("dataset loaded.");
 	}

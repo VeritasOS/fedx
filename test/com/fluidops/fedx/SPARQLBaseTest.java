@@ -39,8 +39,9 @@ public abstract class SPARQLBaseTest extends SPARQLServerBaseTest {
 	 */
 	protected void execute(String queryFile, String expectedResultFile, boolean checkOrder) throws Exception {
 		
-		RepositoryConnection conn = fedxRule.getRepository().getConnection();
-		super.execute(conn, queryFile, expectedResultFile, checkOrder);		
+		try (RepositoryConnection conn = fedxRule.getRepository().getConnection()) {
+			super.execute(conn, queryFile, expectedResultFile, checkOrder);
+		}
 	}	
 	
 	protected Set<Statement> getStatements(Resource subj, IRI pred, Value obj) throws Exception {

@@ -22,7 +22,6 @@ import org.eclipse.rdf4j.common.iteration.EmptyIteration;
 import org.eclipse.rdf4j.common.iteration.LookAheadIteration;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
-import org.eclipse.rdf4j.query.impl.QueueCursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +56,7 @@ public abstract class ParallelExecutorBase<T> extends LookAheadIteration<T, Quer
 
 	/* Variables */
 	protected volatile Thread evaluationThread;
-	protected QueueCursor<CloseableIteration<T, QueryEvaluationException>> rightQueue = new FedXQueueCursor<T>(1024);
+	protected FedXQueueCursor<T> rightQueue = FedXQueueCursor.create(1024);
 	protected CloseableIteration<T, QueryEvaluationException> rightIter;
 	protected volatile boolean closed;
 	protected boolean finished = false;
@@ -121,7 +120,7 @@ public abstract class ParallelExecutorBase<T> extends LookAheadIteration<T, Quer
 	public void toss(Exception e) {
 		rightQueue.toss(e);
 		if (log.isTraceEnabled()) {
-			log.trace("Tossing exception of executor " + getId() + ": " + e.getMessage());
+			log.trace("Tossing exception of " + getDisplayId() + ": " + e.getMessage());
 		}
 	}
 
@@ -173,6 +172,7 @@ public abstract class ParallelExecutorBase<T> extends LookAheadIteration<T, Quer
 			}
 		}
 		closed = true;
+		super.handleClose();
 	}
 
 	/**

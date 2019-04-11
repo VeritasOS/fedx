@@ -18,9 +18,7 @@ package com.fluidops.fedx.evaluation.union;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 
-import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
@@ -36,25 +34,25 @@ import com.fluidops.fedx.evaluation.concurrent.ParallelTaskBase;
  */
 public class ParallelPreparedUnionTask extends ParallelTaskBase<BindingSet> {
 	
-	protected final TripleSource tripleSource;
-	protected final RepositoryConnection conn;
+	protected final Endpoint endpoint;
 	protected final String preparedQuery;
 	protected final BindingSet bindings;
 	protected final ParallelExecutor<BindingSet> unionControl;
 	protected final FilterValueExpr filterExpr;
 	
-	public ParallelPreparedUnionTask(ParallelExecutor<BindingSet> unionControl, String preparedQuery, TripleSource tripleSource, RepositoryConnection conn, BindingSet bindings, FilterValueExpr filterExpr) {
+	public ParallelPreparedUnionTask(ParallelExecutor<BindingSet> unionControl, String preparedQuery, Endpoint endpoint,
+			BindingSet bindings, FilterValueExpr filterExpr) {
+		this.endpoint = endpoint;
 		this.preparedQuery = preparedQuery;
 		this.bindings = bindings;
 		this.unionControl = unionControl;
-		this.tripleSource = tripleSource;
-		this.conn = conn;
 		this.filterExpr = filterExpr;
 	}
 
 	@Override
 	public CloseableIteration<BindingSet, QueryEvaluationException> performTask() throws Exception {
-		return tripleSource.getStatements(preparedQuery, conn, bindings, filterExpr);
+		TripleSource tripleSource = endpoint.getTripleSource();
+		return tripleSource.getStatements(preparedQuery, bindings, filterExpr);
 	}
 
 
@@ -65,7 +63,6 @@ public class ParallelPreparedUnionTask extends ParallelTaskBase<BindingSet> {
 	
 	@Override
 	public String toString() {
-		Endpoint e = EndpointManager.getEndpointManager().getEndpoint(conn);
-		return this.getClass().getSimpleName() + " @" + e.getId() + ": " + preparedQuery;
+		return this.getClass().getSimpleName() + " @" + endpoint.getId() + ": " + preparedQuery;
 	}
 }

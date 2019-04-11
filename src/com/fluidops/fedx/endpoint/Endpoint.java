@@ -20,11 +20,23 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.evaluation.TripleSource;
+import com.fluidops.fedx.evaluation.iterator.CloseDependentConnectionIteration;
 
 /**
  * 
- * Structure to maintain endpoint information, e.g. type, location. The
- * {@link Repository} to use can be obtained by calling {@link #getRepository()}.
+ * Structure to maintain endpoint information, e.g. {@link Repository} type,
+ * location.
+ * 
+ * <p>
+ * The {@link Repository} to use can be obtained by calling
+ * {@link #getRepository()}
+ * </p>
+ * 
+ * <p>
+ * A {@link RepositoryConnection} for interacting with the store can be obtained
+ * using {@link #getConnection()}. Note that typically the {@link TripleSource}
+ * of the endpoint should be used.
+ * </p>
  * 
  * 
  * @author Andreas Schwarte
@@ -43,8 +55,27 @@ public interface Endpoint {
 	public Repository getRepository();
 
 	/**
-	 * Return a singleton connection object. this is valid for the whole lifetime of
-	 * the underlying {@link Endpoint} i.e. until it the Endpoint is shutDown
+	 * Return a {@link RepositoryConnection} for the {@link Repository} represented
+	 * by this endpoint.
+	 * <p>
+	 * Callers of this method need to ensure to close the connection after use.
+	 * </p>
+	 * 
+	 * <p>
+	 * Typical pattern:
+	 * </p>
+	 * 
+	 * <pre>
+	 * try (RepositoryConnection conn = endpoint.getConnection()) {
+	 * 	// do something with the connection
+	 * }
+	 * </pre>
+	 * 
+	 * <p>
+	 * If the {@link RepositoryConnection} needs to stay open outside the scope of a
+	 * method (e.g. for streaming results), consider using
+	 * {@link CloseDependentConnectionIteration}.
+	 * </p>
 	 * 
 	 * @return the repository connection
 	 * 
@@ -52,15 +83,6 @@ public interface Endpoint {
 	 */
 	public RepositoryConnection getConnection();
 
-	/**
-	 * Repair the underlying connection, i.e. call repo.getConnection().
-	 * 
-	 * @return the new connection
-	 * 
-	 * @throws RepositoryException if a repository connection is thrown while
-	 *                             creating the connection
-	 */
-	public RepositoryConnection repairConnection() throws RepositoryException;
 	
 	/**
 	 * 

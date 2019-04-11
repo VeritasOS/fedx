@@ -16,19 +16,15 @@
 package com.fluidops.fedx.exception;
 
 import java.lang.reflect.Constructor;
-import java.net.SocketException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.endpoint.Endpoint;
 
 /**
@@ -61,8 +57,7 @@ public class ExceptionUtil {
 	 * Note that in addition HTTP error codes are extracted from the title, if the exception resulted from
 	 * an HTTP error, such as for instance "503 Service unavailable"
 	 * 
-	 * @param conn
-	 * 			the connection to identify the the endpoint
+	 * @param endpoint the the endpoint
 	 * @param ex
 	 * 			the exception
 	 * @param additionalInfo
@@ -71,18 +66,17 @@ public class ExceptionUtil {
 	 * @return
 	 * 		 	a modified exception with endpoint source
 	 */
-	public static QueryEvaluationException traceExceptionSource(RepositoryConnection conn, Throwable ex,
+	public static QueryEvaluationException traceExceptionSource(Endpoint endpoint, Throwable ex,
 			String additionalInfo) {
 		
-		Endpoint e = EndpointManager.getEndpointManager().getEndpoint(conn);
 		
 		String eID;
 		
-		if (e==null) {
+		if (endpoint==null) {
 			log.warn("No endpoint found for connection, probably changed from different thread.");
 			eID = "unknown";
 		} else {
-			eID = e.getId();
+			eID = endpoint.getId();
 		}
 		
 		// check for http error code (heuristic)
@@ -109,46 +103,15 @@ public class ExceptionUtil {
 	/**
 	 * Repair the connection and then trace the exception source.
 	 * 
-	 * @param conn
+	 * @param endpoint
 	 * @param ex
 	 * @return the exception
 	 */
-	public static QueryEvaluationException traceExceptionSourceAndRepair(RepositoryConnection conn, Throwable ex,
+	public static QueryEvaluationException traceExceptionSourceAndRepair(Endpoint endpoint, Throwable ex,
 			String additionalInfo) {
-		repairConnection(conn, ex);
-		return traceExceptionSource(conn, ex, additionalInfo);
+		return traceExceptionSource(endpoint, ex, additionalInfo);
 	}
-	
-	/**
-	 * Walk the stack trace and in case of SocketException repair the connection of the
-	 * particular endpoint.
-	 * 
-	 * @param conn
-	 * 			the connection to identify the endpoint
-	 * @param ex
-	 * 			the exception
-	 * 
-	 * @throws FedXRuntimeException
-	 * 				if the connection could not be repaired
-	 */
-	public static void repairConnection(RepositoryConnection conn, Throwable ex)
-			throws FedXQueryException, FedXRuntimeException {
 
-		Throwable cause = ex.getCause();
-		while (cause != null) {
-			if (cause instanceof SocketException) {
-				try {
-					Endpoint e = EndpointManager.getEndpointManager().getEndpoint(conn);
-					EndpointManager.getEndpointManager().repairAllConnections();
-					throw new FedXQueryException("Socket exception occured for endpoint " + getExceptionString(e==null?"unknown":e.getId(), ex) + ", all connections have been repaired. Query processing of the current query is aborted.", cause);
-				} catch (RepositoryException e) {
-					log.error("Connection could not be repaired: ", e);
-					throw new FedXRuntimeException(e.getMessage(), e);
-				}				
-			}
-			cause = cause.getCause();
-		}
-	}
 	
 	/**
 	 * Return the exception in a convenient representation, i.e. '%msg% (%CLASS%): %ex.getMessage()%'

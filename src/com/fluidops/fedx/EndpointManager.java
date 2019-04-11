@@ -24,14 +24,10 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.eclipse.rdf4j.query.algebra.evaluation.federation.FederatedService;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.endpoint.Endpoint;
-import com.fluidops.fedx.exception.ExceptionUtil;
-import com.fluidops.fedx.exception.FedXException;
 import com.fluidops.fedx.exception.FedXRuntimeException;
 
 
@@ -85,7 +81,6 @@ public class EndpointManager {
 	
 	// map enpoint ids and connections to the corresponding endpoint
 	protected HashMap<String, Endpoint> endpoints = new HashMap<String, Endpoint>();
-	protected HashMap<RepositoryConnection, Endpoint> connToEndpoint = new HashMap<RepositoryConnection, Endpoint>();
 	
 	protected boolean inRepair = false;
 	protected Long lastRepaired = -1L;
@@ -127,64 +122,9 @@ public class EndpointManager {
 	 */
 	public void addEndpoint(Endpoint e) {
 		endpoints.put(e.getId(), e);
-		connToEndpoint.put(e.getConnection(), e);
 	}
 	
-	/**
-	 * Repair the connection of the endpoint corresponding to the provided connection.
-	 * 
-	 * @param conn
-	 * @return the new RepositoryConnection
-	 * 
-	 * @throws FedXException
-	 * 
-	 */
-	public RepositoryConnection repairConnection(RepositoryConnection conn) throws RepositoryException {
-		Endpoint e = connToEndpoint.remove(conn);
-		
-		if (e==null) {
-			log.warn("No endpoint found for provided connection, probably already repaired in another thread.");
-			return null;		// TODO check if this makes sense
-		}
-		
-		try {
-			RepositoryConnection res = e.repairConnection();
-			connToEndpoint.put(res, e);
-			return res;
-		} catch (RepositoryException ex) {
-			throw ExceptionUtil.changeExceptionMessage("Connection of endpoint " + e.getId() + " could not be repaired", ex, RepositoryException.class);
-		}
-	}
-	
-	
-	public void repairAllConnections() throws RepositoryException {
-		
-				
-		synchronized (this) {
-			
-			// if there was a repair in the previous 3 seconds, abort
-			if (System.currentTimeMillis()-lastRepaired<3000)
-				return;
-			
-			log.info("Repairing all connections after error.");
-			
-			try {
-				inRepair = true;
-				for (Endpoint e : endpoints.values()) {
-					connToEndpoint.remove(e.getConnection());
-					RepositoryConnection newConn = e.repairConnection();
-					connToEndpoint.put(newConn, e);
-				}
-				lastRepaired=System.currentTimeMillis();
-			} catch (RepositoryException r) {
-				throw ExceptionUtil.changeExceptionMessage("Connection of at least one endpoint could not be repaired.", r, RepositoryException.class);
-			} finally {
-				inRepair = false;
-			}
-		}
-	}
-	
-	
+
 	/**
 	 * Remove the provided endpoint from this endpoint manager to be used by
 	 * the {@link FederationManager}. In addition, this method unregisters
@@ -200,7 +140,6 @@ public class EndpointManager {
 		if (!endpoints.containsKey(e.getId()))
 			throw new NoSuchElementException("No endpoint avalaible for id " + e.getId());
 		endpoints.remove(e.getId());
-		connToEndpoint.remove(e.getConnection());
 	}
 	
 	
@@ -221,10 +160,7 @@ public class EndpointManager {
 	public Endpoint getEndpoint(String endpointID) {
 		return endpoints.get(endpointID);
 	}
-	
-	public Endpoint getEndpoint(RepositoryConnection conn) {
-		return connToEndpoint.get(conn);
-	}
+
 	
 	/**
 	 * Return the Endpoint for the provided endpoint url, if it exists. Otherwise

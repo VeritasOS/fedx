@@ -23,7 +23,6 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.EndpointManager;
@@ -74,7 +73,6 @@ public class StatementSourcePattern extends FedXStatementPattern {
 			for (StatementSource source : statementSources) {
 				
 				Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-				RepositoryConnection conn = ownedEndpoint.getConnection();
 				TripleSource t = ownedEndpoint.getTripleSource();
 				
 				/*
@@ -96,10 +94,10 @@ public class StatementSourcePattern extends FedXStatementPattern {
 						}
 					}
 					 
-					union.addTask(new ParallelPreparedUnionTask(union, preparedQuery, t, conn, bindings, (isEvaluated.get() ? null : filterExpr)));
+					union.addTask(new ParallelPreparedUnionTask(union, preparedQuery, ownedEndpoint, bindings, (isEvaluated.get() ? null : filterExpr)));
 					
 				} else {
-					union.addTask(new ParallelUnionTask(union, this, t, conn, bindings, filterExpr));
+					union.addTask(new ParallelUnionTask(union, this, ownedEndpoint, bindings, filterExpr));
 				}
 				
 			}
@@ -123,9 +121,8 @@ public class StatementSourcePattern extends FedXStatementPattern {
 		// XXX do this in parallel for the number of endpoints ?
 		for (StatementSource source : statementSources) {
 			Endpoint ownedEndpoint = EndpointManager.getEndpointManager().getEndpoint(source.getEndpointID());
-			RepositoryConnection ownedConnection = ownedEndpoint.getConnection();
 			TripleSource t = ownedEndpoint.getTripleSource();
-			if (t.hasStatements(this, ownedConnection, bindings))
+			if (t.hasStatements(this, bindings))
 				return new SingleBindingSetIteration(bindings);
 		}
 		

@@ -26,7 +26,6 @@ import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.algebra.CheckStatementPattern;
@@ -175,15 +174,15 @@ public class SailFederationEvalStrategy extends FederationEvalStrategy {
 
 	@Override
 	public CloseableIteration<BindingSet, QueryEvaluationException> evaluateExclusiveGroup(
-			ExclusiveGroup group, RepositoryConnection conn,
-			TripleSource tripleSource, BindingSet bindings)
+			ExclusiveGroup group, BindingSet bindings)
 			throws RepositoryException, MalformedQueryException,
 			QueryEvaluationException {
 
 		// simple thing: use a prepared query
+		TripleSource tripleSource = group.getOwnedEndpoint().getTripleSource();
 		AtomicBoolean isEvaluated = new AtomicBoolean(false);
 		TupleExpr preparedQuery = QueryAlgebraUtil.selectQuery(group, bindings, group.getFilterExpr(), isEvaluated);
-		return tripleSource.getStatements(preparedQuery, conn, bindings,
+		return tripleSource.getStatements(preparedQuery, bindings,
 				(isEvaluated.get() ? null : group.getFilterExpr()));
 	
 		// other option (which might be faster for sesame native stores): join over the statements

@@ -19,9 +19,7 @@ import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 
-import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.algebra.FilterValueExpr;
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
@@ -36,25 +34,25 @@ import com.fluidops.fedx.util.QueryStringUtil;
  */
 public class ParallelUnionTask extends ParallelTaskBase<BindingSet> {
 	
-	protected final TripleSource tripleSource;
-	protected final RepositoryConnection conn;
+	protected final Endpoint endpoint;
 	protected final StatementPattern stmt;
 	protected final BindingSet bindings;
 	protected final ParallelExecutor<BindingSet> unionControl;
 	protected final FilterValueExpr filterExpr;
 	
-	public ParallelUnionTask(ParallelExecutor<BindingSet> unionControl, StatementPattern stmt, TripleSource tripleSource, RepositoryConnection conn, BindingSet bindings, FilterValueExpr filterExpr) {
+	public ParallelUnionTask(ParallelExecutor<BindingSet> unionControl, StatementPattern stmt, Endpoint endpoint,
+			BindingSet bindings, FilterValueExpr filterExpr) {
+		this.endpoint = endpoint;
 		this.stmt = stmt;
 		this.bindings = bindings;
 		this.unionControl = unionControl;
-		this.tripleSource = tripleSource;
-		this.conn = conn;
 		this.filterExpr = filterExpr;
 	}
 
 	@Override
 	public CloseableIteration<BindingSet, QueryEvaluationException> performTask() throws Exception {
-		return tripleSource.getStatements(stmt, conn, bindings, filterExpr);
+		TripleSource tripleSource = endpoint.getTripleSource();
+		return tripleSource.getStatements(stmt, bindings, filterExpr);
 	}
 
 	@Override
@@ -64,7 +62,6 @@ public class ParallelUnionTask extends ParallelTaskBase<BindingSet> {
 	
 	@Override
 	public String toString() {
-		Endpoint e = EndpointManager.getEndpointManager().getEndpoint(conn);
-		return this.getClass().getSimpleName() + " @" + e.getId() + ": " + QueryStringUtil.toString(stmt);
+		return this.getClass().getSimpleName() + " @" + endpoint.getId() + ": " + QueryStringUtil.toString(stmt);
 	}
 }

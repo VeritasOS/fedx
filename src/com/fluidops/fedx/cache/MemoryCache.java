@@ -161,7 +161,7 @@ public class MemoryCache implements Cache {
 
 	@Override
 	public void invalidate() throws FedXException {
-		; 	// no-op		
+		cache.clear();
 	}
 
 	@Override

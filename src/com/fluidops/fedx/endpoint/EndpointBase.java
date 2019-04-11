@@ -18,9 +18,11 @@ package com.fluidops.fedx.endpoint;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.base.RepositoryConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fluidops.fedx.Config;
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.evaluation.TripleSource;
@@ -29,24 +31,13 @@ import com.fluidops.fedx.exception.FedXRuntimeException;
 
 
 /**
- * <p>
- * Structure to maintain endpoint information, e.g. type, location. The
- * {@link Repository} to use can be obtained by calling {@link #getRepository()}.
- * <p>
+ * Base implementation for an {@link Endpoint}.
  * 
  * <p>
- * All endpoints need to be added to the {@link EndpointManager}, moreover
- * endpoints can be looked up using their id and their connection.
- * </p>
- * 
- * <p>
- * An endpoint uses a Singleton for the repository connection. If by chance this
- * connection is broken, e.g. due to a SocketException, a call to
- * {@link #repairConnection()} reinitializes the connection.
- * </p>
- * 
- * <p>
- * Note: Interaction with endpoints should be done via the EndpointManager
+ * Provides implementation for the common behavior as well as connection
+ * management. Typically a fresh {@link RepositoryConnection} is returned when
+ * invoking {@link #getConnection()}, however, it is configurable that a managed
+ * (singleton) connection can be used.
  * </p>
  * 
  * @author Andreas Schwarte
@@ -54,7 +45,7 @@ import com.fluidops.fedx.exception.FedXRuntimeException;
  */
 public abstract class EndpointBase implements Endpoint {
 	
-	private static final Logger log = LoggerFactory.getLogger(EndpointBase.class);
+	protected static final Logger log = LoggerFactory.getLogger(EndpointBase.class);
 	
 	protected final RepositoryInformation repoInfo; // the repository information
 	protected final String endpoint; // the endpoint, e.g. for SPARQL the URL
@@ -62,7 +53,7 @@ public abstract class EndpointBase implements Endpoint {
 	protected boolean writable = false; // can this endpoint be used for write operation
 		
 
-	protected RepositoryConnection conn  = null;	// a Singleton RepositoryConnection for the given endpoint
+	private ManagedRepositoryConnection dependentConn = null; // if configured, contains the managed connection
 	protected boolean initialized = false;			// true, iff the contained repository is initialized
 	protected TripleSource tripleSource;			// the triple source, initialized when repository is set
 	protected EndpointConfiguration endpointConfiguration;	// additional endpoint type specific configuration
@@ -131,7 +122,14 @@ public abstract class EndpointBase implements Endpoint {
 	public RepositoryConnection getConnection() {
 		if (!initialized)
 			throw new FedXRuntimeException("Repository for endpoint " + getId() + " not initialized");
-		return conn;
+		if (dependentConn != null) {
+			return this.dependentConn;
+		}
+		return getFreshConnection();
+	}
+
+	protected RepositoryConnection getFreshConnection() {
+		return getRepository().getConnection();
 	}
 
 	@Override
@@ -155,7 +153,9 @@ public abstract class EndpointBase implements Endpoint {
 	
 	@Override
 	public long size() throws RepositoryException {
-		return getConnection().size();
+		try (RepositoryConnection conn = getConnection()) {
+			return conn.size();
+		}
 	}
 	
 	@Override
@@ -164,35 +164,36 @@ public abstract class EndpointBase implements Endpoint {
 			return;
 		Repository repo = getRepository();
 		tripleSource = TripleSourceFactory.tripleSourceFor(this, getType());
-		conn = repo.getConnection();
+		if (useSingleConnection()) {
+			dependentConn = new ManagedRepositoryConnection(repo, repo.getConnection());
+		}
 		initialized = true;
 	}
-	
-	@Override
-	public RepositoryConnection repairConnection() throws RepositoryException {
-		if (!initialized)
-			throw new FedXRuntimeException("Repository for endpoint " + getId() + " not initialized");
 
-		log.debug("Repairing connection for endpoint " + getId());
-		
-		if (conn!=null) {
-			try {
-				conn.close();
-			} catch (RepositoryException e) { 
-				log.warn("Connection of endpoint " + getId() + " could not be closed: " + e.getMessage());
-			}
-		}
-		conn = getRepository().getConnection();
-		log.info("Connection for endpoint " + getId() + " successfully repaired.");
-		return conn;
+	/**
+	 * Whether to reuse the same {@link RepositoryConnection} throughout the
+	 * lifetime of this Endpoint.
+	 * 
+	 * <p>
+	 * Note that the {@link RepositoryConnection} is wrapped as
+	 * {@link ManagedRepositoryConnection}
+	 * </p>
+	 * 
+	 * @return indicator whether a single connection should be used
+	 * @see Config#useSingletonConnectionPerEndpoint()
+	 */
+	protected boolean useSingleConnection() {
+		return Config.getConfig().useSingletonConnectionPerEndpoint();
 	}
 
 	@Override
 	public void shutDown() throws RepositoryException {
 		if (!isInitialized())
 			return;
-		conn.close();
-		conn = null;
+		if (dependentConn != null) {
+			dependentConn.closeManagedConnection();
+			dependentConn = null;
+		}
 		initialized = false;
 	}
 	
@@ -233,4 +234,27 @@ public abstract class EndpointBase implements Endpoint {
 	}		
 	
 	
+	/**
+	 * A wrapper for managed {@link RepositoryConnection}s which makes sure that
+	 * {@link #close()} is a no-op, i.e. the actual closing of the managed
+	 * connection is controlled by the {@link Endpoint}.
+	 * 
+	 * @author Andreas Schwarte
+	 *
+	 */
+	static class ManagedRepositoryConnection extends RepositoryConnectionWrapper {
+
+		public ManagedRepositoryConnection(Repository repository, RepositoryConnection delegate) {
+			super(repository, delegate);
+		}
+
+		@Override
+		public void close() throws RepositoryException {
+			// Do nothing: this repository connection is managed by FedX
+		}
+		
+		public void closeManagedConnection() throws RepositoryException {
+			this.getDelegate().close();
+		}
+	}
 }

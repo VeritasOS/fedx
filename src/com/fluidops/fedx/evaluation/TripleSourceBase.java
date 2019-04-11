@@ -15,8 +15,11 @@
  */
 package com.fluidops.fedx.evaluation;
 
+import java.util.function.Supplier;
+
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.EmptyIteration;
+import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
@@ -37,8 +40,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
 import com.fluidops.fedx.endpoint.Endpoint;
+import com.fluidops.fedx.evaluation.iterator.CloseDependentConnectionIteration;
 import com.fluidops.fedx.evaluation.iterator.GraphToBindingSetConversionIteration;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
+import com.fluidops.fedx.exception.ExceptionUtil;
 import com.fluidops.fedx.monitoring.Monitoring;
 import com.fluidops.fedx.structures.QueryType;
 import com.fluidops.fedx.util.FedXUtil;
@@ -59,59 +64,69 @@ public abstract class TripleSourceBase implements TripleSource
 
 	@Override
 	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(
-			String preparedQuery, RepositoryConnection conn, QueryType queryType)
+			String preparedQuery, QueryType queryType)
 			throws RepositoryException, MalformedQueryException,
 			QueryEvaluationException
 	{
-		switch (queryType)
-		{
-		case SELECT:
-			monitorRemoteRequest();
-			TupleQuery tQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, preparedQuery);
-			applyMaxExecutionTimeUpperBound(tQuery);
-			disableInference(tQuery);
-			return tQuery.evaluate();
-		case CONSTRUCT:
-			monitorRemoteRequest();
-			GraphQuery gQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, preparedQuery);
-			applyMaxExecutionTimeUpperBound(gQuery);
-			disableInference(gQuery);
-			return new GraphToBindingSetConversionIteration(gQuery.evaluate());
-		case ASK:
-			monitorRemoteRequest();
-			BooleanQuery bQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedQuery);
-			applyMaxExecutionTimeUpperBound(bQuery);
-			disableInference(bQuery);
-			return booleanToBindingSetIteration(bQuery.evaluate());
-		default:
-			throw new UnsupportedOperationException(
-					"Operation not supported for query type " + queryType);
-		}
+		
+		return withConnection((conn, resultHolder) -> {
+			switch (queryType) {
+			case SELECT:
+				monitorRemoteRequest();
+				TupleQuery tQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, preparedQuery);
+				applyMaxExecutionTimeUpperBound(tQuery);
+				disableInference(tQuery);
+				resultHolder.set(tQuery.evaluate());
+				return;
+			case CONSTRUCT:
+				monitorRemoteRequest();
+				GraphQuery gQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, preparedQuery);
+				applyMaxExecutionTimeUpperBound(gQuery);
+				disableInference(gQuery);
+				resultHolder.set(new GraphToBindingSetConversionIteration(gQuery.evaluate()));
+				return;
+			case ASK:
+				monitorRemoteRequest();
+				boolean hasResults = false;
+				try (RepositoryConnection _conn = conn) {
+					BooleanQuery bQuery = _conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedQuery);
+					applyMaxExecutionTimeUpperBound(bQuery);
+					disableInference(bQuery);
+					hasResults = bQuery.evaluate();
+				}
+				resultHolder.set(booleanToBindingSetIteration(hasResults));
+				return;
+			default:
+				throw new UnsupportedOperationException("Operation not supported for query type " + queryType);
+			}
+		});
 	}
 	
 
 	@Override
-	public boolean hasStatements(RepositoryConnection conn, Resource subj,
+	public boolean hasStatements(Resource subj,
 			IRI pred, Value obj, Resource... contexts) throws RepositoryException
 	{
-		return conn.hasStatement(subj, pred, obj, false, contexts);
+		try (RepositoryConnection conn = endpoint.getConnection()) {
+			return conn.hasStatement(subj, pred, obj, false, contexts);
+		}
 	}
 	
 	
 	@Override
-	public boolean hasStatements(ExclusiveGroup group,
-			RepositoryConnection conn, BindingSet bindings)
+	public boolean hasStatements(ExclusiveGroup group, BindingSet bindings)
 			throws RepositoryException, MalformedQueryException,
 			QueryEvaluationException 	{
 		
 		monitorRemoteRequest();
 		String preparedAskQuery = QueryStringUtil.askQueryString(group, bindings);
-		BooleanQuery query = conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedAskQuery);
-		disableInference(query);
-		applyMaxExecutionTimeUpperBound(query);
-		return query.evaluate();
+		try (RepositoryConnection conn = endpoint.getConnection()) {
+			BooleanQuery query = conn.prepareBooleanQuery(QueryLanguage.SPARQL, preparedAskQuery);
+			disableInference(query);
+			applyMaxExecutionTimeUpperBound(query);
+			return query.evaluate();
+		}
 	}
-
 
 	protected void monitorRemoteRequest() {
 		monitoringService.monitorRemoteRequest(endpoint);
@@ -146,5 +161,93 @@ public abstract class TripleSourceBase implements TripleSource
 	 */
 	protected void applyMaxExecutionTimeUpperBound(Operation operation) {
 		FedXUtil.applyMaxQueryExecutionTime(operation);
+	}
+
+	private <T> CloseableIteration<T, QueryEvaluationException> closeConn(RepositoryConnection dependentConn,
+			CloseableIteration<T, QueryEvaluationException> inner) {
+		return new CloseDependentConnectionIteration<T>(inner, dependentConn);
+	}
+
+	/**
+	 * Convenience method to perform an operation on a {@link RepositoryConnection}.
+	 * This method takes care for closing resources as well error handling. The
+	 * resulting iteration has to be supplied to the {@link ResultHolder}.
+	 * 
+	 * @param operation the {@link ConnectionOperation}
+	 * @return the resulting iteration
+	 */
+	protected <T> CloseableIteration<T, QueryEvaluationException> withConnection(ConnectionOperation<T> operation) {
+
+		ResultHolder<T> resultHolder = new ResultHolder<>();
+		RepositoryConnection conn = endpoint.getConnection();
+		try {
+
+			operation.perform(conn, resultHolder);
+
+			CloseableIteration<T, QueryEvaluationException> res = resultHolder.get();
+
+			// do not wrap Empty Iterations
+			if (res instanceof EmptyIteration) {
+				conn.close();
+				return res;
+			}
+
+			return closeConn(conn, res);
+
+		} catch (Throwable t) {
+			// handle all other exception case
+			Iterations.closeCloseable(resultHolder.get());
+			conn.close();
+			throw ExceptionUtil.traceExceptionSource(endpoint, t, "");
+		}
+	}
+
+	/**
+	 * Interface defining the operation to be perform on the connection
+	 * 
+	 * <p>
+	 * Typical pattern
+	 * </p>
+	 * 
+	 * <pre>
+	 * CloseableIteration&lt;BindingSet, QueryEvaluationException&gt; res = withConnection((conn, resultHolder) -> {
+	 *  	// do something with conn
+	 * 		resultHolder.set(...)
+	 * });
+	 * 
+	 * </pre>
+	 * 
+	 * @author Andreas Schwarte
+	 *
+	 * @param <T>
+	 * @see TripleSourceBase#withConnection(ConnectionOperation)
+	 */
+	protected static interface ConnectionOperation<T> {
+		public void perform(RepositoryConnection conn, ResultHolder<T> resultHolder);
+	}
+
+	/**
+	 * Holder for a result iteration to be used with
+	 * {@link TripleSourceBase#withConnection(ConnectionOperation)}. Note that the
+	 * result holder should also be set with temporary results to properly allow
+	 * error handling.
+	 * 
+	 * @author Andreas Schwarte
+	 *
+	 * @param <T>
+	 */
+	protected static class ResultHolder<T> implements Supplier<CloseableIteration<T, QueryEvaluationException>> {
+
+		protected CloseableIteration<T, QueryEvaluationException> result;
+
+		public void set(CloseableIteration<T, QueryEvaluationException> result) {
+			this.result = result;
+		}
+
+		@Override
+		public CloseableIteration<T, QueryEvaluationException> get() {
+			return result;
+		}
+
 	}
 }

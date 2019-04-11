@@ -73,7 +73,7 @@ public class DBpediaASKTest extends FedXBaseTest {
 		
 		ExclusiveGroup group = new ExclusiveGroup(ownedNodes, owner, qInfo);
 		
-		Assertions.assertTrue(ep.getTripleSource().hasStatements(group, ep.getConnection(), EmptyBindingSet.getInstance()));
+		Assertions.assertTrue(ep.getTripleSource().hasStatements(group, EmptyBindingSet.getInstance()));
 		
 		ep.shutDown();
 	}

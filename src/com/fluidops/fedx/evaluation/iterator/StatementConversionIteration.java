@@ -99,6 +99,15 @@ public class StatementConversionIteration extends AbstractCloseableIteration<Bin
 		
 	}
 
+	@Override
+	protected void handleClose() throws QueryEvaluationException {
+		try {
+			super.handleClose();
+		} finally {
+			repoResult.close();
+		}
+	}
+
 	
 	protected BindingSet convert(Statement st) {
 		QueryBindingSet result = new QueryBindingSet(bindings);

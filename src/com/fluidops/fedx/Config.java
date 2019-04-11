@@ -21,10 +21,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.cache.MemoryCache;
+import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.provider.ProviderUtil;
 import com.fluidops.fedx.evaluation.FederationEvalStrategy;
 import com.fluidops.fedx.evaluation.SailFederationEvalStrategy;
@@ -299,12 +301,26 @@ public class Config {
 	}
 	
 	/**
-	 * Returns a flag indicating whether vectored evaluation using the VALUES clause shall
-	 * be applied for SERVICE expressions. 
+	 * Whether to use a singleton {@link RepositoryConnection} per {@link Endpoint}.
+	 * Default: false
+	 * 
+	 * If not set, a fresh {@link RepositoryConnection} is used for each triple
+	 * store interaction.
+	 * 
+	 * @return indicator whether a singleton connection shall be used per endpoint
+	 */
+	public boolean useSingletonConnectionPerEndpoint() {
+		return Boolean.parseBoolean(props.getProperty("endpoint.useSingletonConnection", "false"));
+	}
+
+	/**
+	 * Returns a flag indicating whether vectored evaluation using the VALUES clause
+	 * shall be applied for SERVICE expressions.
 	 * 
 	 * Default: false
 	 * 
-	 * Note: for todays endpoints it is more efficient to disable vectored evaluation of SERVICE.
+	 * Note: for todays endpoints it is more efficient to disable vectored
+	 * evaluation of SERVICE.
 	 * 
 	 * @return whether SERVICE expressions are evaluated using bound joins
 	 */

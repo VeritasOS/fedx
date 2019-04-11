@@ -21,7 +21,6 @@ import java.util.List;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementSource.StatementSourceType;
@@ -49,10 +48,8 @@ public class CacheUtils {
 	{
 		try {
 			TripleSource t = endpoint.getTripleSource();
-			RepositoryConnection conn = endpoint.getConnection(); 
+			boolean hasResults = t.hasStatements(subj, pred, obj);
 
-			boolean hasResults = t.hasStatements(conn, subj, pred, obj);
-			
 			CacheEntry entry = createCacheEntry(endpoint, hasResults);
 			cache.updateEntry( new SubQuery(subj, pred, obj), entry);
 			

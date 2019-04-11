@@ -35,6 +35,7 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
 import org.eclipse.rdf4j.query.impl.MapBindingSet;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
@@ -104,24 +105,28 @@ public class FedXConnection extends AbstractSailConnection
 		long start=0;
 		QueryInfo queryInfo = null;
 		if (true) {
+			String queryString = getOriginalQueryString(bindings);
+			if (queryString==null)
+				logger.warn("Query string is null. Please check your FedX setup.");
+			queryInfo = new QueryInfo(queryString, getOriginalQueryType(bindings),
+					getOriginalMaxExecutionTime(bindings));
+			
 			if (log.isDebugEnabled()) {
-				log.debug("Optimization start");
+				log.debug("Optimization start (Query: " + queryInfo.getQueryID() + ")");
 				start = System.currentTimeMillis();
 			}
 			try {
-				String queryString = getOriginalQueryString(bindings);
-				if (queryString==null)
-					logger.warn("Query string is null. Please check your FedX setup.");
-				queryInfo = new QueryInfo(queryString, getOriginalQueryType(bindings),
-						getOriginalMaxExecutionTime(bindings));
 				FederationManager.getMonitoringService().monitorQuery(queryInfo);
 				query = Optimizer.optimize(query, dataset, bindings, strategy, queryInfo);
 			}  catch (Exception e) {
-				log.error("Exception occured during optimization.", e);
+				log.warn("Exception occured during optimization (Query: " + queryInfo.getQueryID() + "): "
+						+ e.getMessage());
+				log.debug("Details: ", e);
 				throw new SailException(e);
 			}
 			if (log.isDebugEnabled())
-				log.debug(("Optimization duration: " + ((System.currentTimeMillis()-start))));
+				log.debug(("Optimization duration: " + ((System.currentTimeMillis() - start))) + " (Query: "
+						+ queryInfo.getQueryID() + ")");
 		}
 
 		// log the optimized query plan, if Config#isLogQueryPlan(), otherwise void operation
@@ -129,7 +134,10 @@ public class FedXConnection extends AbstractSailConnection
 		
 		if (Config.getConfig().isDebugQueryPlan()) {
 			System.out.println("Optimized query execution plan: \n" + query);
-			log.debug("Optimized query execution plan: \n" + query);
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("Optimized query execution plan (Query: " + queryInfo.getQueryID() + ");" + query);
 		}
 		
 		try {
@@ -203,8 +211,10 @@ public class FedXConnection extends AbstractSailConnection
 			union.addTask( new ParallelTask<Resource>() {
 				@Override
 				public CloseableIteration<Resource, QueryEvaluationException> performTask()	throws Exception {
-					return new RepositoryExceptionConvertingIteration<Resource>(e.getConnection().getContextIDs());
-				}				
+					try (RepositoryConnection conn = e.getConnection()) {
+						return new RepositoryExceptionConvertingIteration<Resource>(conn.getContextIDs());
+					}
+				}
 				@Override
 				public ParallelExecutor<Resource> getControl() {
 					return union;

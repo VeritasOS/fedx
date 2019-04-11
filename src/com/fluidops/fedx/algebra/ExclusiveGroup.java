@@ -131,6 +131,10 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 		return owner.get(0);
 	}
 	
+	public Endpoint getOwnedEndpoint() {
+		return ownedEndpoint;
+	}
+
 	public List<ExclusiveStatement> getStatements() {
 		// XXX make a copy? (or copyOnWrite list?)
 		return owned;
@@ -173,7 +177,7 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 		
 		try {
 			// use the particular evaluation strategy for evaluation
-			return FederationManager.getInstance().getStrategy().evaluateExclusiveGroup(this, ownedEndpoint.getConnection(), ownedEndpoint.getTripleSource(), bindings);
+			return FederationManager.getInstance().getStrategy().evaluateExclusiveGroup(this, bindings);
 		} catch (RepositoryException e) {
 			throw new QueryEvaluationException(e);
 		} catch (MalformedQueryException e) {

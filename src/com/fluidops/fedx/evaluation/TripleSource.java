@@ -26,7 +26,6 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.fluidops.fedx.algebra.ExclusiveGroup;
@@ -52,8 +51,6 @@ public interface TripleSource {
 	 * 
 	 * @param preparedQuery
 	 * 			a prepared query to evaluate
-	 * @param conn
-	 * 			the connection to the endpoint
 	 * @param bindings
 	 * 			the bindings to use
 	 * @param filterExpr
@@ -66,7 +63,9 @@ public interface TripleSource {
 	 * @throws MalformedQueryException
 	 * @throws QueryEvaluationException
 	 */
-	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(TupleExpr preparedQuery, RepositoryConnection conn, final BindingSet bindings, FilterValueExpr filterExpr) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
+	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(TupleExpr preparedQuery,
+			final BindingSet bindings, FilterValueExpr filterExpr)
+			throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 
 	
 	/**
@@ -74,8 +73,6 @@ public interface TripleSource {
 	 * 
 	 * @param preparedQuery
 	 * 			a prepared query to evaluate (SPARQL query as String)
-	 * @param conn
-	 * 			the connection to the endpoint
 	 * @param bindings
 	 * 			the bindings to use
 	 * @param filterExpr
@@ -88,28 +85,25 @@ public interface TripleSource {
 	 * @throws MalformedQueryException
 	 * @throws QueryEvaluationException
 	 */
-	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(String preparedQuery, RepositoryConnection conn, final BindingSet bindings, FilterValueExpr filterExpr) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
+	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(String preparedQuery, final BindingSet bindings, FilterValueExpr filterExpr) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 
 	/**
 	 * Evaluate a given SPARQL query of the provided query type at the given source.
 	 * 
 	 * @param preparedQuery
-	 * @param conn
 	 * @param queryType
 	 * @return the statements
 	 * @throws RepositoryException
 	 * @throws MalformedQueryException
 	 * @throws QueryEvaluationException
 	 */
-	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(String preparedQuery, RepositoryConnection conn, QueryType queryType) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
+	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(String preparedQuery, QueryType queryType) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 	
 	/**
 	 * Evaluate the query expression on the provided endpoint.
 	 * 
 	 * @param stmt
 	 * 			the stmt expression to evaluate
-	 * @param conn
-	 * 			the connection to the endpoint
 	 * @param bindings
 	 * 			the bindings to use
 	 * @param filterExpr
@@ -122,14 +116,12 @@ public interface TripleSource {
 	 * @throws MalformedQueryException
 	 * @throws QueryEvaluationException
 	 */
-	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(StatementPattern stmt, RepositoryConnection conn, final BindingSet bindings, FilterValueExpr filterExpr) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
+	public CloseableIteration<BindingSet, QueryEvaluationException> getStatements(StatementPattern stmt, final BindingSet bindings, FilterValueExpr filterExpr) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 
 	
 	/**
 	 * Return the statements matching the given pattern as a {@link Statement} iteration.
 	 * 
-	 * @param conn
-	 * 			the connection to the endpoint
 	 * @param subj
 	 * @param pred
 	 * @param obj
@@ -142,7 +134,7 @@ public interface TripleSource {
 	 * @throws MalformedQueryException
 	 * @throws QueryEvaluationException
 	 */
-	public CloseableIteration<Statement, QueryEvaluationException> getStatements(RepositoryConnection conn,
+	public CloseableIteration<Statement, QueryEvaluationException> getStatements(
 			Resource subj, IRI pred, Value obj, Resource... contexts)
 			throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 	
@@ -151,7 +143,6 @@ public interface TripleSource {
 	 * Check if the provided statement can return results.
 	 * 
 	 * @param stmt
-	 * @param conn
 	 * @param bindings
 	 * 			a binding set. in case no bindings are present, an {@link EmptyBindingSet} can be used (i.e. never null)
 	 * 
@@ -160,13 +151,13 @@ public interface TripleSource {
 	 * @throws MalformedQueryException
 	 * @throws QueryEvaluationException
 	 */
-	public boolean hasStatements(StatementPattern stmt, RepositoryConnection conn, BindingSet bindings) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
+	public boolean hasStatements(StatementPattern stmt, BindingSet bindings)
+			throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 	
 	/**
 	 * Check if the repository can return results for the given triple pattern represented
 	 * by subj, pred and obj
 	 * 
-	 * @param conn
 	 * @param subj
 	 * @param pred
 	 * @param obj
@@ -174,19 +165,19 @@ public interface TripleSource {
 	 * @return whether the source can provide results
 	 * @throws RepositoryException
 	 */
-	public boolean hasStatements(RepositoryConnection conn, Resource subj, IRI pred, Value obj, Resource... contexts)
+	public boolean hasStatements(Resource subj, IRI pred, Value obj, Resource... contexts)
 			throws RepositoryException;
 	
 	/**
 	 * Check if the repository can return results for the given {@link ExclusiveGroup},
 	 * i.e. a list of Statements
 	 * 
-	 * @param conn
 	 * @param bindings
 	 * @return whether the repository can return results
 	 * @throws RepositoryException
 	 */
-	public boolean hasStatements(ExclusiveGroup group, RepositoryConnection conn, BindingSet bindings) throws RepositoryException, MalformedQueryException, QueryEvaluationException;
+	public boolean hasStatements(ExclusiveGroup group, BindingSet bindings)
+			throws RepositoryException, MalformedQueryException, QueryEvaluationException;
 	
 	
 	/**

@@ -1,5 +1,6 @@
 package com.fluidops.fedx;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -42,14 +44,14 @@ public class MediumConcurrencyTest extends SPARQLBaseTest {
 	}
 
 	@Test
-	public void queryMix() throws Exception
+	public void queryMix() throws Throwable
 	{
 		
 		/* test select query retrieving all persons (2 endpoints) */
 		prepareTest(Arrays.asList("/tests/medium/data1.ttl", "/tests/medium/data2.ttl", "/tests/medium/data3.ttl", "/tests/medium/data4.ttl"));
 
 		final int MAX_QUERIES = 500;
-		final Random rand = new Random();
+		final Random rand = new Random(12345);
 		final List<Future<String>> futures = new ArrayList<>();
 
 		for (int i = 0; i < MAX_QUERIES; i++)
@@ -58,9 +60,17 @@ public class MediumConcurrencyTest extends SPARQLBaseTest {
 			futures.add(f);
 		}
 
-		for (Future<String> f : futures)
-		{
-			f.get(30, TimeUnit.SECONDS);
+		try {
+			final String message = Assertions.assertTimeoutPreemptively(Duration.ofSeconds(30), () -> {
+				for (Future<String> f : futures) {
+					f.get(30, TimeUnit.SECONDS);
+				}
+				return "OK";
+			});
+			Assertions.assertEquals("OK", message);
+		} catch (Throwable t) {
+			futures.stream().forEach(future -> future.cancel(true));
+			throw t;
 		}
 
 		log.info("Done");

@@ -30,7 +30,6 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -329,9 +328,8 @@ public class SourceSelection {
 		public CloseableIteration<BindingSet, QueryEvaluationException> performTask() throws Exception {
 			try {
 				TripleSource t = endpoint.getTripleSource();
-				RepositoryConnection conn = endpoint.getConnection(); 
-
-				boolean hasResults = t.hasStatements(stmt, conn, EmptyBindingSet.getInstance());
+				boolean hasResults = false;
+				hasResults = t.hasStatements(stmt, EmptyBindingSet.getInstance());
 
 				SourceSelection sourceSelection = control.sourceSelection;
 				CacheEntry entry = CacheUtils.createCacheEntry(endpoint, hasResults);
