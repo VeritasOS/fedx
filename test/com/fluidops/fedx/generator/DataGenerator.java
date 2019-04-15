@@ -21,11 +21,11 @@ public class DataGenerator
 {
 
 	
-	public static final int PERSONS_1 = 5;				// Number of persons in endpoint 1
-	public static final int PERSONS_2 = 5;				// Number of persons in endpoint 2
-	public static final int PROJECTS = 3;				// Number of projects in endpoint 3
-	public static final int PUBLICATIONS = 10;			// Number of publications in endpoint 4
-	public static final int AUTHORS = 20;				// Number of authors
+	public static final int PERSONS_1 = 500; // Number of persons in endpoint 1
+	public static final int PERSONS_2 = 1500; // Number of persons in endpoint 2
+	public static final int PROJECTS = 100; // Number of projects in endpoint 3
+	public static final int PUBLICATIONS = 500; // Number of publications in endpoint 4
+	public static final int AUTHORS = 600; // Number of authors
 	public static final int PROBABILITY_IS_AUTHOR=70;	// probability in % that a person is an author (owl_sameAs)
 	public static final int PROBABILITY_HAS_PERSON=80;	// probability in % that a project has a responsible person
 	

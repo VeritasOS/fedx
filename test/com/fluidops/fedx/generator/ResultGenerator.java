@@ -33,22 +33,23 @@ public class ResultGenerator
 	
 	public void run() throws Exception {
 		
-		initStore();
 		
-//		createResult("/tests/medium/", "query01");
-//		createResult("/tests/medium/", "query02");
-//		createResult("/tests/medium/", "query03");
-//		createResult("/tests/medium/", "query04");
-//		createResult("/tests/medium/", "query05");
-//		createResult("/tests/medium/", "query05");
-//		createResult("/tests/medium/", "query07");
-//		createResult("/tests/medium/", "query08");
-		createResult("/tests/medium/", "query09");
-		createResult("/tests/medium/", "query10");
-		createResult("/tests/medium/", "query11");
-		createResult("/tests/medium/", "query12");
-		
-//		printResult("/tests/medium/", "query12");
+		String basePackage = "/tests/performance/";
+
+		initStore(basePackage);
+
+		createResult(basePackage, "query01");
+		createResult(basePackage, "query02");
+		createResult(basePackage, "query03");
+		createResult(basePackage, "query04");
+		createResult(basePackage, "query05");
+		createResult(basePackage, "query06");
+		createResult(basePackage, "query07");
+		createResult(basePackage, "query08");
+		createResult(basePackage, "query09");
+		createResult(basePackage, "query10");
+		createResult(basePackage, "query11");
+		createResult(basePackage, "query12");
 
 	}
 	
@@ -69,7 +70,7 @@ public class ResultGenerator
 		TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, q);
 		TupleQueryResult res = query.evaluate();
 		
-		OutputStream out = new FileOutputStream(new File(queryFile + ".srx"));
+		OutputStream out = new FileOutputStream(new File("test" + baseDir, queryFile + ".srx"));
 		TupleQueryResultWriter qrWriter = new SPARQLResultsXMLWriter(out);
 		QueryResults.report(res, qrWriter);
 		out.close();
@@ -88,7 +89,7 @@ public class ResultGenerator
 	}
 	
 	
-	protected void initStore() throws Exception {
+	protected void initStore(String basePackage) throws Exception {
 				
 		MemoryStore mem = new MemoryStore();
 		this.repo = new SailRepository(mem);
@@ -98,10 +99,10 @@ public class ResultGenerator
 		
 		String baseUri = "http://namespace.org";
 		
-		conn.add(ResultGenerator.class.getResourceAsStream("/tests/medium/data1.ttl"), baseUri, RDFFormat.TURTLE);
-		conn.add(ResultGenerator.class.getResourceAsStream("/tests/medium/data2.ttl"), baseUri, RDFFormat.TURTLE);
-		conn.add(ResultGenerator.class.getResourceAsStream("/tests/medium/data3.ttl"), baseUri, RDFFormat.TURTLE);
-		conn.add(ResultGenerator.class.getResourceAsStream("/tests/medium/data4.ttl"), baseUri, RDFFormat.TURTLE);
+		conn.add(ResultGenerator.class.getResourceAsStream(basePackage + "data1.ttl"), baseUri, RDFFormat.TURTLE);
+		conn.add(ResultGenerator.class.getResourceAsStream(basePackage + "data2.ttl"), baseUri, RDFFormat.TURTLE);
+		conn.add(ResultGenerator.class.getResourceAsStream(basePackage + "data3.ttl"), baseUri, RDFFormat.TURTLE);
+		conn.add(ResultGenerator.class.getResourceAsStream(basePackage + "data4.ttl"), baseUri, RDFFormat.TURTLE);
 	
 	}
 	
