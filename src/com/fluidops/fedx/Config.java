@@ -287,17 +287,18 @@ public class Config {
 	}
 	
 	/**
-	 * Returns the fully qualified class name of the {@link FederationEvalStrategy} implementation
-	 * that is used in the case of SPARQL implementations, e.g. SPARQL repository or remote repository. 
+	 * Returns the fully qualified class name of the {@link FederationEvalStrategy}
+	 * implementation that is used in the case of SPARQL implementations, e.g.
+	 * SPARQL repository or remote repository.
 	 * 
-	 * Default {@link SparqlFederationEvalStrategy}
+	 * Default {@link SparqlFederationEvalStrategyWithValues}
 	 * 
-	 * Alternative implementation: {@link SparqlFederationEvalStrategyWithValues}
+	 * Alternative implementation: {@link SparqlFederationEvalStrategy}
 	 * 
 	 * @return the evaluation strategy class
 	 */
 	public String getSPARQLEvaluationStrategy() {
-		return props.getProperty("sparqlEvaluationStrategy", SparqlFederationEvalStrategy.class.getName());
+		return props.getProperty("sparqlEvaluationStrategy", SparqlFederationEvalStrategyWithValues.class.getName());
 	}
 	
 	/**

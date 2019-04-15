@@ -327,7 +327,8 @@ public class QueryStringUtil {
 	 * @see BoundJoinVALUESConversionIteration
 	 * @since 3.0
 	 */
-	public static String selectQueryStringBoundJoinVALUES(StatementPattern stmt, List<BindingSet> unionBindings, FilterValueExpr filterExpr, Boolean evaluated) {
+	public static String selectQueryStringBoundJoinVALUES(StatementPattern stmt, List<BindingSet> unionBindings,
+			FilterValueExpr filterExpr, AtomicBoolean evaluated) {
 		
 		Set<String> varNames = new LinkedHashSet<String>();	
 		StringBuilder res = new StringBuilder();

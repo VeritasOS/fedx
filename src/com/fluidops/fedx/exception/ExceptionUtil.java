@@ -170,22 +170,43 @@ public class ExceptionUtil {
 
 	/**
 	 * Converts the {@link Throwable} to an {@link Exception}. If it is already of
-	 * type exception, it is returned as is. Otherwise, we create a new exception,
-	 * and attache the stack trace and a meaningful message.
+	 * type exception, it is returned as is. Otherwise, we create a new
+	 * {@link QueryEvaluationException}, and attach the stack trace and a meaningful
+	 * message.
 	 * 
 	 * @param t
 	 * @return the {@link Exception}
 	 */
 	public static Exception toException(Throwable t) {
 		Exception e;
+		if (t instanceof QueryEvaluationException) {
+			return (QueryEvaluationException) t;
+		}
 		if (t instanceof TimeoutException) {
 			e = new QueryInterruptedException("Query evaluation has run into a timeout.", t);
 		} else if (t instanceof Exception) {
 			e = (Exception) t;
 		} else {
-			e = new Exception("" + t.getMessage() + ". Original type: " + t.getClass());
+			e = new QueryEvaluationException("" + t.getMessage() + ". Original type: " + t.getClass());
 			e.setStackTrace(t.getStackTrace());
 		}
 		return e;
+	}
+
+	/**
+	 * Converts the given Throwable to a {@link QueryEvaluationException}. If it is
+	 * already of type {@link QueryEvaluationException} no transformation is done,
+	 * otherwise the throwable is wrapped.
+	 * 
+	 * @param t
+	 * @return the {@link QueryEvaluationException}
+	 */
+	public static QueryEvaluationException toQueryEvaluationException(Throwable t) {
+
+		Exception res = toException(t);
+		if (res instanceof QueryEvaluationException) {
+			return (QueryEvaluationException) res;
+		}
+		return new QueryEvaluationException(res);
 	}
 }
