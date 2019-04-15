@@ -166,15 +166,4 @@ public class CheckStatementPattern implements StatementTupleExpr, BoundJoinTuple
 	public QueryInfo getQueryInfo() {
 		return stmt.getQueryInfo();
 	}
-
-	@Override
-	public void addLocalVar(String localVar) {
-		stmt.addLocalVar(localVar);	
-	}
-
-	@Override
-	public List<String> getLocalVars()
-	{
-		return stmt.getLocalVars();
-	}
 }

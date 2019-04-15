@@ -77,18 +77,5 @@ public interface StatementTupleExpr extends TupleExpr, QueryRef {
 	 * @throws QueryEvaluationException
 	 */
 	public CloseableIteration<BindingSet, QueryEvaluationException> evaluate(BindingSet bindings) throws QueryEvaluationException; 
-	
-	/**
-	 * Sets/adds a variable names that is local to this expression
-	 * 
-	 * @param localVars
-	 */
-	public void addLocalVar(String localVars);
-	
-	/**
-	 * Retrieve the variable names that are local to this expression,
-	 * i.e. the ones that do not need to be projected.
-	 * 
-	 */
-	public List<String> getLocalVars();
+
 }

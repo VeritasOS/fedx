@@ -43,7 +43,6 @@ import com.fluidops.fedx.algebra.ExclusiveStatement;
 import com.fluidops.fedx.algebra.FedXStatementPattern;
 import com.fluidops.fedx.algebra.FilterValueExpr;
 import com.fluidops.fedx.algebra.IndependentJoinGroup;
-import com.fluidops.fedx.algebra.StatementTupleExpr;
 import com.fluidops.fedx.evaluation.SparqlFederationEvalStrategyWithValues;
 import com.fluidops.fedx.evaluation.iterator.BoundJoinVALUESConversionIteration;
 import com.fluidops.fedx.exception.IllegalQueryException;
@@ -146,9 +145,6 @@ public class QueryStringUtil {
 		Set<String> varNames = new HashSet<String>();
 		String s = constructStatement(stmt, varNames, bindings);
 		
-		// project only relevant variables, i.e. do not bind local variables
-		varNames = project(stmt, varNames);
-		
 		StringBuilder res = new StringBuilder();
 		
 		res.append("SELECT ");
@@ -203,8 +199,6 @@ public class QueryStringUtil {
 		for (ExclusiveStatement s : group.getStatements())
 			sb.append( constructStatement(s, varNames, bindings) );
 		
-		// project only relevant variables, i.e. do not bind local variables
-		varNames = project(group, varNames);
 		
 		if (varNames.size()==0)
 			throw new IllegalQueryException("SELECT query needs at least one projection!");		
@@ -375,18 +369,6 @@ public class QueryStringUtil {
 		return res.toString();
 	}
 	
-	/**
-	 * Modifies the set of varNames to remove those variables that are local
-	 * to the expression, i.e. those that do not have to be projected. Does
-	 * not create a copy!
-	 * @param expr
-	 * @param varNames
-	 * @return the projected variables
-	 */
-	private static Set<String> project(StatementTupleExpr expr, Set<String> varNames) {
-		varNames.removeAll(expr.getLocalVars());
-		return varNames;
-	}
 	
 	/**
 	 * Construct a SELECT query for a grouped bound check.

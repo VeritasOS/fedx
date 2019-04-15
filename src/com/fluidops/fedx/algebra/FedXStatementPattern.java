@@ -43,7 +43,6 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	protected final String id;
 	protected final QueryInfo queryInfo;
 	protected final List<String> freeVars = new ArrayList<String>(3);
-	protected final List<String> localVars = new ArrayList<String>();
 	protected FilterValueExpr filterExpr = null;
 	
 	public FedXStatementPattern(StatementPattern node, QueryInfo queryInfo) {
@@ -57,8 +56,6 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	public <X extends Exception> void visitChildren(QueryModelVisitor<X> visitor)
 		throws X {
 		super.visitChildren(visitor);
-		if (localVars.size()>0)
-			LocalVarsNode.visit(visitor, localVars);
 		for (StatementSource s : sort(statementSources))
 			s.visit(visitor);
 		
@@ -94,16 +91,6 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	@Override
 	public QueryInfo getQueryInfo() {
 		return this.queryInfo;
-	}
-
-	@Override
-	public void addLocalVar(String localVar) {
-		this.localVars.add(localVar);		
-	}
-
-	@Override
-	public List<String> getLocalVars() {
-		return localVars;	// TODO
 	}
 	
 	@Override

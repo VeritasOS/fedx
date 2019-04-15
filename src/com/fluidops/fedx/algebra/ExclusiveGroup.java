@@ -51,7 +51,6 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 	protected final List<ExclusiveStatement> owned = new ArrayList<ExclusiveStatement>();
 	protected final ArrayList<StatementSource> owner;
 	protected final Set<String> freeVars = new HashSet<String>();
-	protected final List<String> localVars = new ArrayList<String>();
 	protected final String id;
 	protected final transient QueryInfo queryInfo;
 	protected FilterValueExpr filter = null;
@@ -100,10 +99,9 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 	public <X extends Exception> void visitChildren(QueryModelVisitor<X> visitor)
 		throws X {
 		
-		for (ExclusiveStatement s : owned)
+		for (ExclusiveStatement s : owned) {
 			s.visit(visitor);
-		if (localVars.size()>0)
-			LocalVarsNode.visit(visitor, localVars);
+		}
 	}
 	
 	@Override
@@ -218,15 +216,5 @@ public class ExclusiveGroup extends AbstractQueryModelNode implements StatementT
 	@Override
 	public QueryInfo getQueryInfo() {
 		return this.queryInfo;
-	}	
-
-	@Override
-	public void addLocalVar(String localVar) {
-		this.localVars.add(localVar);		
-	}
-
-	@Override
-	public List<String> getLocalVars() {
-		return localVars;
 	}
 }

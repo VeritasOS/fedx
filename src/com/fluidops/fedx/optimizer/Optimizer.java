@@ -116,8 +116,7 @@ public class Optimizer {
 		
 		// optimize statement groups and join order
 		new StatementGroupOptimizer(queryInfo).optimize(query);
-				
-		new VariableScopeOptimizer(queryInfo).optimize(query);
+
 		
 		if (logger.isTraceEnabled())
 			logger.trace("Query after Optimization: " + query);
