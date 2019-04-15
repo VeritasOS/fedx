@@ -81,6 +81,7 @@ public class FedXPerformanceTest extends SPARQLBaseTest {
 		List<Run> runs = Lists.newArrayList();
 		for (int i = 1; i <= maxRuns; i++) {
 			System.out.println("Run " + i);
+			long runStart = System.currentTimeMillis();
 			Run run = new Run(i);
 			runs.add(run);
 			for (String query : queries) {
@@ -91,6 +92,7 @@ public class FedXPerformanceTest extends SPARQLBaseTest {
 				long duration = System.currentTimeMillis() - start;
 				queryRun.duration = duration;
 			}
+			System.out.println("Run " + i + " duration: " + (System.currentTimeMillis() - runStart));
 		}
 
 		for (String query : queries) {

@@ -46,29 +46,30 @@ public class WriteTest extends SPARQLBaseTest {
 		ep1.setWritable(true);
 		Endpoint ep2 = iter.next();
 		
+		List<Statement> stmts = null;
 		Statement st = simpleStatement();
 		
-		RepositoryConnection conn = fedxRule.getRepository().getConnection();		
-		conn.add(st);		
-		
-		// test that statement is returned from federation
-		List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
-		Assertions.assertEquals(1, stmts.size());
-		Assertions.assertEquals(st, stmts.get(0));
-		conn.close();
+		try (RepositoryConnection conn = fedxRule.getRepository().getConnection()) {
+			conn.add(st);
+
+			// test that statement is returned from federation
+			stmts = Iterations.asList(conn.getStatements(null, null, null, true));
+			Assertions.assertEquals(1, stmts.size());
+			Assertions.assertEquals(st, stmts.get(0));
+		}
 		
 		// check that the statement is actually written to endpoint 1
-		RepositoryConnection ep1Conn = ep1.getConnection();
-		stmts = Iterations.asList(ep1Conn.getStatements(null, null, null, true));
-		Assertions.assertEquals(1, stmts.size());
-		Assertions.assertEquals(st, stmts.get(0));
-		ep1Conn.close();
+		try (RepositoryConnection ep1Conn = ep1.getConnection()) {
+			stmts = Iterations.asList(ep1Conn.getStatements(null, null, null, true));
+			Assertions.assertEquals(1, stmts.size());
+			Assertions.assertEquals(st, stmts.get(0));
+		}
 		
 		// check that endpoint 2 is empty
-		RepositoryConnection ep2Conn = ep2.getConnection();
-		stmts = Iterations.asList(ep2Conn.getStatements(null, null, null, true));
-		Assertions.assertEquals(0, stmts.size());
-		ep1Conn.close();
+		try (RepositoryConnection ep2Conn = ep2.getConnection()) {
+			stmts = Iterations.asList(ep2Conn.getStatements(null, null, null, true));
+			Assertions.assertEquals(0, stmts.size());
+		}
 	}
 	
 	@Test
@@ -80,9 +81,9 @@ public class WriteTest extends SPARQLBaseTest {
 		
 		Assertions.assertThrows(UnsupportedOperationException.class, () -> {
 			Statement st = simpleStatement();
-			RepositoryConnection conn = fedxRule.getRepository().getConnection();
-			conn.add(st);
-			conn.close();
+			try (RepositoryConnection conn = fedxRule.getRepository().getConnection()) {
+				conn.add(st);
+			}
 		});
 
 	}
@@ -96,15 +97,16 @@ public class WriteTest extends SPARQLBaseTest {
 		EndpointBase ep1 = (EndpointBase) iter.next();
 		ep1.setWritable(true);
 		
-		RepositoryConnection conn = fedxRule.getRepository().getConnection();
-		Update update = conn.prepareUpdate(QueryLanguage.SPARQL, "PREFIX : <http://example.org/> INSERT { :subject a :Person } WHERE { }");
-		update.execute();
+		try (RepositoryConnection conn = fedxRule.getRepository().getConnection()) {
+			Update update = conn.prepareUpdate(QueryLanguage.SPARQL,
+					"PREFIX : <http://example.org/> INSERT { :subject a :Person } WHERE { }");
+			update.execute();
 		
-		// test that statement is returned from federation
-		List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
-		Assertions.assertEquals(1, stmts.size());
-		Assertions.assertEquals(RDF.TYPE, stmts.get(0).getPredicate());
-		conn.close();		
+			// test that statement is returned from federation
+			List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
+			Assertions.assertEquals(1, stmts.size());
+			Assertions.assertEquals(RDF.TYPE, stmts.get(0).getPredicate());
+		}
 	}
 	
 	@Test
@@ -117,23 +119,21 @@ public class WriteTest extends SPARQLBaseTest {
 		
 		Statement st = simpleStatement();
 		
-		RepositoryConnection ep1Conn = ep1.getRepository().getConnection();		
-		ep1Conn.add(st);	
-		ep1Conn.close();
+		try (RepositoryConnection ep1Conn = ep1.getRepository().getConnection()) {
+			ep1Conn.add(st);
+		}
 		
 		// test that statement is returned from federation
-		RepositoryConnection conn = fedxRule.getRepository().getConnection();	
-		List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
-		Assertions.assertEquals(1, stmts.size());
-		Assertions.assertEquals(st, stmts.get(0));
+		try (RepositoryConnection conn = fedxRule.getRepository().getConnection()) {
+
+			List<Statement> stmts = Iterations.asList(conn.getStatements(null, null, null, true));
+			Assertions.assertEquals(1, stmts.size());
+			Assertions.assertEquals(st, stmts.get(0));
 		
-		conn.remove(st.getSubject(), null, null);
+			conn.remove(st.getSubject(), null, null);
 		
-		Assertions.assertEquals(0, conn.size());
-		
-		conn.close();
-		
-		
+			Assertions.assertEquals(0, conn.size());
+		}
 	}
 	
 	protected Statement simpleStatement() {
