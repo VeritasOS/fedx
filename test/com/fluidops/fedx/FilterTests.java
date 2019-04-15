@@ -38,4 +38,10 @@ public class FilterTests extends SPARQLBaseTest {
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl"));
 		execute("/tests/filter/query05.rq", "/tests/filter/query05.srx", false);			
 	}
+
+	@Test
+	public void testFilterPushing() throws Exception {
+		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data4.ttl"));
+		execute("/tests/filter/query06.rq", "/tests/filter/query06.srx", false);
+	}
 }

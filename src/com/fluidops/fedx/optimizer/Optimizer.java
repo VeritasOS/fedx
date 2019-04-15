@@ -106,8 +106,9 @@ public class Optimizer {
 			new ServiceOptimizer(queryInfo).optimize(query);
 		
 		// optimize Filters, if available
-		if (info.hasFilter())
-			new FilterOptimizer().optimize(query);
+		// TODO deactivate filter optimization due to a bug, see GH #29
+//		if (info.hasFilter())
+//			new FilterOptimizer().optimize(query);
 
 		// optimize unions, if available
 		if (info.hasUnion)
