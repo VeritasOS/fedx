@@ -29,14 +29,11 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.BooleanLiteral;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
-import org.eclipse.rdf4j.query.algebra.Projection;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
-import org.eclipse.rdf4j.query.algebra.evaluation.QueryBindingSet;
 import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;
 import org.eclipse.rdf4j.query.algebra.evaluation.federation.ServiceJoinIterator;
 import org.eclipse.rdf4j.query.algebra.evaluation.impl.StrictEvaluationStrategy;
@@ -59,7 +56,6 @@ import com.fluidops.fedx.algebra.FilterExpr;
 import com.fluidops.fedx.algebra.IndependentJoinGroup;
 import com.fluidops.fedx.algebra.NJoin;
 import com.fluidops.fedx.algebra.NUnion;
-import com.fluidops.fedx.algebra.ProjectionWithBindings;
 import com.fluidops.fedx.algebra.SingleSourceQuery;
 import com.fluidops.fedx.algebra.StatementSource;
 import com.fluidops.fedx.algebra.StatementTupleExpr;
@@ -151,10 +147,6 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 			
 		if (expr instanceof FedXService) {
 			return evaluateService((FedXService)expr, bindings);
-		}
-		
-		if (expr instanceof ProjectionWithBindings) {
-			return evaluateProjectionWithBindings((ProjectionWithBindings)expr, bindings);
 		}
 		
 		if (expr instanceof IndependentJoinGroup) {
@@ -356,19 +348,6 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		
 	
 	/**
-	 * Evaluate a projection containing additional values, e.g. set from a filter expression
-	 * 
-	 * @return the result
-	 * @throws QueryEvaluationException
-	 */
-	public CloseableIteration<BindingSet, QueryEvaluationException> evaluateProjectionWithBindings(ProjectionWithBindings projection, BindingSet bindings) throws QueryEvaluationException {
-		QueryBindingSet actualBindings = new QueryBindingSet(bindings);
-		for (Binding b : projection.getAdditionalBindings())
-			actualBindings.addBinding(b);
-		return evaluate((Projection)projection, actualBindings);
-	}
-	
-	/**
 	 * Evaluate a SERVICE using vectored evaluation, taking the provided bindings as input.
 	 * 
 	 * See {@link ControlledWorkerBoundJoin} and {@link Config#getEnableServiceAsBoundJoin()}
@@ -383,6 +362,7 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		return new ServiceJoinIterator(new CollectionIteration<BindingSet, QueryEvaluationException>(bindings), service.getService(), EmptyBindingSet.getInstance(), this);
 	}
 	
+	@Override
 	public Value evaluate(ValueExpr expr, BindingSet bindings) throws ValueExprEvaluationException, QueryEvaluationException {
 		
 		if (expr instanceof FilterExpr)

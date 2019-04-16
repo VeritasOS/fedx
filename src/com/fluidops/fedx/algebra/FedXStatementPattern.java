@@ -24,6 +24,9 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
+import org.eclipse.rdf4j.query.algebra.evaluation.QueryBindingSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.structures.QueryInfo;
 
@@ -37,6 +40,8 @@ import com.fluidops.fedx.structures.QueryInfo;
  */
 public abstract class FedXStatementPattern extends StatementPattern implements StatementTupleExpr, FilterTuple, BoundJoinTupleExpr
 {
+	private static final Logger log = LoggerFactory.getLogger(FedXStatementPattern.class);
+
 	private static final long serialVersionUID = 6588020780262348806L;
 
 	protected final List<StatementSource> statementSources = new ArrayList<StatementSource>();
@@ -44,6 +49,7 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	protected final QueryInfo queryInfo;
 	protected final List<String> freeVars = new ArrayList<String>(3);
 	protected FilterValueExpr filterExpr = null;
+	protected QueryBindingSet boundFilters = null; // contains bound filter bindings, that need to be added as additional bindings
 	
 	public FedXStatementPattern(StatementPattern node, QueryInfo queryInfo) {
 		super(node.getSubjectVar(), node.getPredicateVar(), node.getObjectVar(), node.getContextVar());
@@ -59,6 +65,10 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 		for (StatementSource s : sort(statementSources))
 			s.visit(visitor);
 		
+		if (boundFilters != null) {
+			BoundFiltersNode.visit(visitor, boundFilters);
+		}
+
 		if (filterExpr!=null)
 			filterExpr.visit(visitor);
 	}
@@ -143,6 +153,16 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	@Override
 	public void addBoundFilter(String varName, Value value) {
 		
+		if (!freeVars.contains(varName)) {
+			log.debug("Invalid call to addBoundFilter: variable " + varName + " is not known as a free variable");
+			return;
+		}
+
+		// lazy initialization of bound filters
+		if (boundFilters == null) {
+			boundFilters = new QueryBindingSet();
+		}
+
 		// visit Var nodes and set value for matching var names
 		if (getSubjectVar().getName().equals(varName))
 			getSubjectVar().setValue(value);
@@ -151,6 +171,8 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 		if (getObjectVar().getName().equals(varName))
 			getObjectVar().setValue(value);
 		
+		boundFilters.addBinding(varName, value);
+
 		freeVars.remove(varName);
 		
 		// XXX recheck owned source if it still can deliver results, otherwise prune it

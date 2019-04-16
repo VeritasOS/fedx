@@ -105,10 +105,6 @@ public class Optimizer {
 		if (info.hasService())
 			new ServiceOptimizer(queryInfo).optimize(query);
 		
-		// optimize Filters, if available
-		// TODO deactivate filter optimization due to a bug, see GH #29
-//		if (info.hasFilter())
-//			new FilterOptimizer().optimize(query);
 
 		// optimize unions, if available
 		if (info.hasUnion)
@@ -117,6 +113,10 @@ public class Optimizer {
 		// optimize statement groups and join order
 		new StatementGroupOptimizer(queryInfo).optimize(query);
 
+		// optimize Filters, if available
+		// Note: this is done after the join order is determined to ease filter pushing
+		if (info.hasFilter())
+			new FilterOptimizer().optimize(query);
 		
 		if (logger.isTraceEnabled())
 			logger.trace("Query after Optimization: " + query);

@@ -28,6 +28,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
+import com.fluidops.fedx.evaluation.iterator.InsertBindingsIteration;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
 import com.fluidops.fedx.exception.IllegalQueryException;
 import com.fluidops.fedx.structures.QueryInfo;
@@ -69,6 +70,7 @@ public class ExclusiveStatement extends FedXStatementPattern {
 			 * much more efficient to use getStatements(subj, pred, obj) instead of evaluating a prepared query.
 			 */			
 		
+			CloseableIteration<BindingSet, QueryEvaluationException> res = null;
 			if (t.usePreparedQuery()) {
 				
 				AtomicBoolean isEvaluated = new AtomicBoolean(false); // is filter evaluated
@@ -78,16 +80,31 @@ public class ExclusiveStatement extends FedXStatementPattern {
 				} catch (IllegalQueryException e1) {
 					// TODO there might be an issue with filters being evaluated => investigate
 					/* all vars are bound, this must be handled as a check query, can occur in joins */
-					if (t.hasStatements(this, bindings))
-						return new SingleBindingSetIteration(bindings);
+					if (t.hasStatements(this, bindings)) {
+						res = new SingleBindingSetIteration(bindings);
+						if (boundFilters != null) {
+							// make sure to insert any values from FILTER expressions that are directly
+							// bound in this expression
+							res = new InsertBindingsIteration(res, boundFilters);
+						}
+						return res;
+					}
 					return new EmptyIteration<BindingSet, QueryEvaluationException>();
 				}
 								
-				return t.getStatements(preparedQuery, bindings, (isEvaluated.get() ? null : filterExpr));
+				res = t.getStatements(preparedQuery, bindings, (isEvaluated.get() ? null : filterExpr));
 				
 			} else {
-				return t.getStatements(this, bindings, filterExpr);
+				res = t.getStatements(this, bindings, filterExpr);
 			}
+
+			if (boundFilters != null) {
+				// make sure to insert any values from FILTER expressions that are directly
+				// bound in this expression
+				res = new InsertBindingsIteration(res, boundFilters);
+			}
+
+			return res;
 				
 		} catch (RepositoryException e) {
 			throw new QueryEvaluationException(e);

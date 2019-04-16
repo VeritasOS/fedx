@@ -10,9 +10,17 @@ public class FilterTests extends SPARQLBaseTest {
 	@Test
 	public void testSimpleFilter() throws Exception {
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl"));
-		execute("/tests/filter/query01.rq", "/tests/filter/query01.srx", false);			
+		evaluateQueryPlan("/tests/filter/query01.rq", "/tests/filter/query01.qp");
+		execute("/tests/filter/query01.rq", "/tests/filter/query01.srx", false);
 	}
 	
+	@Test
+	public void testSimpleFilter_ExclusiveStatement() throws Exception {
+		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl"));
+		evaluateQueryPlan("/tests/filter/query01a.rq", "/tests/filter/query01a.qp");
+		execute("/tests/filter/query01a.rq", "/tests/filter/query01a.srx", false);
+	}
+
 	@Test
 	public void testOrFilter() throws Exception {
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl"));

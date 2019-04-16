@@ -29,6 +29,7 @@ import com.fluidops.fedx.EndpointManager;
 import com.fluidops.fedx.FederationManager;
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.evaluation.TripleSource;
+import com.fluidops.fedx.evaluation.iterator.InsertBindingsIteration;
 import com.fluidops.fedx.evaluation.iterator.SingleBindingSetIteration;
 import com.fluidops.fedx.evaluation.union.ParallelPreparedUnionTask;
 import com.fluidops.fedx.evaluation.union.ParallelUnionTask;
@@ -90,7 +91,12 @@ public class StatementSourcePattern extends FedXStatementPattern {
 							preparedQuery = QueryStringUtil.selectQueryString(this, bindings, filterExpr, isEvaluated);
 						} catch (IllegalQueryException e1) {
 							/* all vars are bound, this must be handled as a check query, can occur in joins */
-							return handleStatementSourcePatternCheck(bindings);
+							CloseableIteration<BindingSet, QueryEvaluationException> res = handleStatementSourcePatternCheck(
+									bindings);
+							if (boundFilters != null && !(res instanceof EmptyIteration)) {
+								res = new InsertBindingsIteration(res, boundFilters);
+							}
+							return res;
 						}
 					}
 					 
@@ -104,7 +110,13 @@ public class StatementSourcePattern extends FedXStatementPattern {
 			
 			union.run();	// execute the union in this thread
 			
-			return union;
+			if (boundFilters != null) {
+				// make sure to insert any values from FILTER expressions that are directly
+				// bound in this expression
+				return new InsertBindingsIteration(union, boundFilters);
+			} else {
+				return union;
+			}
 			
 		} catch (RepositoryException e) {
 			throw new QueryEvaluationException(e);

@@ -19,15 +19,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.algebra.And;
 import org.eclipse.rdf4j.query.algebra.Compare;
 import org.eclipse.rdf4j.query.algebra.Filter;
 import org.eclipse.rdf4j.query.algebra.Not;
 import org.eclipse.rdf4j.query.algebra.Or;
-import org.eclipse.rdf4j.query.algebra.Projection;
 import org.eclipse.rdf4j.query.algebra.QueryModelNode;
 import org.eclipse.rdf4j.query.algebra.Service;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
@@ -35,14 +32,12 @@ import org.eclipse.rdf4j.query.algebra.ValueConstant;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.eclipse.rdf4j.query.algebra.Var;
 import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
-import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fluidops.fedx.algebra.EmptyResult;
 import com.fluidops.fedx.algebra.FilterExpr;
 import com.fluidops.fedx.algebra.FilterTuple;
-import com.fluidops.fedx.algebra.ProjectionWithBindings;
 import com.fluidops.fedx.algebra.StatementTupleExpr;
 import com.fluidops.fedx.exception.OptimizationException;
 
@@ -57,11 +52,8 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 
 	private static final Logger log = LoggerFactory.getLogger(FilterOptimizer.class);
 	
-	/* map containing the inserted values, i.e. filter values which could be
-	 * directly replaced into the query
-	 */
-	private List<Binding> insertedValues = new ArrayList<Binding>();
 	
+
 	@Override
 	public void optimize(TupleExpr tupleExpr) {
 		tupleExpr.visit(this);				
@@ -148,19 +140,7 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 		}
 		
 	}
-		
-	
-	
-	@Override
-	public void meet(Projection node) throws OptimizationException {
-		super.meet(node);
-		// we need to check if we have inserted some value constant
-		// from a filter and if this is part of the projection. If yes
-		// we need to actually project it
-		if (!insertedValues.isEmpty()) {
-			node.replaceWith(new ProjectionWithBindings(node.getArg(), node.getProjectionElemList(), insertedValues));
-		}
-	}
+
 
 
 	@Override
@@ -209,7 +189,7 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 	
 	
 	
-	protected class VarFinder extends AbstractQueryModelVisitor<OptimizationException>
+	protected static class VarFinder extends AbstractQueryModelVisitor<OptimizationException>
 	{
 		
 		protected HashSet<String> vars;
@@ -230,22 +210,24 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 	}
 	
 	
-	protected class FilterExprInsertVisitor extends AbstractQueryModelVisitor<OptimizationException>
+	protected static class FilterExprInsertVisitor extends AbstractQueryModelVisitor<OptimizationException>
 	{
 		
 		
-		protected boolean canRemove = false;		// if true, the current filter can be removed
+
 		protected FilterExpr filterExpr = null;		// the current filter Expr
+		protected boolean isApplied = false;
 		
 		
 		
 		public void initialize(FilterExpr filterExpr) {
-			this.canRemove=true;
+			this.isApplied = false;
 			this.filterExpr = filterExpr;
 		}
 		
 		public boolean canRemove() {
-			return canRemove;
+			// if the filter is applied somewhere, it can be removed
+			return isApplied;
 		}
 		
 		
@@ -257,13 +239,10 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 			}
 			
 			else if (node instanceof StatementTupleExpr) {
-			
-				// TODO check if we still can remove!!!
-				
+				return;
 			}
 			
 			else {
-				// TODO we maybe have to adjust canRemove here
 				super.meetOther(node);
 			}
 		}
@@ -289,30 +268,40 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 					intersected++;
 			}
 			
-			// filter expression is irrelevant
-			if (intersected==0)
+			// filter expression is irrelevant for this expression
+			if (intersected == 0) {
 				return;
+			}
 			
 			// push eq comparison into stmt as bindings
 			if (expr.isCompareEq()) {
 				
-				if (handleCompare(filterTuple, (Compare)expr.getExpression()))
+				if (bindCompareInExpression(filterTuple, (Compare) expr.getExpression())) {
+					isApplied = true;
 					return;
+				}
 			}
 			
 			// filter contains all variables => push filter
-			if (intersected==expr.getVars().size())
-				filterTuple.addFilterExpr(expr);
-			
-			// filter is still needed for post filtering
-			else {
-				canRemove=false;
+			if (intersected == expr.getVars().size()) {
+				if (!isApplied) {
+					// only push filter if it has not been applied to another statement
+					filterTuple.addFilterExpr(expr);
+				}
+				isApplied = true;
 			}
 		}
 		
 		
-		
-		private boolean handleCompare(FilterTuple filterTuple, Compare cmp) {
+		/**
+		 * Bind the given compare filter expression in the tuple expression, i.e. insert
+		 * the value as binding for the respective variable.
+		 * 
+		 * @param filterTuple
+		 * @param cmp
+		 * @return
+		 */
+		private boolean bindCompareInExpression(FilterTuple filterTuple, Compare cmp) {
 			
 			boolean isVarLeft = cmp.getLeftArg() instanceof Var;
 			boolean isVarRight = cmp.getRightArg() instanceof Var;
@@ -332,21 +321,15 @@ public class FilterOptimizer extends AbstractQueryModelVisitor<OptimizationExcep
 			if (isVarLeft && cmp.getRightArg() instanceof ValueConstant) {
 				String varName = ((Var)cmp.getLeftArg()).getName();
 				Value value = ((ValueConstant)cmp.getRightArg()).getValue();
-				if (value instanceof Resource) {
-					filterTuple.addBoundFilter(varName, value);
-					insertedValues.add(new SimpleBinding(varName, value));
-					return true;
-				}
+				filterTuple.addBoundFilter(varName, value);
+				return true;
 			}
 			
 			if (isVarRight && cmp.getLeftArg() instanceof ValueConstant) {
 				String varName = ((Var)cmp.getRightArg()).getName();
 				Value value = ((ValueConstant)cmp.getLeftArg()).getValue();
-				if (value instanceof Resource) {
-					filterTuple.addBoundFilter(varName, value);
-					insertedValues.add(new SimpleBinding(varName, value));
-					return true;
-				}
+				filterTuple.addBoundFilter(varName, value);
+				return true;
 			}
 			
 			return false;	// not added
