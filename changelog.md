@@ -23,6 +23,7 @@ See upgrade notes for details.
    - make logging backend optional (adapters via SLF4j)
    - migrate (optional) logging backend to log4j 2
    - redefine logging behavior for CLI
+ * Improvements to optimizers (LIMIT, FILTER)
  * Improved overall robustness and fault tolerance
  * Documentation migrated to https://github.com/VeritasOS/fedx/wiki
  * Technical Improvements

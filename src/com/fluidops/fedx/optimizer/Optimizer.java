@@ -113,6 +113,11 @@ public class Optimizer {
 		// optimize statement groups and join order
 		new StatementGroupOptimizer(queryInfo).optimize(query);
 
+		// potentially push limits (if applicable)
+		if (info.hasLimit()) {
+			new LimitOptimizer().optimize(query);
+		}
+
 		// optimize Filters, if available
 		// Note: this is done after the join order is determined to ease filter pushing
 		if (info.hasFilter())

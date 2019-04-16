@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.algebra.AbstractQueryModelNode;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.StatementPattern;
 import org.eclipse.rdf4j.query.algebra.evaluation.QueryBindingSet;
@@ -50,6 +51,7 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 	protected final List<String> freeVars = new ArrayList<String>(3);
 	protected FilterValueExpr filterExpr = null;
 	protected QueryBindingSet boundFilters = null; // contains bound filter bindings, that need to be added as additional bindings
+	protected long upperLimit = -1; // if set to a positive number, this upper limit is applied to any subquery
 	
 	public FedXStatementPattern(StatementPattern node, QueryInfo queryInfo) {
 		super(node.getSubjectVar(), node.getPredicateVar(), node.getObjectVar(), node.getContextVar());
@@ -67,6 +69,10 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 		
 		if (boundFilters != null) {
 			BoundFiltersNode.visit(visitor, boundFilters);
+		}
+
+		if (upperLimit > 0) {
+			new UpperLimitNode(upperLimit).visit(visitor);
 		}
 
 		if (filterExpr!=null)
@@ -180,6 +186,24 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 		// if no free vars AND hasResults => replace by TrueNode to avoid additional remote requests
 	}
 	
+	/**
+	 * Set the upper limit for this statement expression (i.e. applied in the
+	 * evaluation to individual subqueries of this expr)
+	 * 
+	 * @param upperLimit the upper limit, a negative number means unlimited
+	 */
+	public void setUpperLimit(long upperLimit) {
+		this.upperLimit = upperLimit;
+	}
+
+	/**
+	 * 
+	 * @return the upper limit or a negative number (meaning no LIMIT)
+	 */
+	public long getUpperLimit() {
+		return this.upperLimit;
+	}
+
 	private List<StatementSource> sort(List<StatementSource> stmtSources) {
 		List<StatementSource> res = new ArrayList<StatementSource>(stmtSources);
 		Collections.sort(res, new Comparator<StatementSource>()	{
@@ -189,5 +213,26 @@ public abstract class FedXStatementPattern extends StatementPattern implements S
 			}			
 		});
 		return res;
+	}
+	
+	static class UpperLimitNode extends AbstractQueryModelNode {
+
+		private static final long serialVersionUID = -1331709574582152474L;
+
+		private final long upperLimit;
+
+		public UpperLimitNode(long upperLimit) {
+			super();
+			this.upperLimit = upperLimit;
+		}
+		
+		@Override
+		public String getSignature() {
+			return "Upper Limit: " + upperLimit;
+		}
+		@Override
+		public <X extends Exception> void visit(QueryModelVisitor<X> visitor) throws X {
+			visitor.meetOther(this);
+		}
 	}
 }

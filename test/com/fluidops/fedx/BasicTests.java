@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -140,5 +141,28 @@ public class BasicTests extends SPARQLBaseTest {
 				.add(Arrays.asList(vf.createLiteral("Person1"))).build();
 
 		compareTupleQueryResults(actual, expected, false);
+	}
+	
+	@Test
+	public void testQueryWithLimit() throws Exception {
+		
+		prepareTest(Arrays.asList("/tests/medium/data1.ttl", "/tests/medium/data2.ttl", "/tests/medium/data3.ttl",
+				"/tests/medium/data4.ttl"));
+		
+		String queryString = readQueryString("/tests/basic/query_limit01.rq");
+
+		evaluateQueryPlan("/tests/basic/query_limit01.rq", "/tests/basic/query_limit01.qp");
+
+		TupleQuery query = QueryManager.prepareTupleQuery(queryString);
+
+		try (TupleQueryResult actual = query.evaluate()) {
+			if (actual.hasNext()) {
+				BindingSet firstResult = actual.next();
+				System.out.println(firstResult);
+			}
+			if (actual.hasNext()) {
+				throw new Exception("Expected single result due to LIMIT 1");
+			}
+		}
 	}
 }

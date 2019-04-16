@@ -170,6 +170,10 @@ public class QueryStringUtil {
 	
 		res.append(" }");
 		
+		long upperLimit = stmt.getUpperLimit();
+		if (upperLimit > 0) {
+			res.append(" LIMIT ").append(upperLimit);
+		}
 		return res.toString();		
 	}
 	
