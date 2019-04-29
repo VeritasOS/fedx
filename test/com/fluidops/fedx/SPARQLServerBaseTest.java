@@ -1,7 +1,9 @@
 package com.fluidops.fedx;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +53,8 @@ public abstract class SPARQLServerBaseTest extends FedXBaseTest {
 	protected static Server server;
 	
 	
-	
+	@TempDir
+	static Path tempDir;
 
 	private static REPOSITORY_TYPE repositoryType = REPOSITORY_TYPE.SPARQLREPOSITORY;
 
@@ -107,7 +111,8 @@ public abstract class SPARQLServerBaseTest extends FedXBaseTest {
 		List<String> repositoryIds = new ArrayList<String>(MAX_ENDPOINTS);
 		for (int i=1; i<=MAX_ENDPOINTS; i++)
 			repositoryIds.add("endpoint"+i);
-		server = new SPARQLEmbeddedServer(repositoryIds, repositoryType==REPOSITORY_TYPE.REMOTEREPOSITORY);
+		File dataDir = new File(tempDir.toFile(), "datadir");
+		server = new SPARQLEmbeddedServer(dataDir, repositoryIds, repositoryType == REPOSITORY_TYPE.REMOTEREPOSITORY);
 
 		server.initialize(MAX_ENDPOINTS);
 	}
@@ -121,7 +126,8 @@ public abstract class SPARQLServerBaseTest extends FedXBaseTest {
 	 */
 	private static void initializeLocalNativeStores() throws Exception {
 		
-		server = new NativeStoreServer();
+		File dataDir = new File(tempDir.toFile(), "datadir");
+		server = new NativeStoreServer(dataDir);
 		server.initialize(MAX_ENDPOINTS);
 	}
 

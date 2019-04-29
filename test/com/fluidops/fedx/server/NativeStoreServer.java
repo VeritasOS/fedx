@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStoreExt;
-import org.junit.rules.TemporaryFolder;
 
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointBase;
@@ -17,21 +16,23 @@ import com.fluidops.fedx.endpoint.EndpointType;
 import com.fluidops.fedx.endpoint.provider.RepositoryInformation;
 import com.fluidops.fedx.repository.ConfigurableSailRepository;
 
-public class NativeStoreServer extends TemporaryFolder implements Server {
+public class NativeStoreServer implements Server {
 
 	private List<Repository> repositories = new ArrayList<>();
-	
+
+	private final File dataDir;
+
+	public NativeStoreServer(File dataDir) {
+		super();
+		this.dataDir = dataDir;
+	}
+
 	@Override
 	public void initialize(int nRepositories) throws Exception {
-		try {
-			this.before();
-		} catch (Throwable e) {
-			throw new Exception(e);
-		}
-		File baseDir = newFolder();
+
 		for (int i=1; i<=nRepositories; i++) {
 			ConfigurableSailRepository repo = new ConfigurableSailRepository(
-					new NativeStoreExt(new File(baseDir, "endpoint" + i)), true);
+					new NativeStoreExt(new File(dataDir, "endpoint" + i)), true);
 			repo.initialize();
 			repositories.add(repo);
 			repo.shutDown();
@@ -40,11 +41,7 @@ public class NativeStoreServer extends TemporaryFolder implements Server {
 	
 	@Override
 	public void shutdown() throws Exception {
-		try {
-			this.after();
-		} catch (Throwable e) {
-			throw new Exception(e);
-		}
+
 	}
 
 	@Override

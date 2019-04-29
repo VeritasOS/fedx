@@ -12,7 +12,6 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
-import org.junit.rules.TemporaryFolder;
 
 import com.fluidops.fedx.endpoint.Endpoint;
 import com.fluidops.fedx.endpoint.EndpointFactory;
@@ -40,20 +39,17 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	 * {@link FedXRepositoryResolverBean}
 	 */
 	private RepositoryResolver repositoryResolver;
-
-	// use Junit temporary folder (but not as Rule!)
-	TemporaryFolder tempFolder = new TemporaryFolder();
-
 	/**
 	 * The data directory populated at runtime
 	 */
-	private File dataDir;
+	private final File dataDir;
 
 	/**
 	 * @param repositoryIds
 	 */
-	public SPARQLEmbeddedServer(List<String> repositoryIds, boolean useRemoteRepositoryEndpoint) {
+	public SPARQLEmbeddedServer(File dataDir, List<String> repositoryIds, boolean useRemoteRepositoryEndpoint) {
 		super();
+		this.dataDir = dataDir;
 		this.repositoryIds = repositoryIds;
 		this.useRemoteRepositoryEndpoint = useRemoteRepositoryEndpoint;
 	}
@@ -78,9 +74,6 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 	public void start()
 		throws Exception
 	{
-		tempFolder.create();
-
-		dataDir = tempFolder.newFolder("datadir");
 		System.setProperty("org.eclipse.rdf4j.appdata.basedir", dataDir.getAbsolutePath());
 
 		super.start();
@@ -106,8 +99,6 @@ public class SPARQLEmbeddedServer extends EmbeddedServer implements Server {
 		}
 
 		super.stop();
-		
-		tempFolder.delete();
 	}
 	
 
