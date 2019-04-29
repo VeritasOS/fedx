@@ -18,8 +18,8 @@ project.ext.productBuildby = productCompany
 project.ext.productName = 'FedX'
 project.ext.productLongName = 'FedX'
 
-project.ext.rdf4jVersion = '2.4.5'
-project.ext.jettyVersion = '9.4.14.v20181114'
+project.ext.rdf4jVersion = '2.4.6'
+project.ext.jettyVersion = '9.4.17.v20190418'
 
 buildDir='target'
 group 'com.veritas.fops'
@@ -44,15 +44,15 @@ dependencies {
 	implementation 'commons-codec:commons-codec:1.11'
 	implementation 'org.apache.commons:commons-compress:1.18'
 	implementation 'commons-io:commons-io:2.6'
-	implementation 'org.apache.httpcomponents:httpcore:4.4.10'
-	implementation 'org.apache.httpcomponents:httpcore-nio:4.4.10'	
-	implementation 'org.apache.httpcomponents:httpclient:4.5.6'
-	implementation 'org.apache.httpcomponents:httpclient-cache:4.5.6'
-	implementation 'commons-logging:commons-logging:1.2'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.9.7'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.7'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.11'
+	implementation 'org.apache.httpcomponents:httpcore-nio:4.4.11'	
+	implementation 'org.apache.httpcomponents:httpclient:4.5.8'
+	implementation 'org.apache.httpcomponents:httpclient-cache:4.5.8'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.26'
+	runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.26'
 	runtime group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
 	runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
 	runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.2', transitive: false
@@ -105,9 +105,8 @@ dependencies {
 	// rdf4j HTTP endpoint
 	testRuntime group: 'org.eclipse.rdf4j', name: 'rdf4j-http-server-spring', version: rdf4jVersion, transitive: false
 	testCompile group: 'org.eclipse.rdf4j', name: 'rdf4j-config', version: rdf4jVersion, transitive: false
-	testRuntime group: 'org.springframework', name: 'spring-webmvc', version: '4.2.1.RELEASE'
+	testRuntime group: 'org.springframework', name: 'spring-webmvc', version: '5.1.6.RELEASE'
 	testRuntime group: 'com.github.ziplet', name: 'ziplet', version: '2.0.0', transitive: false
-	testRuntime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.25'
 	testRuntime project.files('build/test/fedxPerformanceScenario.jar')
 }
 
