@@ -37,7 +37,11 @@ import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;
 import org.eclipse.rdf4j.query.algebra.evaluation.federation.ServiceJoinIterator;
 import org.eclipse.rdf4j.query.algebra.evaluation.impl.StrictEvaluationStrategy;
+import org.eclipse.rdf4j.query.algebra.evaluation.iterator.BadlyDesignedLeftJoinIterator;
+import org.eclipse.rdf4j.query.algebra.evaluation.iterator.HashJoinIteration;
 import org.eclipse.rdf4j.query.algebra.evaluation.util.QueryEvaluationUtil;
+import org.eclipse.rdf4j.query.algebra.helpers.TupleExprs;
+import org.eclipse.rdf4j.query.algebra.helpers.VarNameCollector;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sparql.federation.CollectionIteration;
@@ -51,6 +55,7 @@ import com.fluidops.fedx.algebra.CheckStatementPattern;
 import com.fluidops.fedx.algebra.ConjunctiveFilterExpr;
 import com.fluidops.fedx.algebra.EmptyResult;
 import com.fluidops.fedx.algebra.ExclusiveGroup;
+import com.fluidops.fedx.algebra.FedXLeftJoin;
 import com.fluidops.fedx.algebra.FedXService;
 import com.fluidops.fedx.algebra.FilterExpr;
 import com.fluidops.fedx.algebra.IndependentJoinGroup;
@@ -66,6 +71,7 @@ import com.fluidops.fedx.evaluation.concurrent.ControlledWorkerScheduler;
 import com.fluidops.fedx.evaluation.concurrent.ParallelServiceExecutor;
 import com.fluidops.fedx.evaluation.join.ControlledWorkerBoundJoin;
 import com.fluidops.fedx.evaluation.join.ControlledWorkerJoin;
+import com.fluidops.fedx.evaluation.join.ControlledWorkerLeftJoin;
 import com.fluidops.fedx.evaluation.join.SynchronousBoundJoin;
 import com.fluidops.fedx.evaluation.join.SynchronousJoin;
 import com.fluidops.fedx.evaluation.union.ControlledWorkerUnion;
@@ -142,6 +148,10 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 			return ((ExclusiveGroup)expr).evaluate(bindings);
 		}
 		
+		if (expr instanceof FedXLeftJoin) {
+			return evaluateLeftJoin((FedXLeftJoin) expr, bindings);
+		}
+
 		if (expr instanceof SingleSourceQuery)
 			return evaluateSingleSourceQuery((SingleSourceQuery)expr, bindings);
 			
@@ -268,6 +278,59 @@ public abstract class FederationEvalStrategy extends StrictEvaluationStrategy {
 		return result;
 	}
 	
+	/**
+	 * Evaluate a {@link FedXLeftJoin} (i.e. an OPTIONAL clause)
+	 * 
+	 * @param leftJoin
+	 * @param bindings
+	 * @return the resulting iteration
+	 * @throws QueryEvaluationException
+	 * @see StrictEvaluationStrategy#evaluate(org.eclipse.rdf4j.query.algebra.LeftJoin,
+	 *      BindingSet)
+	 */
+	protected CloseableIteration<BindingSet, QueryEvaluationException> evaluateLeftJoin(FedXLeftJoin leftJoin,
+			final BindingSet bindings) throws QueryEvaluationException {
+
+		/*
+		 * NOTE: this implementation is taken from
+		 * StrictEvaluationStrategy.evaluate(LeftJoin, BindingSet)
+		 * 
+		 * However, we have to take care for some concurrency scheduling to guarantee
+		 * the order in which subqueries are executed.
+		 */
+
+		if (TupleExprs.containsSubquery(leftJoin.getRightArg())) {
+			return new HashJoinIteration(this, leftJoin, bindings);
+		}
+
+		// Check whether optional join is "well designed" as defined in section
+		// 4.2 of "Semantics and Complexity of SPARQL", 2006, Jorge Pérez et al.
+		VarNameCollector optionalVarCollector = new VarNameCollector();
+		leftJoin.getRightArg().visit(optionalVarCollector);
+		if (leftJoin.hasCondition()) {
+			leftJoin.getCondition().visit(optionalVarCollector);
+		}
+
+		Set<String> problemVars = optionalVarCollector.getVarNames();
+		problemVars.removeAll(leftJoin.getLeftArg().getBindingNames());
+		problemVars.retainAll(bindings.getBindingNames());
+
+		if (problemVars.isEmpty()) {
+			// left join is "well designed"
+			CloseableIteration<BindingSet, QueryEvaluationException> leftIter = evaluate(leftJoin.getLeftArg(),
+					bindings);
+			ControlledWorkerScheduler<BindingSet> scheduler = FederationManager.getInstance().getLeftJoinScheduler();
+
+			ControlledWorkerLeftJoin join = new ControlledWorkerLeftJoin(scheduler, this, leftIter, leftJoin,
+					bindings, leftJoin.getQueryInfo());
+			executor.execute(join);
+			return join;
+		} else {
+			// TODO optimize with a FedX secure implementation
+			return new BadlyDesignedLeftJoinIterator(this, leftJoin, bindings, problemVars);
+		}
+	}
+
 	public CloseableIteration<BindingSet, QueryEvaluationException> evaluateNaryUnion(NUnion union, BindingSet bindings) throws QueryEvaluationException {
 		
 		ControlledWorkerScheduler<BindingSet> unionScheduler = FederationManager.getInstance().getUnionScheduler();

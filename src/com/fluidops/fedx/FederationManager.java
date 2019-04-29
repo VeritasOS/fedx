@@ -208,6 +208,7 @@ public class FederationManager {
 	protected FederationEvalStrategy strategy;
 	protected FederationType type;
 	protected ControlledWorkerScheduler<BindingSet> joinScheduler;
+	protected ControlledWorkerScheduler<BindingSet> leftJoinScheduler;
 	protected ControlledWorkerScheduler<BindingSet> unionScheduler;
 	
 	
@@ -245,6 +246,11 @@ public class FederationManager {
 			unionScheduler.abort();
 		unionScheduler = new ControlledWorkerScheduler<BindingSet>(Config.getConfig().getUnionWorkerThreads(), "Union Scheduler");		
 		
+
+		if (leftJoinScheduler!=null)
+			leftJoinScheduler.abort();
+		leftJoinScheduler = new ControlledWorkerScheduler<BindingSet>(Config.getConfig().getLeftJoinWorkerThreads(), "Left Join Scheduler");		
+
 	}
 
 	
@@ -272,6 +278,10 @@ public class FederationManager {
 		return joinScheduler;
 	}
 
+	public ControlledWorkerScheduler<BindingSet> getLeftJoinScheduler() {
+		return leftJoinScheduler;
+	}
+	
 	public ControlledWorkerScheduler<BindingSet> getUnionScheduler() {
 		return unionScheduler;
 	}
@@ -446,6 +456,12 @@ public class FederationManager {
 			unionScheduler.shutdown();
 		} catch (Exception e) {
 			log.warn("Failed to shutdown union scheduler: " + e.getMessage());
+			log.debug("Details: ", e);
+		}
+		try {
+			leftJoinScheduler.shutdown();
+		} catch (Exception e) {
+			log.warn("Failed to shutdown left join scheduler: " + e.getMessage());
 			log.debug("Details: ", e);
 		}
 		DelegateFederatedServiceResolver.shutdown(); // shutdown any federated service resolver

@@ -242,7 +242,7 @@ public abstract class EndpointBase implements Endpoint {
 	 * @author Andreas Schwarte
 	 *
 	 */
-	static class ManagedRepositoryConnection extends RepositoryConnectionWrapper {
+	public static class ManagedRepositoryConnection extends RepositoryConnectionWrapper {
 
 		public ManagedRepositoryConnection(Repository repository, RepositoryConnection delegate) {
 			super(repository, delegate);

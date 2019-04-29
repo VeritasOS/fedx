@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.rdf4j.query.algebra.Filter;
 import org.eclipse.rdf4j.query.algebra.Join;
+import org.eclipse.rdf4j.query.algebra.LeftJoin;
 import org.eclipse.rdf4j.query.algebra.Projection;
 import org.eclipse.rdf4j.query.algebra.Service;
 import org.eclipse.rdf4j.query.algebra.Slice;
@@ -28,6 +29,7 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.Union;
 import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
 
+import com.fluidops.fedx.algebra.FedXLeftJoin;
 import com.fluidops.fedx.algebra.NJoin;
 import com.fluidops.fedx.exception.OptimizationException;
 import com.fluidops.fedx.structures.QueryInfo;
@@ -128,6 +130,17 @@ public class GenericInfoOptimizer extends AbstractQueryModelVisitor<Optimization
 		node.replaceWith(newJoin);
 	}
 	
+	@Override
+	public void meet(LeftJoin node) throws OptimizationException {
+		/**
+		 * Wrap the left join in order to keep a reference to the query info object
+		 */
+		FedXLeftJoin join = new FedXLeftJoin(node, queryInfo);
+		join.visitChildren(this);
+
+		node.replaceWith(join);
+	}
+
 	@Override
 	public void meet(StatementPattern node) {
 		stmts.add(node);

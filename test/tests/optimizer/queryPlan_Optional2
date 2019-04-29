@@ -3,7 +3,7 @@ QueryRoot
       ProjectionElemList
          ProjectionElem "o"
          ProjectionElem "o2"
-      LeftJoin
+      FedXLeftJoin
          StatementSourcePattern
             Var (name=s)
             Var (name=_const_99282aab_uri, value=http://purl.org/dc/terms/source, anonymous)

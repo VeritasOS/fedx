@@ -43,6 +43,7 @@ import com.google.common.collect.Maps;
  * query08: avg=2640, min=2083, max=3747
  * query09: avg=72, min=66, max=94
  * query10: avg=785, min=664, max=1006
+ * query11: avg=2465, min=2249, max=3707
  * </pre>
  * 
  * 
@@ -54,7 +55,7 @@ public class FedXPerformanceTest extends SPARQLBaseTest {
 	static final String[] queries = new String[]
 	{
 			"query01", "query02", "query03", "query04", "query05", "query06", "query07", "query08", "query09",
-			"query10", /* "query11", "query12" */
+			"query10", "query11" /*, "query12" */
 	};
 
 	@Test
@@ -115,7 +116,7 @@ public class FedXPerformanceTest extends SPARQLBaseTest {
 	}
 	
 	@Test
-	@Disabled // TODO requires analysis, currently blocking
+	@Disabled // FIXME currently stack overflow error in result comparison due to implementation issue in RDF4J
 	public void testRun() throws Exception {
 		String basePackage = "/tests/performance/";
 
@@ -123,7 +124,7 @@ public class FedXPerformanceTest extends SPARQLBaseTest {
 		prepareTest(Arrays.asList(basePackage + "data1.ttl", basePackage + "data2.ttl", basePackage + "data3.ttl",
 				basePackage + "data4.ttl"));
 
-		String query = "query11";
+		String query = "query12";
 		execute(basePackage + query + ".rq", basePackage + query + ".srx", false);
 	}
 

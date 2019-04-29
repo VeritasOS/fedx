@@ -188,8 +188,18 @@ public class Config {
 	}
 	
 	/**
-	 * The block size for a bound join, i.e. the number of bindings that are integrated
-	 * in a single subquery. Default is 15.
+	 * The (maximum) number of left join worker threads used in the
+	 * {@link ControlledWorkerScheduler} for join operations. Default is 10.
+	 * 
+	 * @return the number of left join worker threads
+	 */
+	public int getLeftJoinWorkerThreads() {
+		return Integer.parseInt(props.getProperty("leftJoinWorkerThreads", "10"));
+	}
+
+	/**
+	 * The block size for a bound join, i.e. the number of bindings that are
+	 * integrated in a single subquery. Default is 15.
 	 * 
 	 * @return the bound join block size
 	 */
