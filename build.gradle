@@ -1,5 +1,6 @@
 plugins {
 	id "com.github.spotbugs" version "1.7.1"
+	id 'jacoco'
 }
 
 apply plugin: 'java'
@@ -269,6 +270,22 @@ task tests(dependsOn: ['testNativeStore', 'testSparqlRepository', 'testRemoteRep
 // make sure that tests are executed
 check.dependsOn tests
 
+
+jacoco {
+	toolVersion = "0.8.3"
+}
+
+task jacocoReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+	additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
+	sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+	classDirectories =  files(sourceSets.main.output)
+	executionData = fileTree("target").include("/jacoco/*.exec")
+	reports {
+		html.enabled = true
+		xml.enabled = false
+		csv.enabled = false
+	}
+}
 
 def deployDir = file("target/deploy")
 

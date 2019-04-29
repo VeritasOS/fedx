@@ -31,6 +31,7 @@ See upgrade notes for details.
    - migrate unit tests to junit 5
    - test infrastructure for simulating errornous environments
    - integrate static code analysis using spotbugs
+   - integrate code coverage analysis using jacoco
 
 
 FedX 5.1.0 (2018-06-18)

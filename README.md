@@ -30,4 +30,5 @@ The FedX repository uses Gradle as a build system:
 ./gradlew cleanEclipse eclipse
 ./gradlew tests
 ./gradlew testNativeStore testSparqlRepository testRemoteRepository
+./gradlew jacocoReport
 ```
