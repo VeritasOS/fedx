@@ -310,8 +310,9 @@ public class QueryStringUtil {
 	 * 
 	 * <source>
 	 * SELECT ?v ?__index WHERE {
+	 *   VALUES (?s ?__index) { (:s1 1) (:s2 2) ... (:sN N) }
 	 *   ?s name ?v.
-	 * } VALUES (?s ?__index) { (:s1 1) (:s2 2) ... (:sN N) }
+	 * } 
 	 * </source>
 	 * 
 	 * @param stmt
@@ -339,14 +340,12 @@ public class QueryStringUtil {
 				
 		res.append(" ?").append(BoundJoinVALUESConversionIteration.INDEX_BINDING_NAME).append(" WHERE {");
 		
-		res.append( stmtPattern );
 		
 		// TODO evaluate filter expression remote
 //		if (filterExpr!=null) {
 //		
 //		}
 	
-		res.append(" }");
 		
 		// add VALUES clause
 		res.append(" VALUES (");
@@ -368,6 +367,11 @@ public class QueryStringUtil {
 			res.append("\"").append(index).append("\") ");
 			index++;
 		}
+
+		res.append(" } ");
+
+		res.append(stmtPattern);
+
 		res.append(" }");
 		
 		return res.toString();
