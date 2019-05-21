@@ -148,15 +148,15 @@ public class CLI {
 		if (queries.size()==0)
 			error("No queries specified", true);
 
-		// initialize default prefix declarations (if the user did not specify anything)
-		if (Config.getConfig().getPrefixDeclarations() == null) {
-			initDefaultPrefixDeclarations();
-		}
-		
 		
 		// setup the federation
 		try {
 			repo = FedXFactory.initializeFederation(endpoints);
+
+			// initialize default prefix declarations (if the user did not specify anything)
+			if (Config.getConfig().getPrefixDeclarations() == null) {
+				initDefaultPrefixDeclarations();
+			}
 
 			int count = 1;
 			for (String queryString : queries) {

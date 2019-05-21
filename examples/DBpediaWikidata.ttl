@@ -1,0 +1,15 @@
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix fedx: <http://www.fluidops.com/config/fedx#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://DBpedia> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "http://dbpedia.org/sparql" ;
+	fedx:supportsASKQueries false .
+
+<http://Wikidata> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "https://query.wikidata.org/sparql" ;
+	fedx:supportsASKQueries false .

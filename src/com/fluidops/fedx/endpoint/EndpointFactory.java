@@ -222,8 +222,8 @@ public class EndpointFactory {
 	/**
 	 * Utility function to load federation members from a data configuration file. A
 	 * data configuration file provides information about federation members in form
-	 * of ntriples. Currently the types NativeStore and SPARQLEndpoint are
-	 * supported. For details please refer to the documentation in
+	 * of turtle. Currently the types NativeStore and SPARQLEndpoint are supported.
+	 * For details please refer to the documentation in
 	 * {@link NativeRepositoryInformation} and {@link SPARQLRepositoryInformation}.
 	 * 
 	 * @param dataConfig
@@ -239,7 +239,7 @@ public class EndpointFactory {
 			throw new FedXRuntimeException("File does not exist: " + dataConfig.getAbsolutePath());
 		
 		Model graph = new TreeModel();
-		RDFParser parser = Rio.createParser(RDFFormat.N3);
+		RDFParser parser = Rio.createParser(RDFFormat.TURTLE);
 		RDFHandler handler = new DefaultRDFHandler(graph);
 		parser.setRDFHandler(handler);
 		try (FileReader fr = new FileReader(dataConfig)) {

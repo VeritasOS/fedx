@@ -15,9 +15,11 @@ techniques and is thus a highly scalable solution for practical federated query 
 * Practical applicability & easy integration as a [http://rdf4j.org/](RDF4J) SAIL
 * Comprehensive CLI for federated query processing from the command line
 
-## Documentation
+## Documentation and Getting Started
 
-Refer to the [wiki](https://github.com/VeritasOS/fedx/wiki) for the latest documentation
+Refer to the [wiki](https://github.com/VeritasOS/fedx/wiki) for the latest documentation.
+
+Particularly see [Getting Started](https://github.com/VeritasOS/fedx/wiki/Getting-Started) for the first steps.
 
 ## Development
 

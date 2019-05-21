@@ -294,7 +294,7 @@ task deploy(type: Copy, dependsOn: ["jar"] ) {
 	into "$deployDir"
 	
 	into("lib") {
-		from configurations.compileClasspath
+		from configurations.runtimeClasspath
 	}
 	
 	into("lib") {
