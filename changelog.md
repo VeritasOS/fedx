@@ -1,6 +1,6 @@
 Changelog
 
-FedX 6.0.0 SNAPSHOT
+FedX 6.0.0 (2019-07-03)
 
 Note: this release is not fully backwards compatible to previous releases. 
 See upgrade notes for details.
